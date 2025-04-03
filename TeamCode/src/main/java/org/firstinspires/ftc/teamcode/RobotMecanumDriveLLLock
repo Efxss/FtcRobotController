@@ -1,13 +1,13 @@
-// IMPORT [FTC]
+// [IMPORT] FTC
 package org.firstinspires.ftc.teamcode;
 
-// IMPORT [REV]
+// [IMPORT] REV
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-// IMPORT [LIMELIGHT 3A]
+// [IMPORT] LIMELIGHT 3A
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.LLStatus;
@@ -35,9 +35,9 @@ public class DriveLLLOCK extends OpMode {
 
         // [SETUP] Limelight3A
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
-        limelight.setPollRateHz(100); // Set data polling rate
-        limelight.start(); // Start tracking
-        limelight.pipelineSwitch(0); // Set initial pipeline
+        limelight.setPollRateHz(100);
+        limelight.start();
+        limelight.pipelineSwitch(0);
 
         // [DEBUG] ScriptStatus
         telemetry.addData("Status", "Initialized");
@@ -45,7 +45,7 @@ public class DriveLLLOCK extends OpMode {
 
     @Override
     public void loop() {
-        // [INPUT] Lock Mode (TOGGLE, 'A')
+        // [INPUT] Lock Mode (BOOLEAN, 'A')
         if (gamepad1.a && !lastAState) {
             lockMode = !lockMode;
         }
@@ -89,25 +89,25 @@ public class DriveLLLOCK extends OpMode {
     }
 
     @Override
-    // [HELPER-END] Stop all motors
+    // [HELPER-END] Stop: Motors, Limelight
     public void stop() {
         frontLeft.setPower(0);
         frontRight.setPower(0);
         backLeft.setPower(0);
         backRight.setPower(0);
-        limelight.stop(); // stop limelight when script stopped
+        limelight.stop();
     }
 
     // [FUNCTION] LL Align
     private double[] getAlignMovement() {
         LLResult result = limelight.getLatestResult();
         if (result != null && result.isValid()) {
-            double tx = result.getTx(); // Left/Right offset
-            double ty = result.getTy(); // Up/Down offset
-            double ta = result.getTa(); // Target area (size)
+            double tx = result.getTx(); // Left/Right Offset
+            double ty = result.getTy(); // Up/Down Offset
+            double ta = result.getTa(); // Target Area (Size)
             
-            double strafeAdjust = tx * 0.02;  // Move Side/Side (X Offset)
-            double driveAdjust = (10 - ta) * 0.01; // Move Forward/Backward
+            double strafeAdjust = tx * 0.02;  // Side/Side (X)
+            double driveAdjust = (10 - ta) * 0.01; // Forward/Backward
             double rotateAdjust = tx * 0.015; // Rotate
             
             telemetry.addData("Target X", tx);
