@@ -1,34 +1,26 @@
-// Java package declaration
+// [IMPORT] FTC
 package org.firstinspires.ftc.teamcode;
 
-// [IMPORT] FTC
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+// [IMPORT] REV
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 // [IMPORT] LIMELIGHT 3A
 import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.LLResultTypes;
+import com.qualcomm.hardware.limelightvision.LLStatus;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 
-@Config
 @TeleOp(name="Drive LL LOCK", group="TeleOp")
-public class RobotMecanumDriveLLLock extends OpMode {
+public class DriveLLLOCK extends OpMode {
 
     private DcMotorEx frontLeft, frontRight, backLeft, backRight;
     private boolean lockMode = false;
     private boolean lastLockModeState = false;
     private Limelight3A limelight;
-    private final double speedMult = 0.8;
-    private ColorSensor colorSensor;
-    private CRServo Servo1;
-    private CRServo Servo2;
-    int Dir = 1;
+    private double speedMult = 1;
 
     @Override
     public void init() {
@@ -37,9 +29,6 @@ public class RobotMecanumDriveLLLock extends OpMode {
         frontRight = hardwareMap.get(DcMotorEx.class, "frontRight");
         backLeft   = hardwareMap.get(DcMotorEx.class, "backLeft");
         backRight  = hardwareMap.get(DcMotorEx.class, "backRight");
-        colorSensor = hardwareMap.colorSensor.get("ColorSensor");
-        Servo1 = hardwareMap.get(CRServo.class, "Servo1");
-        Servo2 = hardwareMap.get(CRServo.class, "Servo2");
 
         // [SETUP] Motor Config.
         frontRight.setDirection(DcMotor.Direction.REVERSE);
@@ -54,21 +43,20 @@ public class RobotMecanumDriveLLLock extends OpMode {
         // [DEBUG] ScriptStatus
         telemetry.addData("Status:", "Initialized");
         telemetry.addData("!WARNING!:", "Potential robot spazzing, as this is a test");
-        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
     }
 
     @Override
     public void loop() {
         // [INPUT] Lock Mode (BOOLEAN, 'A')
-        if (gamepad1.triangle && !lastLockModeState) {
+        if (gamepad1.a && !lastLockModeState) {
             lockMode = !lockMode;
         }
-        lastLockModeState = gamepad1.triangle;
+        lastLockModeState = gamepad1.a;
 
         // [INPUT] Drive (DOUBLE, Jstick)
         double drive  = gamepad1.left_stick_y * speedMult;  // Forward/Backward
         double strafe = -gamepad1.left_stick_x * speedMult; // Left/Right
-        double rotate = -gamepad1.right_stick_x * speedMult; // Rotation
+        double rotate = gamepad1.left_trigger - gamepad1.right_trigger * speedMult; // Rotation
 
         // [SCRIPT] Lock Mode
         if (lockMode) {
@@ -87,25 +75,11 @@ public class RobotMecanumDriveLLLock extends OpMode {
         double backLeftPower   = drive - strafe + rotate;
         double backRightPower  = drive + strafe - rotate;
 
-        float red = colorSensor.red();
-        float green = colorSensor.green();
-        float blue = colorSensor.blue();
-
         // [OUTPUT] Motor Movement(s)
-        frontLeft.setPower(frontLeftPower);
-        frontRight.setPower(frontRightPower);
-        backLeft.setPower(backLeftPower);
-        backRight.setPower(backRightPower);
-
-        Intake();
-
-        if (blue > 45) {
-            Out();
-        }
-
-        if (blue < 40) {
-            In();
-        }
+        frontLeft.setPower(frontLeftPower/2);
+        frontRight.setPower(frontRightPower/2);
+        backLeft.setPower(backLeftPower/2);
+        backRight.setPower(backRightPower/2);
 
         // [DEBUG] LockModeStatus, MotorPowers (Tele)
         telemetry.addData("Lock Mode", lockMode ? "ON" : "OFF");
@@ -126,30 +100,6 @@ public class RobotMecanumDriveLLLock extends OpMode {
         limelight.stop();
     }
 
-    private void Intake() {
-        if (Dir == 1) {
-            Servo1.setPower(0.25);
-            Servo2.setPower(-0.25);
-        }
-        else if (Dir == 2) {
-            Servo1.setPower(-2);
-            Servo2.setPower(2);
-        }
-        else if (Dir == 3) {
-            Servo1.setPower(0);
-            Servo2.setPower(0);
-        }
-    }
-
-    private void In() {
-        Dir = 1;
-    }
-
-    private void Out() {
-        Dir = 2;
-    }
-
-
     // [FUNCTION] Alignment Calc (Limelight) (WITH DEBUG: TELE)
     private double[] getAlignMovement() {
         LLResult result = limelight.getLatestResult();
@@ -158,10 +108,10 @@ public class RobotMecanumDriveLLLock extends OpMode {
             double ty = result.getTy(); // Up/Down Offset
             double ta = result.getTa(); // Target Area (Size)
             
-            double strafeAdjust = tx * -0.02;  // Side/Side (X)
-            double driveAdjust = (10 - ta) * -0.02; // Forward/Backward
-            double rotateAdjust = tx * -0.015; // Rotate
-
+            double strafeAdjust = tx * 0.02;  // Side/Side (X)
+            double driveAdjust = (10 - ta) * 0.01; // Forward/Backward
+            double rotateAdjust = tx * 0.015; // Rotate
+            
             telemetry.addData("Target X", tx);
             telemetry.addData("Target Y", ty);
             telemetry.addData("Target Area", ta);
