@@ -8,36 +8,54 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.threadopmode.ThreadOpMode;
+import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 @Config
 @TeleOp
 public class MentorChallengeOne extends ThreadOpMode {
-
+    
+// START GLOBAL VARIABLES-{
+    
+    // WebCam Globals:
+        private static final double camWidthPX  = 640;
+        private static final double camHeightPX = 480;
+        private VisionPortal visionPortal;
+        private AprilTagProcessor tagProcessor;
+        
+    // Generic [Robot] Globals:
     private DcMotorEx frontLeft, frontRight, backLeft, backRight;
 
-    int basketRange = 5; // Inches
+    // Trig [Triangulation] Globals:
+        int basketRange = 5; // Inches
+        float X1;
+        float Y1;
+        float H1;
+        float X2;
+        float Y2;
+        float H2;
+        float XT;
+        float YT;
 
-    float X1;
-    float Y1;
-
-    float H1;
-
-    float X2;
-    float Y2;
-
-    float H2;
-
-    float XT;
-    float YT;
-
-    SparkFunOTOS SparkFun;
-    SparkFunOTOS.Pose2D pos;
-
+    // SparkFunOTOS Globals:
+        SparkFunOTOS SparkFun;
+        SparkFunOTOS.Pose2D pos;
+        
+//  }-END GLOBAL VARIABLES
+    
+// START INIT-{
+    
     @Override
     public void mainInit() {
+
+        tagProcessor = AprilTagProcessor.easyCreateWithDefaults();
+        visionPortal = VisionPortal.easyCreateWithDefaults(
+                hardwareMap.get(WebcamName.class, "Webcam 1"), tagProcessor);
 
         frontLeft  = hardwareMap.get(DcMotorEx.class, "frontLeft");
         frontRight = hardwareMap.get(DcMotorEx.class, "frontRight");
@@ -61,11 +79,13 @@ public class MentorChallengeOne extends ThreadOpMode {
 
         configureOtos();
 
-        // waitForStart(); // Incorrect?
+// }-END INIT
+
+// START MAIN SCRIPT-{
+
+        // waitForStart(); // Incorrect Use? - Fix Please
 
         pos = SparkFun.getPosition();
-
-        // End Int //
 
         TriangulateBasketPos();
 
@@ -87,14 +107,15 @@ public class MentorChallengeOne extends ThreadOpMode {
 
         HomePos();
 
-
+// }-END MAIN SCRIPT
     }
 
     @Override
     public void mainLoop() {
-
+        // Nothing Here
     }
 
+    
     public void TriangulateBasketPos() {
         MotorUtils.MoveDis(0.8, 12, SparkFun, frontLeft, frontRight, backLeft, backRight);
         MotorUtils.StrafeDis(0.8, 12, SparkFun, frontLeft, frontRight, backLeft, backRight);
@@ -105,7 +126,7 @@ public class MentorChallengeOne extends ThreadOpMode {
         X1 = (float) pos.x;
         Y1 = (float) pos.y;
 
-        CenterTag(13);
+        CenterTag(17);
         pos = SparkFun.getPosition();
         H1 = (float) Math.toRadians(pos.h);
 
@@ -116,7 +137,7 @@ public class MentorChallengeOne extends ThreadOpMode {
         X2 = (float) pos.x;
         Y2 = (float) pos.y;
 
-        CenterTag(13);
+        CenterTag(17);
         pos = SparkFun.getPosition();
         H2 = (float) Math.toRadians(pos.h);
 
@@ -131,7 +152,7 @@ public class MentorChallengeOne extends ThreadOpMode {
         telemetry.addLine();
 
         telemetry.addLine("Mathing...");
-        telemetry.addLine(" -Be Aware: Could divide by 0 or <1e-6, very unlikely though-"); // POTENTIAL CATASTROPHIC ERROR: DIVIDE BY 0 or <1e-6!!! IDK: How to fix/If even issue
+        telemetry.addLine(" -Be Aware: Could divide by 0 or <1e-6, very unlikely though-"); // POTENTIAL CATASTROPHIC ERROR: DIVIDE BY 0 OR <1e-6!!! IDK: How to fix/If even issue
         telemetry.update();
 
         XT = (float) ((Y2 - Y1 + (Math.tan(H1) * X1) - (Math.tan(H2) * X2)) / (Math.tan(H1) - Math.tan(H2)));
@@ -143,21 +164,46 @@ public class MentorChallengeOne extends ThreadOpMode {
         telemetry.addData("YT", YT);
     }
 
+    
     public void CenterTag(int tagID) {
+        double targetError = 10;
 
+        while (targetError > 5) {
+            AprilTagDetection target = null;
+
+            while (target == null) {
+                for (AprilTagDetection det : tagProcessor.getDetections()) {
+                    if (det.id == tagID) {
+                        target = det;
+                        break;
+                    }
+                }
+                MotorUtils.RotateTo(0.5, ((float) (pos.h + 15)), SparkFun, frontLeft, frontRight, backLeft, backRight);
+            }
+            targetError = target.center.x - (camWidthPX / 2.0);
+            if (targetError > 0) {MotorUtils.RotateRight(0.5, frontLeft, frontRight, backLeft, backRight);}
+            if (targetError < 0) {MotorUtils.RotateLeft(0.5, frontLeft, frontRight, backLeft, backRight);}
+        }
+        MotorUtils.StopMotors(frontLeft, frontRight, backLeft, backRight);
     }
 
+    
     public void Collect(String Color) {
 
     }
 
+    
     public void ScoreBlock() {
 
+        
     }
 
+    
     public void HomePos() {
-
+        
     }
+    
+    
     @SuppressLint("DefaultLocale")
     private void configureOtos() {
         telemetry.addLine("Configuring OTOS...");
