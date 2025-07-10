@@ -28,8 +28,6 @@ public class MentorChallengeOne extends ThreadOpMode {
     //region GLOBAL VARIABLES
 
     // WebCam Globals:
-    private static final double camWidthPX = 960;
-    private static final double camHeightPX = 540;
     private VisionPortal visionPortal;
     private AprilTagProcessor tagProcessor;
 
@@ -40,7 +38,7 @@ public class MentorChallengeOne extends ThreadOpMode {
     int basketRange = 5; // Inches
     double X1, Y1, H1;
     double X2, Y2, H2;
-    double XT, YT;
+    double TX, TY;
 
     int CamW = 1280/2;
     int CamH = 720/2;
@@ -150,23 +148,50 @@ public class MentorChallengeOne extends ThreadOpMode {
 
         telemetry.addData("X1:", X1);
         telemetry.addData("Y1:", Y1);
-        telemetry.addData("H1 (RAD):", "%.10f", H1);
+        telemetry.addData("H1 (DEG):", "%.10f", H1);
         telemetry.addLine();
 
         telemetry.addData("X2:", X2);
         telemetry.addData("Y2:", Y2);
-        telemetry.addData("H2 (RAD):", "%.10f", H2);
+        telemetry.addData("H2 (DEG):", "%.10f", H2);
         telemetry.addLine();
 
         telemetry.addLine("Mathing...");
         telemetry.addLine(" !Be Aware: Could divide by 0 or <1e-6, very unlikely though!"); // POTENTIAL CATASTROPHIC ERROR: DIVIDE BY 0 OR <1e-6!!! IDK: How to fix/If even issue
         telemetry.update();
 
+        /* OLD, POTENTIALLY INVALID, MATH
         double A = 180 - (H1 + H2);
         double a = Math.sqrt(Math.pow((X2 - X1), 2) + Math.pow((Y2 - Y1), 2));
 
-        double TY = ((a) / Math.tan(A)) * Math.cos(A);
-        double TX = TY * Math.tan(A);
+        TY = ((a) / Math.tan(A)) * Math.cos(A);
+        TX = TY * Math.tan(A);
+         */
+
+        // NEW, POTENTIALLY VALID, MATH:
+
+        // Convert: Heading (DEG) --> Dir Vec (RAD)
+        double dx1 = Math.cos(Math.toRadians(90 - H1));
+        double dy1 = Math.sin(Math.toRadians(90 - H1));
+        double dx2 = Math.cos(Math.toRadians(90 - H2));
+        double dy2 = Math.sin(Math.toRadians(90 - H2));
+
+        // Find the vector from point A (X1, Y1) to point B (X2, Y2)
+        double DX = X2 - X1;
+        double DY = Y2 - Y1;
+
+        // Solve for t (& optionally s)
+        double det = dx1 * dy2 - dx2 * dy1; // Find the determinant
+        if (det < 1e-10) {throw new RuntimeException("ERROR: RAYS ARE PARALLEL!");} // Stop divide by zero
+
+        double t = (DX * dy2 - DY * dx2) / det;
+        double s = (DX * dy1 - DY * dx1) / det; // Not technically required
+
+        // Find the intersection of the 2 rays (A & B)
+        if (det < 1e-10) {throw new RuntimeException("ERROR: RAYS ARE PARALLEL!");} // Stop invalid intersections
+
+        TX = X1 + t * dx1;
+        TY = Y1 + t * dy1;
 
         telemetry.addLine("Done Mathing!");
         telemetry.addData("TY", TY);
