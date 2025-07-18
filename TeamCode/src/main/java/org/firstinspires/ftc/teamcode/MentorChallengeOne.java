@@ -244,9 +244,8 @@ public class MentorChallengeOne extends ThreadOpMode {
                             break;
                         }
                     }
-                    if (target == null) {
-                        break;
-                    }
+
+                    if(target == null) continue; // Bad iteration, target is null
 
                     // compute error relative to midpoint
                     targetError = target.center.x - centerX;
