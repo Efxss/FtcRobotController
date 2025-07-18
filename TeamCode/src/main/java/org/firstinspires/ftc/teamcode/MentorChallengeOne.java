@@ -133,7 +133,6 @@ public class MentorChallengeOne extends ThreadOpMode {
         SparkFunOTOS.Pose2D pos = robot.getImu().getPosition();
 
         CenterTag(17);
-        pos = robot.getImu().getPosition();
         X1 = pos.x;
         Y1 = pos.y;
         H1 = -pos.h;
@@ -210,19 +209,20 @@ public class MentorChallengeOne extends ThreadOpMode {
 
         // 1) Spin until we see the tag at all
         while (target == null) {
-            for (AprilTagDetection det : tagProcessor.getDetections()) {
-                if (det.id == tagID) {
-                    target = det;
-                    telemetry.addData("Tag Found", det.id);
-                    telemetry.addData("Center X", det.center.x);
-                    telemetry.update();
-                    break;
-                }
-            }
+            target = tagProcessor.getDetections().stream()
+                        .filter(x -> x.id == tagID)
+                        .findFirst()// Find first detection matching the targeted ID
+                        .orElse(null);
+
             if (target == null) {
                 robot.rotateRight(0.1);
-                sleep(50);
+                sleep(20);
+                continue;
             }
+
+            telemetry.addData("Tag Found", target.id);
+            telemetry.addData("Center X", target.center.x);
+            telemetry.update();
         }
         // stop spinning as soon as we’ve locked onto the tag
         robot.stopMotors();
@@ -250,13 +250,14 @@ public class MentorChallengeOne extends ThreadOpMode {
                 telemetry.addData("TargetError", targetError);
                 telemetry.update();
 
+                double correctiveRotationDegs = Math.max(Math.abs(targetError) / 1500, 0.05);
                 if (targetError > 10) {
-                    robot.rotateRight(Math.max(Math.abs(targetError) / 1500, 0.05));
+                    robot.rotateRight(correctiveRotationDegs);
                 } else if (targetError < -10) {
-                    robot.rotateLeft(Math.max(Math.abs(targetError) / 1500, 0.05));
+                    robot.rotateLeft(correctiveRotationDegs);
                 }
 
-                sleep(25);
+                sleep(20);
             } catch (Exception e) { // Might as well catch all
                 System.err.println(e.getMessage());
             }
