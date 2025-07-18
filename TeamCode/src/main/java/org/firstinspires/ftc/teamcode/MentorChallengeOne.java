@@ -34,15 +34,14 @@ public class MentorChallengeOne extends ThreadOpMode {
     private Robot robot;
 
     // Trig [Triangulation] Globals:
-    // TODO: Can this be marked final? Could help with compilation folding. :) (https://ondrej-kvasnovsky.medium.com/constant-folding-in-the-jvm-08437d879a45) -NP
     double basketRange = 5; // Inches
     double hCorrection = 0; // Degrees
     double X1, Y1, H1;
     double X2, Y2, H2;
     double TX, TY;
 
-    int CamW = 1280/2;
-    int CamH = 720/2;
+    int CamW = 1280 / 2;
+    int CamH = 720 / 2;
 
     //endregion
 
@@ -182,13 +181,17 @@ public class MentorChallengeOne extends ThreadOpMode {
 
         // Solve for t (& optionally s)
         double det = dx1 * dy2 - dx2 * dy1; // Find the determinant
-        if (Math.abs(det) < 1e-10) {throw new RuntimeException("ERROR: RAYS ARE PARALLEL!");} // Stop divide by zero
+        if (Math.abs(det) < 1e-10) {
+            throw new RuntimeException("ERROR: RAYS ARE PARALLEL!");
+        } // Stop divide by zero
 
         double t = (DX * dy2 - DY * dx2) / det;
         double s = (DX * dy1 - DY * dx1) / det; // Not technically required
 
         // Find the intersection of the 2 rays (A & B)
-        if (t < 0 || s < 0) {throw new RuntimeException("ERROR: INVALID INTERSECTION");} // Stop invalid intersections
+        if (t < 0 || s < 0) {
+            throw new RuntimeException("ERROR: INVALID INTERSECTION");
+        } // Stop invalid intersections
 
         TX = X1 + t * dx1;
         TY = Y1 + t * dy1;
@@ -225,15 +228,15 @@ public class MentorChallengeOne extends ThreadOpMode {
         robot.stopMotors();
 
 
-
         // 2) Center on the tag
         if (target != null) {
             double targetError;
             targetError = target.center.x - centerX;
 
+
             while (Math.abs(targetError) > 10) {
-                while (Math.abs(targetError) > 10) {
-                    // re-fetch detections each pass
+                // re-fetch detections each pass
+                try {
                     target = null;
                     for (AprilTagDetection det : tagProcessor.getDetections()) {
                         if (det.id == tagID) {
@@ -257,11 +260,14 @@ public class MentorChallengeOne extends ThreadOpMode {
                     }
 
                     sleep(25);
-                }
+                } catch (NullPointerException e) {
 
-                // finally, stop any motion
-                robot.stopMotors();
+                    System.err.println(e.getMessage());
+                }
             }
+
+            // finally, stop any motion
+            robot.stopMotors();
         }
     }
 
