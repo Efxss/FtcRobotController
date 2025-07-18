@@ -235,13 +235,10 @@ public class MentorChallengeOne extends ThreadOpMode {
         while (Math.abs(targetError) > 10) {
             // re-fetch detections each pass
             try {
-                target = null;
-                for (AprilTagDetection det : tagProcessor.getDetections()) {
-                    if (det.id == tagID) {
-                        target = det;
-                        break;
-                    }
-                }
+                target = tagProcessor.getDetections().stream()
+                            .filter(x -> x.id == tagID)
+                            .findFirst()// Find first detection matching the targeted ID
+                            .orElse(null);
 
                 if (target == null) continue; // Bad iteration, target is null
 
