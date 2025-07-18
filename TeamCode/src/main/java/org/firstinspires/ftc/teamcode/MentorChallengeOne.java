@@ -229,45 +229,41 @@ public class MentorChallengeOne extends ThreadOpMode {
 
 
         // 2) Center on the tag
-        if (target != null) {
-            double targetError;
-            targetError = target.center.x - centerX;
+        double targetError;
+        targetError = target.center.x - centerX;
 
-
-            while (Math.abs(targetError) > 10) {
-                // re-fetch detections each pass
-                try {
-                    target = null;
-                    for (AprilTagDetection det : tagProcessor.getDetections()) {
-                        if (det.id == tagID) {
-                            target = det;
-                            break;
-                        }
+        while (Math.abs(targetError) > 10) {
+            // re-fetch detections each pass
+            try {
+                target = null;
+                for (AprilTagDetection det : tagProcessor.getDetections()) {
+                    if (det.id == tagID) {
+                        target = det;
+                        break;
                     }
-
-                    if(target == null) continue; // Bad iteration, target is null
-
-                    // compute error relative to midpoint
-                    targetError = target.center.x - centerX;
-                    telemetry.addData("TargetError", targetError);
-                    telemetry.update();
-
-                    if (targetError > 10) {
-                        robot.rotateRight(Math.max(Math.abs(targetError) / 1500, 0.05));
-                    } else if (targetError < -10) {
-                        robot.rotateLeft(Math.max(Math.abs(targetError) / 1500, 0.05));
-                    }
-
-                    sleep(25);
-                } catch (NullPointerException e) {
-
-                    System.err.println(e.getMessage());
                 }
-            }
 
-            // finally, stop any motion
-            robot.stopMotors();
+                if (target == null) continue; // Bad iteration, target is null
+
+                // compute error relative to midpoint
+                targetError = target.center.x - centerX;
+                telemetry.addData("TargetError", targetError);
+                telemetry.update();
+
+                if (targetError > 10) {
+                    robot.rotateRight(Math.max(Math.abs(targetError) / 1500, 0.05));
+                } else if (targetError < -10) {
+                    robot.rotateLeft(Math.max(Math.abs(targetError) / 1500, 0.05));
+                }
+
+                sleep(25);
+            } catch (Exception e) { // Might as well catch all
+                System.err.println(e.getMessage());
+            }
         }
+
+        // finally, stop any motion
+        robot.stopMotors();
     }
 
     public void Collect(String Color) {
