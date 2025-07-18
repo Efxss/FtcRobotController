@@ -209,20 +209,20 @@ public class MentorChallengeOne extends ThreadOpMode {
 
         // 1) Spin until we see the tag at all
         while (target == null) {
-            target = tagProcessor.getDetections().stream()
-                        .filter(x -> x.id == tagID)
-                        .findFirst()// Find first detection matching the targeted ID
-                        .orElse(null);
+            for (AprilTagDetection det : tagProcessor.getDetections()) {
+                if (det.id == tagID) {
+                    target = det;
+                    telemetry.addData("Tag Found", det.id);
+                    telemetry.addData("Center X", det.center.x);
+                    telemetry.update();
+                    break;
+                }
+            }
 
             if (target == null) {
                 robot.rotateRight(0.1);
                 sleep(20);
-                continue;
             }
-
-            telemetry.addData("Tag Found", target.id);
-            telemetry.addData("Center X", target.center.x);
-            telemetry.update();
         }
         // stop spinning as soon as we’ve locked onto the tag
         robot.stopMotors();
@@ -235,10 +235,13 @@ public class MentorChallengeOne extends ThreadOpMode {
         while (Math.abs(targetError) > 10) {
             // re-fetch detections each pass
             try {
-                target = tagProcessor.getDetections().stream()
-                            .filter(x -> x.id == tagID)
-                            .findFirst()// Find first detection matching the targeted ID
-                            .orElse(null);
+                target = null;
+                for (AprilTagDetection det : tagProcessor.getDetections()) {
+                    if (det.id == tagID) {
+                        target = det;
+                        break;
+                    }
+                }
 
                 if (target == null) continue; // Bad iteration, target is null
 
