@@ -31,20 +31,22 @@ public class MentorChallengeOne extends ThreadOpMode {
     private VisionPortal visionPortal;
     private AprilTagProcessor tagProcessor;
 
-    public static double P = 10, I = 3, D = 0, F = 8;
+    public static final double P = 10, I = 3, D = 0, F = 8;
 
     private Robot robot;
 
     // Trig [Triangulation] Globals:
-    // TODO: Can this be marked final? Could help with compilation folding. :) (https://ondrej-kvasnovsky.medium.com/constant-folding-in-the-jvm-08437d879a45) -NP
-    double basketRange = 5; // Inches
-    double hCorrection = 0; // Degrees
+    public static final double basketRange = 5; // Inches
+    public static final double hCorrection = 0; // Degrees
     double X1, Y1, H1;
     double X2, Y2, H2;
     double TX, TY;
 
-    int CamW = 1280/2;
-    int CamH = 720/2;
+    public static final double CamRelOffsetX = -2.5;
+    public static final double CamRelOffsetY = 2.125;
+
+    public static final int CamW = 1280 / 2;
+    public static final int CamH = 720 / 2;
 
     //endregion
 
@@ -142,17 +144,25 @@ public class MentorChallengeOne extends ThreadOpMode {
 
         CenterTag(17);
         pos = robot.getImu().getPosition();
-        X1 = pos.x - 2.5;
-        Y1 = pos.y + 2.125;
+
+        // Get heading, inverted so CW is positive & CCW is negative
         H1 = -pos.h;
+        // Get X & Y, accounting for camera offset
+        double theta1 = Math.toRadians(90 - (H1 + hCorrection));
+        X1 = pos.x + CamRelOffsetX * Math.cos(theta1) - CamRelOffsetY * Math.sin(theta1);
+        Y1 = pos.y + CamRelOffsetX * Math.sin(theta1) + CamRelOffsetY * Math.cos(theta1);
 
         robot.strafeRelDist(0.2, 18);
 
         CenterTag(17);
         pos = robot.getImu().getPosition();
-        X2 = pos.x - 2.5;
-        Y2 = pos.y + 2.125;
+
+        // Get heading, inverted so CW is positive & CCW is negative
         H2 = -pos.h;
+        // Get X & Y, accounting for camera offset
+        double theta2 = Math.toRadians(90 - (H2 + hCorrection));
+        X2 = pos.x + CamRelOffsetX * Math.cos(theta2) - CamRelOffsetY * Math.sin(theta2);
+        Y2 = pos.y + CamRelOffsetX * Math.sin(theta2) + CamRelOffsetY * Math.cos(theta2);
 
         telemetry.addData("X1:", X1);
         telemetry.addData("Y1:", Y1);
