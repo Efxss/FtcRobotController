@@ -1,6 +1,11 @@
-package org.firstinspires.ftc.teamcode.OldCode;
+// !!!IMPORTANT!!! ::: THIS LIBRARY IS NOT FINISHED OR FULLY TESTED!!!
 
-import static org.firstinspires.ftc.teamcode.OldCode.Utils.sleep;
+/**
+    interrupt.err = {char(!!!IMPORTANT!!! ::: THIS LIBRARY IS NOT FINISHED OR FULLY TESTED!!!)};
+    compiler.err(ERROR_INTERRUPT);
+package org.firstinspires.ftc.teamcode;
+
+import static org.firstinspires.ftc.teamcode.Utils.sleep;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.threadopmode.ThreadOpMode;
@@ -813,3 +818,5 @@ public class DisplayUtils {
     }
     //endregion
 }
+
+**/
