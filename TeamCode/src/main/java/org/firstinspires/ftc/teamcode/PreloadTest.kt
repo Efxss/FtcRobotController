@@ -25,6 +25,7 @@ import kotlin.math.abs
 import kotlin.math.hypot
 import kotlin.math.max
 import kotlin.math.min
+
 @TeleOp
 class PreloadTest : OpMode() {
     @IgnoreConfigurable
@@ -41,16 +42,16 @@ class PreloadTest : OpMode() {
     private lateinit var camServo: Servo
     private lateinit var limelight: Limelight3A
     private val startPose = Pose(72.0, 0.0, Math.toRadians(90.0))
-    private val preloadPose = Pose(74.0, 6.0, Math.toRadians(80.0))
+    private val preloadPose = Pose(74.0, 4.0, Math.toRadians(80.0))
     private lateinit var preloadPose1: PathChain
     private var visionPortal: VisionPortal? = null
     private var tagProcessor: AprilTagProcessor? = null
     private var pathState: Int = 0
     private var dispensingState = 0
-    private val pidP = 10.0
-    private val pidI = 3.0
-    private val pidD = 0.0
-    private val pidF = 8.0
+    private val pidP = 8.05
+    private val pidI = 0.6
+    private val pidD = 0.9
+    private val pidF = 0.01
     private var velocityModeInitialized = false
     private var velocityPowerScale = 0.95
     private var intake = 0
@@ -62,7 +63,7 @@ class PreloadTest : OpMode() {
         const val FIRE_P2 = 0.1845
         const val FIRE_P3 = 0.258
         const val CAM_OPEN = 0.5
-        const val CAM_CLOSED = 0.0
+        const val CAM_CLOSED = 0.255
     }
     object DetectionThresholds {
         const val MIN_WIDTH = 200.0
@@ -94,7 +95,7 @@ class PreloadTest : OpMode() {
         const val CAM_HEIGHT_PX = 720
         const val CENTER_DEADZONE = 15
         const val KP_ROTATE = 0.003
-        const val OUTTAKE_SPEED = 0.308
+        const val OUTTAKE_SPEED = 0.26
     }
     private enum class PieceColor(val symbol: String) {
         NONE("N"),
@@ -164,6 +165,15 @@ class PreloadTest : OpMode() {
         follower.update()
         processAprilTags()
         advanceRun()
+        runTelemetry()
+    }
+    private fun runTelemetry() {
+        val thread = Thread {
+            panels?.debug("Real Motor 1 velocity", outTake1.velocity)
+            panels?.debug("Real Motor 2 velocity", outTake2.velocity)
+            panels?.update(telemetry)
+        }
+        thread.start()
     }
     private fun buildPaths() {
         preloadPose1 = follower.pathBuilder()
@@ -200,12 +210,8 @@ class PreloadTest : OpMode() {
         val detections = tagProcessor?.detections.orEmpty()
         val target = detections.firstOrNull { it.id == AprilTagIds.RED_DEPO }
         if (target == null) {
-            panels?.debug("RED_DEPO tag not in view")
-            panels?.update(telemetry)
             return
         }
-        println("Function is running")
-        panels?.debug("function is running")
         val xErrPx: Double = target.center.x - (DepoCenter.CAM_WIDTH_PX / 2.0)
         val tagWidthPx = hypot(
             target.corners[1].x - target.corners[0].x,
@@ -213,11 +219,6 @@ class PreloadTest : OpMode() {
         )
         val widthErrPx = DepoCenter.DESIRED_TAG_WIDTH_PX - tagWidthPx
         if (abs(xErrPx) <= DepoCenter.CENTER_DEADZONE) {
-            panels?.debug("Centered on tag")
-            panels?.debug("xErrPx", xErrPx)
-            panels?.debug("tagWidthPx", tagWidthPx)
-            panels?.debug("widthErrPx", widthErrPx)
-            panels?.update(telemetry)
             setPathState(4)
             return
         }
@@ -235,14 +236,6 @@ class PreloadTest : OpMode() {
         val currentHeading = follower.pose.heading
         val targetHeading = currentHeading - turnStep
         follower.turnTo(targetHeading)
-        panels?.debug("Tag in view")
-        panels?.debug("xErrPx", xErrPx)
-        panels?.debug("tagWidthPx", tagWidthPx)
-        panels?.debug("widthErrPx", widthErrPx)
-        panels?.debug("angleErrorRad", angleError)
-        panels?.debug("turnStepRad", turnStep)
-        panels?.debug("targetHeading", targetHeading)
-        panels?.update(telemetry)
     }
     private fun clip(v: Double, min: Double, max: Double): Double {
         return max(min, min(max, v))
@@ -268,32 +261,19 @@ class PreloadTest : OpMode() {
     }
     private fun processVisionDetection() {
         val result = limelight.latestResult ?: return
-        panels?.debug("Data age (ms)", result.staleness)
         val py = result.pythonOutput
         if (py == null || py.isEmpty()) {
-            panels?.addLine("Python output empty")
             return
         }
         val targets = parsePythonOutput(py)
         val greenCount = targets.count { it.colorId == ColorIds.GREEN }
         val purpleCount = targets.count { it.colorId == ColorIds.PURPLE }
-        panels?.debug("Targets", targets.size)
-        panels?.debug("Green", greenCount)
-        panels?.debug("Purple", purpleCount)
         targets.maxByOrNull { it.ta }?.let { best ->
             if (best.meetsDetectionThreshold()) {
                 when (best.colorId) {
                     ColorIds.GREEN -> attemptAddPiece(PieceColor.GREEN)
                     ColorIds.PURPLE -> attemptAddPiece(PieceColor.PURPLE)
                 }
-                panels?.addLine("Best (by area)")
-                panels?.debug(" colorId", best.colorId)
-                panels?.debug(" tx(norm)", best.tx)
-                panels?.debug(" ty(norm)", best.ty)
-                panels?.debug(" area(px)", best.ta)
-                panels?.debug(" W", best.width)
-                panels?.debug(" H", best.height)
-                panels?.update(telemetry)
             }
         }
     }

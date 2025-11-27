@@ -7,8 +7,8 @@ import com.bylazar.telemetry.TelemetryManager
 import com.pedropathing.follower.Follower
 import com.pedropathing.geometry.Pose
 import com.pedropathing.util.Timer
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import org.firstinspires.ftc.vision.VisionPortal
@@ -18,7 +18,7 @@ import kotlin.math.hypot
 import kotlin.math.max
 import kotlin.math.min
 
-@TeleOp
+@Disabled
 class CenterTest : OpMode() {
     @IgnoreConfigurable
     var panels: TelemetryManager? = null

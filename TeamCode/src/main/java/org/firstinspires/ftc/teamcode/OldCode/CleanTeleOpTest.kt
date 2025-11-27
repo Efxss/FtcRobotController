@@ -1,11 +1,11 @@
-package org.firstinspires.ftc.teamcode
+package org.firstinspires.ftc.teamcode.OldCode
 
 import android.util.Size
 import com.bylazar.telemetry.PanelsTelemetry
 import com.bylazar.telemetry.TelemetryManager
 import com.qualcomm.hardware.limelightvision.Limelight3A
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.CRServo
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorEx
@@ -18,7 +18,7 @@ import java.lang.Thread.sleep
 import kotlin.math.max
 import kotlin.math.min
 
-@TeleOp
+@Disabled
 class CleanTeleOpTest : OpMode() {
     // ========== HARDWARE ==========
     private var panels: TelemetryManager? = null

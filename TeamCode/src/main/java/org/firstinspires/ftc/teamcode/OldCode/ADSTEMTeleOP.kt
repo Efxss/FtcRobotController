@@ -1,12 +1,12 @@
-package org.firstinspires.ftc.teamcode
+package org.firstinspires.ftc.teamcode.OldCode
 
 import android.util.Size
 import com.bylazar.telemetry.PanelsTelemetry
 import com.bylazar.telemetry.TelemetryManager
 import com.qualcomm.hardware.limelightvision.LLResult
 import com.qualcomm.hardware.limelightvision.Limelight3A
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.CRServo
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorEx
@@ -19,19 +19,9 @@ import java.lang.Thread.sleep
 import kotlin.math.max
 import kotlin.math.min
 
-@TeleOp
-class TeleOp : OpMode() {
+@Disabled
+class ADSTEMTeleOP : OpMode() {
     private var panels: TelemetryManager? = null
-    private lateinit var frontLeft: DcMotorEx
-    private lateinit var frontRight: DcMotorEx
-    private lateinit var backLeft: DcMotorEx
-    private lateinit var backRight: DcMotorEx
-    private lateinit var outTake1: DcMotorEx
-    private lateinit var outTake2: DcMotorEx
-    private lateinit var intakeServo1: CRServo
-    private lateinit var intakeServo2: CRServo
-    private lateinit var bowlServo : Servo
-    private lateinit var camServo  : Servo
     val lP1 = 0.059
     val lP2 = 0.13
     val lP3 = 0.204
@@ -39,14 +29,16 @@ class TeleOp : OpMode() {
     val fP2 = 0.02
     val fP3 = 0.0945
     var cLP = 1
-    var driveSpeed = false
     var servoSpeed = 0.0
-    var moveMode   = 0
     var held = 0
     val ord = arrayOf("N", "N", "N")
     val eord = arrayOf("", "", "")
-    private var lastDpadLeftState = false
-    private var lastDpadRightState = false
+    private lateinit var intakeServo1: CRServo
+    private lateinit var intakeServo2: CRServo
+    private lateinit var outTake1: DcMotorEx
+    private lateinit var outTake2: DcMotorEx
+    private lateinit var bowlServo: Servo
+    private lateinit var camServo: Servo
     private var visionPortal: VisionPortal? = null
     private var tagProcessor: AprilTagProcessor? = null
     private var anyTagSeen: Boolean = false
@@ -68,24 +60,18 @@ class TeleOp : OpMode() {
     val i = 3.toDouble()
     val d = 0.toDouble()
     val f = 8.toDouble()
-
     override fun init() {
-        frontLeft        = hardwareMap.get(DcMotorEx::class.java, "frontLeft")
-        frontRight       = hardwareMap.get(DcMotorEx::class.java, "frontRight")
-        backLeft         = hardwareMap.get(DcMotorEx::class.java, "backLeft")
-        backRight        = hardwareMap.get(DcMotorEx::class.java, "backRight")
-        outTake1         = hardwareMap.get(DcMotorEx::class.java, "outTake1")
-        outTake2         = hardwareMap.get(DcMotorEx::class.java, "outTake2")
-        intakeServo1     = hardwareMap.get(CRServo::class.java, "intakeServo1")
-        intakeServo2     = hardwareMap.get(CRServo::class.java, "intakeServo2")
-        bowlServo        = hardwareMap.get(Servo::class.java, "BowlServo")
-        camServo         = hardwareMap.get(Servo::class.java, "CamServo")
-        listOf(frontRight, frontLeft, intakeServo2, outTake2)
-            .forEach { it.direction = DcMotorSimple.Direction.REVERSE }
-        listOf(backRight, backLeft)
-            .forEach { it.direction = DcMotorSimple.Direction.FORWARD }
-        listOf(frontRight, backRight, frontLeft, backLeft, outTake1, outTake2)
-            .forEach { it.setVelocityPIDFCoefficients(p, i, d, f) }
+        panels = PanelsTelemetry.telemetry
+        intakeServo1 = hardwareMap.get(CRServo::class.java, "intakeServo1")
+        intakeServo2 = hardwareMap.get(CRServo::class.java, "intakeServo2")
+        outTake1 = hardwareMap.get(DcMotorEx::class.java, "outTake1")
+        outTake2 = hardwareMap.get(DcMotorEx::class.java, "outTake2")
+        bowlServo  = hardwareMap.get(Servo::class.java, "bowlServo")
+        camServo  = hardwareMap.get(Servo::class.java, "camServo")
+        intakeServo2.direction = DcMotorSimple.Direction.REVERSE
+        outTake2.direction = DcMotorSimple.Direction.REVERSE
+        outTake1.setVelocityPIDFCoefficients(p, i, d, f)
+        outTake2.setVelocityPIDFCoefficients(p, i, d, f)
         limelight = hardwareMap.get(Limelight3A::class.java, "limelight")
         limelight.setPollRateHz(100)     // fast polling
         limelight.pipelineSwitch(0)      // <- change to your pipeline slot
@@ -97,8 +83,7 @@ class TeleOp : OpMode() {
             .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
             .build()
         panels?.addLine("Limelight init complete.")
-        panels = PanelsTelemetry.telemetry
-        resetEncoders()
+        resetMotors()
     }
 
     override fun start() {
@@ -138,19 +123,8 @@ class TeleOp : OpMode() {
             }
         }
 
-        var drive  = gamepad1.left_stick_y.toDouble() // Forward/backward
-        var strafe = -gamepad1.right_stick_x.toDouble() // Left/right
-        var rotate = (gamepad1.left_trigger - gamepad1.right_trigger).toDouble() // Rotation
-
-        var frontLeftPower  = drive + strafe + rotate
-        var frontRightPower = drive - strafe - rotate
-        var backLeftPower   = drive - strafe + rotate
-        var backRightPower  = drive + strafe - rotate
-
-        if (gamepad1.left_bumper) {
-            driveSpeed = false
-        } else if (gamepad1.right_bumper) {
-            driveSpeed = true
+        if (gamepad1.square) {
+            visionPortal?.resumeStreaming()
         }
 
         if (gamepad1.cross) {
@@ -166,46 +140,6 @@ class TeleOp : OpMode() {
             intakeServo1.power = servoSpeed
             intakeServo2.power = servoSpeed
         }
-
-        if (!driveSpeed) {
-            frontLeft.velocity  = -frontLeftPower * 1000
-            frontRight.velocity = frontRightPower * 1000
-            backLeft.velocity   = backLeftPower * 1000
-            backRight.velocity  = -backRightPower * 1000
-        } else {
-            frontLeft.velocity  = -frontLeftPower * 8000
-            frontRight.velocity = frontRightPower * 8000
-            backLeft.velocity   = backLeftPower * 8000
-            backRight.velocity  = -backRightPower * 8000
-        }
-
-        /*if (gamepad1.dpad_left && !lastDpadLeftState) {
-            moveMode -= 1
-            if (moveMode < 0) {
-                moveMode = 0
-            }
-        }
-        lastDpadLeftState = gamepad1.dpad_left
-
-        if (gamepad1.dpad_right && !lastDpadRightState) {
-            moveMode += 1
-            if (moveMode > 2) {
-                moveMode = 2
-            }
-        }
-        lastDpadRightState = gamepad1.dpad_right
-
-        when (moveMode) {
-            0 -> {
-                bowlServo.position = lP1
-            }
-            1 -> {
-                bowlServo.position = lP2
-            }
-            2 -> {
-                bowlServo.position = lP3
-            }
-        }*/
 
         val result: LLResult? = limelight.latestResult
         if (result == null) {
@@ -257,7 +191,7 @@ class TeleOp : OpMode() {
         best?.let {
             when (purpleCount) {
                 1 -> {
-                    if (it.width >= 250 && it.height >= 110 && it.ty > 0.55) {
+                    if (it.width >= 250 && it.height >= 110 && it.ty > 0.48) {
                         // Fill the list array similar to color sensor logic
                         if (ord[0] == "N") {
                             // Check if already detected
@@ -268,6 +202,7 @@ class TeleOp : OpMode() {
 
                             // Update servo position
                             if (cLP == 1) {
+                                sleep(750)
                                 bowlServo.position = lP2
                                 cLP = 2
                             }
@@ -280,6 +215,7 @@ class TeleOp : OpMode() {
 
                             // Update servo position
                             if (cLP == 2) {
+                                sleep(750)
                                 bowlServo.position = lP3
                                 cLP = 3
                             }
@@ -303,7 +239,7 @@ class TeleOp : OpMode() {
             }
             when (greenCount) {
                 1 -> {
-                    if (it.width >= 250 && it.height >= 110 && it.ty > 0.55) {
+                    if (it.width >= 250 && it.height >= 110 && it.ty > 0.48) {
                         // Fill the list array for green pieces
                         if (ord[0] == "N") {
                             // Check if green already detected
@@ -314,6 +250,7 @@ class TeleOp : OpMode() {
 
                             // Update servo position
                             if (cLP == 1) {
+                                sleep(750)
                                 bowlServo.position = lP2
                                 cLP = 2
                             }
@@ -326,6 +263,7 @@ class TeleOp : OpMode() {
 
                             // Update servo position
                             if (cLP == 2) {
+                                sleep(750)
                                 bowlServo.position = lP3
                                 cLP = 3
                             }
@@ -366,31 +304,31 @@ class TeleOp : OpMode() {
         when (held) {
             0 -> { /* Do nothing */ }
             1 -> {
-                setMotorVelocityFromPseudoPower(outTake1, 0.2)
-                setMotorVelocityFromPseudoPower(outTake2, 0.2)
+                setMotorVelocityFromPseudoPower(outTake1, 0.25)
+                setMotorVelocityFromPseudoPower(outTake2, 0.25)
                 sleep(1000)
                 if (ord[0] != "N" && ord[1] != "N" && ord[2] != "N") {
                     if (eord[0] == "G" && eord[1] == "P" && eord[2] == "P") {
                         if (ord.contentEquals(eord)) {
-                            sleep(5000)
+                            sleep(3500)
                             bowlServo.position = fP1
                             sleep(1500)
                             camServo.position = 0.5
                             sleep(500)
                             camServo.position = 0.0
-                            sleep(5000)
+                            sleep(3500)
                             bowlServo.position = fP2
                             sleep(1500)
                             camServo.position = 0.5
                             sleep(500)
                             camServo.position = 0.0
-                            sleep(5000)
+                            sleep(3500)
                             bowlServo.position = fP3
                             sleep(1500)
                             camServo.position = 0.5
                             sleep(500)
                             camServo.position = 0.0
-                            sleep(5000)
+                            sleep(3500)
                             eord[0] = ""
                             eord[1] = ""
                             eord[2] = ""
@@ -401,25 +339,25 @@ class TeleOp : OpMode() {
                             return
                         }
                         if (ord[0] == "P" && ord[1] == "P" && ord[2] == "G") {
-                            sleep(5000)
+                            sleep(3500)
                             bowlServo.position = fP3
                             sleep(1500)
                             camServo.position = 0.5
                             sleep(500)
                             camServo.position = 0.0
-                            sleep(5000)
+                            sleep(3500)
                             bowlServo.position = fP2
                             sleep(1500)
                             camServo.position = 0.5
                             sleep(500)
                             camServo.position = 0.0
-                            sleep(5000)
+                            sleep(3500)
                             bowlServo.position = fP1
                             sleep(1500)
                             camServo.position = 0.5
                             sleep(500)
                             camServo.position = 0.0
-                            sleep(5000)
+                            sleep(3500)
                             eord[0] = ""
                             eord[1] = ""
                             eord[2] = ""
@@ -430,25 +368,25 @@ class TeleOp : OpMode() {
                             return
                         }
                         if (ord[0] == "P" && ord[1] == "G" && ord[2] == "P") {
-                            sleep(5000)
+                            sleep(3500)
                             bowlServo.position = fP2
                             sleep(1500)
                             camServo.position = 0.5
                             sleep(500)
                             camServo.position = 0.0
-                            sleep(5000)
+                            sleep(3500)
                             bowlServo.position = fP1
                             sleep(1500)
                             camServo.position = 0.5
                             sleep(500)
                             camServo.position = 0.0
-                            sleep(5000)
+                            sleep(3500)
                             bowlServo.position = fP3
                             sleep(1500)
                             camServo.position = 0.5
                             sleep(500)
                             camServo.position = 0.0
-                            sleep(5000)
+                            sleep(3500)
                             eord[0] = ""
                             eord[1] = ""
                             eord[2] = ""
@@ -461,25 +399,25 @@ class TeleOp : OpMode() {
                     }
                     if (eord[0] == "P" && eord[1] == "G" && eord[2] == "P") {
                         if (ord.contentEquals(eord)) {
-                            sleep(5000)
+                            sleep(3500)
                             bowlServo.position = fP1
                             sleep(1500)
                             camServo.position = 0.5
                             sleep(500)
                             camServo.position = 0.0
-                            sleep(5000)
+                            sleep(3500)
                             bowlServo.position = fP2
                             sleep(1500)
                             camServo.position = 0.5
                             sleep(500)
                             camServo.position = 0.0
-                            sleep(5000)
+                            sleep(3500)
                             bowlServo.position = fP3
                             sleep(1500)
                             camServo.position = 0.5
                             sleep(500)
                             camServo.position = 0.0
-                            sleep(5000)
+                            sleep(3500)
                             eord[0] = ""
                             eord[1] = ""
                             eord[2] = ""
@@ -490,25 +428,25 @@ class TeleOp : OpMode() {
                             return
                         }
                         if (ord[0] == "P" && ord[1] == "P" && ord[2] == "G") {
-                            sleep(5000)
+                            sleep(3500)
                             bowlServo.position = fP1
                             sleep(1500)
                             camServo.position = 0.5
                             sleep(500)
                             camServo.position = 0.0
-                            sleep(5000)
+                            sleep(3500)
                             bowlServo.position = fP3
                             sleep(1500)
                             camServo.position = 0.5
                             sleep(500)
                             camServo.position = 0.0
-                            sleep(5000)
+                            sleep(3500)
                             bowlServo.position = fP2
                             sleep(1500)
                             camServo.position = 0.5
                             sleep(500)
                             camServo.position = 0.0
-                            sleep(5000)
+                            sleep(3500)
                             eord[0] = ""
                             eord[1] = ""
                             eord[2] = ""
@@ -519,25 +457,25 @@ class TeleOp : OpMode() {
                             return
                         }
                         if (ord[0] == "G" && ord[1] == "P" && ord[2] == "P") {
-                            sleep(5000)
+                            sleep(3500)
                             bowlServo.position = fP2
                             sleep(1500)
                             camServo.position = 0.5
                             sleep(500)
                             camServo.position = 0.0
-                            sleep(5000)
+                            sleep(3500)
                             bowlServo.position = fP1
                             sleep(1500)
                             camServo.position = 0.5
                             sleep(500)
                             camServo.position = 0.0
-                            sleep(5000)
+                            sleep(3500)
                             bowlServo.position = fP3
                             sleep(1500)
                             camServo.position = 0.5
                             sleep(500)
                             camServo.position = 0.0
-                            sleep(5000)
+                            sleep(3500)
                             eord[0] = ""
                             eord[1] = ""
                             eord[2] = ""
@@ -550,25 +488,25 @@ class TeleOp : OpMode() {
                     }
                     if (eord[0] == "P" && eord[1] == "P" && eord[2] == "G") {
                         if (ord.contentEquals(eord)) {
-                            sleep(5000)
+                            sleep(3500)
                             bowlServo.position = fP1
                             sleep(1500)
                             camServo.position = 0.5
                             sleep(500)
                             camServo.position = 0.0
-                            sleep(5000)
+                            sleep(3500)
                             bowlServo.position = fP2
                             sleep(1500)
                             camServo.position = 0.5
                             sleep(500)
                             camServo.position = 0.0
-                            sleep(5000)
+                            sleep(3500)
                             bowlServo.position = fP3
                             sleep(1500)
                             camServo.position = 0.5
                             sleep(500)
                             camServo.position = 0.0
-                            sleep(5000)
+                            sleep(3500)
                             eord[0] = ""
                             eord[1] = ""
                             eord[2] = ""
@@ -579,25 +517,25 @@ class TeleOp : OpMode() {
                             return
                         }
                         if (ord[0] == "P" && ord[1] == "G" && ord[2] == "P") {
-                            sleep(5000)
+                            sleep(3500)
                             bowlServo.position = fP1
                             sleep(1500)
                             camServo.position = 0.5
                             sleep(500)
                             camServo.position = 0.0
-                            sleep(5000)
+                            sleep(3500)
                             bowlServo.position = fP3
                             sleep(1500)
                             camServo.position = 0.5
                             sleep(500)
                             camServo.position = 0.0
-                            sleep(5000)
+                            sleep(3500)
                             bowlServo.position = fP2
                             sleep(1500)
                             camServo.position = 0.5
                             sleep(500)
                             camServo.position = 0.0
-                            sleep(5000)
+                            sleep(3500)
                             eord[0] = ""
                             eord[1] = ""
                             eord[2] = ""
@@ -608,25 +546,25 @@ class TeleOp : OpMode() {
                             return
                         }
                         if (ord[0] == "G" && ord[1] == "P" && ord[2] == "P") {
-                            sleep(5000)
+                            sleep(3500)
                             bowlServo.position = fP2
                             sleep(1500)
                             camServo.position = 0.5
                             sleep(500)
                             camServo.position = 0.0
-                            sleep(5000)
+                            sleep(3500)
                             bowlServo.position = fP3
                             sleep(1500)
                             camServo.position = 0.5
                             sleep(500)
                             camServo.position = 0.0
-                            sleep(5000)
+                            sleep(3500)
                             bowlServo.position = fP1
                             sleep(1500)
                             camServo.position = 0.5
                             sleep(500)
                             camServo.position = 0.0
-                            sleep(5000)
+                            sleep(3500)
                             eord[0] = ""
                             eord[1] = ""
                             eord[2] = ""
@@ -647,24 +585,17 @@ class TeleOp : OpMode() {
                 return
             }
         }
-        panels?.addData("MoveMode", moveMode)
-        panels?.addData("BowlServo", bowlServo.position)
+
         panels?.update()
     }
 
-    fun resetEncoders() {
-        frontLeft.mode  = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        frontLeft.mode  = DcMotor.RunMode.RUN_USING_ENCODER
-        frontRight.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        frontRight.mode = DcMotor.RunMode.RUN_USING_ENCODER
-        backLeft.mode   = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        backLeft.mode   = DcMotor.RunMode.RUN_USING_ENCODER
-        backRight.mode  = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        backRight.mode  = DcMotor.RunMode.RUN_USING_ENCODER
-        frontLeft.zeroPowerBehavior  = DcMotor.ZeroPowerBehavior.BRAKE
-        frontRight.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
-        backLeft.zeroPowerBehavior   = DcMotor.ZeroPowerBehavior.BRAKE
-        backRight.zeroPowerBehavior  = DcMotor.ZeroPowerBehavior.BRAKE
+    fun resetMotors() {
+        outTake1.mode  = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        outTake1.mode  = DcMotor.RunMode.RUN_USING_ENCODER
+        outTake2.mode  = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        outTake2.mode  = DcMotor.RunMode.RUN_USING_ENCODER
+        outTake1.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+        outTake2.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
     }
 
     private fun ensureVelocityMode() {
