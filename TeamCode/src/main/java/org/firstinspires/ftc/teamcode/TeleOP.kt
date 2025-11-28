@@ -19,6 +19,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import org.firstinspires.ftc.vision.VisionPortal
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor
 import java.io.File
+import kotlin.concurrent.thread
 import kotlin.math.max
 import kotlin.math.min
 
@@ -191,15 +192,30 @@ class TeleOP : OpMode() {
     override fun loop() {
         follower.update()
         handleDriving()
+        runTelemetry()
     }
 
     private fun handleDriving() {
-        follower.setTeleOpDrive(
-            -gamepad1.left_stick_y.toDouble(),
-            -gamepad1.left_stick_x.toDouble(),
-            -gamepad1.right_stick_x.toDouble(),
-            false
-        )
+        thread {
+            val rotate = (gamepad1.left_trigger - gamepad1.right_trigger)
+            follower.setTeleOpDrive(
+                gamepad1.left_stick_y.toDouble(),
+                -gamepad1.right_stick_x.toDouble(),
+                -rotate.toDouble(),
+                false
+            )
+        }
+    }
+
+    private fun runTelemetry() {
+        thread {
+            val pose = follower.pose
+            panels?.addData("EORD", expectedOrder)
+            panels?.addData("Heading", pose.heading)
+            panels?.addData("X", pose.x)
+            panels?.addData("Y", pose.y)
+            panels?.update(telemetry)
+        }
     }
 
     private fun initializeHardware() {
