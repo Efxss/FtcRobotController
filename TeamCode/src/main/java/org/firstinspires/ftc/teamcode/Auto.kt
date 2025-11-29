@@ -281,57 +281,50 @@ class Auto : OpMode() {
                 if (dispensingState == 1) {
                     /* Do nothing shooting */
                 } else {
-                    sleep(250)
                     setPathState(5)
                 }
             }
             5 -> {
-                if (!follower.isBusy) {
+                if (!follower.isBusy && pathTimer.elapsedTimeSeconds > 0.25) {
                     follower.followPath(pickupPosePoint5, false)
                     setPathState(6)
-                    sleep(500)
                 }
             }
             6 -> {
-                if (!follower.isBusy) {
+                if (!follower.isBusy && pathTimer.elapsedTimeSeconds > 0.5) {
                     follower.setMaxPower(0.2)
                     follower.followPath(pickupPose1, true)
                     setPathState(7)
-                    sleep(500)
                 }
             }
             7 -> {
-                if (!follower.isBusy) {
+                if (!follower.isBusy && pathTimer.elapsedTimeSeconds > 0.5) {
                     intake = 1
                     follower.followPath(pickupPose1Ball1, true)
                     setPathState(8)
-                    sleep(500)
                 }
             }
             8 -> {
-                if (!follower.isBusy) {
+                if (!follower.isBusy && pathTimer.elapsedTimeSeconds > 0.5) {
                     follower.followPath(pickupPose1Ball2, true)
                     setPathState(9)
-                    sleep(1000)
                 }
             }
             9 -> {
-                if (!follower.isBusy) {
+                if (!follower.isBusy && pathTimer.elapsedTimeSeconds > 1.0) {
                     follower.followPath(pickupPose1Ball3, true)
                     setPathState(10)
-                    sleep(1500)
                 }
             }
             10 -> {
-                if (!follower.isBusy) {
+                if (!follower.isBusy && pathTimer.elapsedTimeSeconds > 1.5) {
                     follower.setMaxPower(0.6)
                     follower.followPath(returnPose, true)
                     setPathState(11)
-                    sleep(2000)
                 }
             }
             11 -> {
-                if (!follower.isBusy) {
+                if (!follower.isBusy && pathTimer.elapsedTimeSeconds > 2.0) {
                     setPathState(12)
                 }
             }
