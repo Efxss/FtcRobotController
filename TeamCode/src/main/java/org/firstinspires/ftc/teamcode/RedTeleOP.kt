@@ -20,22 +20,21 @@ import org.firstinspires.ftc.vision.VisionPortal
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor
 import java.io.File
 import kotlin.concurrent.thread
+import kotlin.math.abs
+import kotlin.math.hypot
 import kotlin.math.max
 import kotlin.math.min
 
 @TeleOp
-class TeleOP : OpMode() {
-
+class RedTeleOP : OpMode() {
     @IgnoreConfigurable
     var panels: TelemetryManager? = null
-
     private lateinit var follower: Follower
     private lateinit var pathTimer: Timer
     private lateinit var actionTimer: Timer
     private lateinit var opmodeTimer: Timer
     private val slowMode = false
     private val slowModeMultiplier = 0.5
-
     private lateinit var outTake1: DcMotorEx
     private lateinit var outTake2: DcMotorEx
     private lateinit var intakeServo1: CRServo
@@ -45,9 +44,7 @@ class TeleOP : OpMode() {
     private lateinit var limelight: Limelight3A
     private var visionPortal: VisionPortal? = null
     private var tagProcessor: AprilTagProcessor? = null
-
     private var pathState: Int = 0
-
     private var dispensingState = 0
     private val pidP = 8.05
     private val pidI = 0.6
@@ -56,7 +53,6 @@ class TeleOP : OpMode() {
     private var velocityModeInitialized = false
     private var velocityPowerScale = 0.95
     private var intake = 0
-
     object ServoPositions {
         // Loading positions
         const val LOAD_P1 = 0.0
@@ -72,13 +68,11 @@ class TeleOP : OpMode() {
         const val CAM_OPEN = 0.5
         const val CAM_CLOSED = 0.255
     }
-
     object DetectionThresholds {
         const val MIN_WIDTH = 200.0
         const val MIN_HEIGHT = 90.0
         const val MIN_Y_POSITION = 0.44
     }
-
     object Timing {
         const val DISPENSE_INITIAL_DELAY = 3000L
         const val BOWL_MOVE_DELAY = 1300L
@@ -87,12 +81,10 @@ class TeleOP : OpMode() {
         const val DETECTION_COOLDOWN = 1300L
         const val OUTTAKE_DELAY = 1000L
     }
-
     object ColorIds {
         const val GREEN = 1
         const val PURPLE = 2
     }
-
     object AprilTagIds {
         const val FILENAME = "tower.txt"
         const val GPP_ORDER = 21
@@ -100,7 +92,6 @@ class TeleOP : OpMode() {
         const val PPG_ORDER = 23
         const val RED_DEPO =  24
     }
-
     object DepoCenter {
         const val DESIRED_TAG_WIDTH_PX = 110
         const val ROTATE_POWER = 0.2
@@ -110,7 +101,6 @@ class TeleOP : OpMode() {
         const val KP_ROTATE = 0.003
         const val OUTTAKE_SPEED = 0.26
     }
-
     private enum class PieceColor(val symbol: String) {
         NONE("N"),
         GREEN("G"),
@@ -121,7 +111,6 @@ class TeleOP : OpMode() {
                 entries.find { it.symbol == s } ?: NONE  // Changed from values() to entries
         }
     }
-
     private data class GamePieceOrder(
         var slot1: PieceColor = PieceColor.NONE,
         var slot2: PieceColor = PieceColor.NONE,
@@ -159,7 +148,6 @@ class TeleOP : OpMode() {
 
         override fun toString() = "${slot1.symbol}${slot2.symbol}${slot3.symbol}"
     }
-
     data class Target(
         val tx: Double,
         val ty: Double,
@@ -173,7 +161,6 @@ class TeleOP : OpMode() {
                     height >= DetectionThresholds.MIN_HEIGHT &&
                     ty > DetectionThresholds.MIN_Y_POSITION
     }
-
     private val currentOrder = GamePieceOrder()
     private val expectedOrder = GamePieceOrder()
     private var currentLoadPosition = 1
@@ -187,37 +174,90 @@ class TeleOP : OpMode() {
         limelight.start()
         opmodeTimer.resetTimer()
         follower.startTeleOpDrive()
+        handleDriving()
     }
 
     override fun loop() {
         follower.update()
-        handleDriving()
-        runTelemetry()
     }
 
     private fun handleDriving() {
         thread {
             val rotate = (gamepad1.left_trigger - gamepad1.right_trigger)
             follower.setTeleOpDrive(
-                gamepad1.left_stick_y.toDouble(),
                 -gamepad1.right_stick_x.toDouble(),
-                -rotate.toDouble(),
+                gamepad1.left_stick_y.toDouble(),
+                rotate * 0.5,
                 false
             )
+            if (gamepad1.right_bumper) {
+                depoFire()
+            }
         }
     }
-
-    private fun runTelemetry() {
-        thread {
-            val pose = follower.pose
-            panels?.addData("EORD", expectedOrder)
-            panels?.addData("Heading", pose.heading)
-            panels?.addData("X", pose.x)
-            panels?.addData("Y", pose.y)
-            panels?.update(telemetry)
+    private fun depoFire() {
+        val detections = tagProcessor?.detections.orEmpty()
+        val target = detections.firstOrNull { it.id == AprilTagIds.RED_DEPO }
+        if (target == null) {
+            setMotorVelocityFromPseudoPower(outTake1, 0.0)
+            setMotorVelocityFromPseudoPower(outTake2, 0.0)
+            return
         }
+        val xErrPx: Double = target.center.x - (DepoCenter.CAM_WIDTH_PX / 2.0)
+        val tagWidthPx = hypot(
+            target.corners[1].x - target.corners[0].x,
+            target.corners[1].y - target.corners[0].y
+        )
+        val leftHeightPx = hypot(
+            target.corners[3].x - target.corners[0].x,
+            target.corners[3].y - target.corners[0].y
+        )
+        val rightHeightPx = hypot(
+            target.corners[2].x - target.corners[1].x,
+            target.corners[2].y - target.corners[1].y
+        )
+        val tagHeightPx = (leftHeightPx + rightHeightPx) / 2.0
+        val isCentered = abs(xErrPx) <= DepoCenter.CENTER_DEADZONE
+        if (!isCentered) {
+            val hFovDeg = 70.0
+            val hFovRad = Math.toRadians(hFovDeg)
+            val pixelsToRad = hFovRad / DepoCenter.CAM_WIDTH_PX
+            val angleError = xErrPx * pixelsToRad
+            val maxTurnStepDeg = 10.0
+            val maxTurnStepRad = Math.toRadians(maxTurnStepDeg)
+            val turnStep = clip(
+                angleError,
+                -maxTurnStepRad,
+                maxTurnStepRad
+            )
+            val currentHeading = follower.pose.heading
+            val targetHeading = currentHeading - turnStep
+            follower.turnTo(targetHeading)
+            setMotorVelocityFromPseudoPower(outTake1, 0.0)
+            setMotorVelocityFromPseudoPower(outTake2, 0.0)
+            panels?.debug("Status", "Centering...")
+            panels?.debug("X Error (px)", "%.2f", xErrPx)
+        } else {
+            val minHeight = 50.0
+            val maxHeight = 200.0
+            val minSpeed = 0.20
+            val maxSpeed = 0.40
+            val normalizedHeight = clip(
+                (tagHeightPx - minHeight) / (maxHeight - minHeight),
+                0.0,
+                1.0
+            )
+            val outtakeSpeed = maxSpeed - (maxSpeed - minSpeed) * normalizedHeight
+            setMotorVelocityFromPseudoPower(outTake1, outtakeSpeed)
+            setMotorVelocityFromPseudoPower(outTake2, outtakeSpeed)
+            panels?.debug("Status", "FIRING!")
+            panels?.debug("Tag Height (px)", "%.2f", tagHeightPx)
+            panels?.debug("Normalized Height", "%.2f", normalizedHeight)
+            panels?.debug("Outtake Speed", "%.2f", outtakeSpeed)
+        }
+        panels?.debug("Tag Width (px)", "%.2f", tagWidthPx)
+        panels?.update(telemetry)
     }
-
     private fun initializeHardware() {
         outTake1 = hardwareMap.get(DcMotorEx::class.java, "outTake1")
         outTake2 = hardwareMap.get(DcMotorEx::class.java, "outTake2")
@@ -233,7 +273,6 @@ class TeleOP : OpMode() {
         resetEncoders()
         setupVision()
     }
-
     private fun setupVision() {
         limelight.setPollRateHz(100)
         limelight.pipelineSwitch(0)
@@ -246,24 +285,20 @@ class TeleOP : OpMode() {
             .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
             .build()
     }
-
     private fun setupMotorDirections() {
         listOf(intakeServo2, outTake2)
             .forEach { it.direction = DcMotorSimple.Direction.REVERSE }
     }
-
     private fun setupPIDFCoefficients() {
         listOf(outTake1, outTake2)
             .forEach { it.setVelocityPIDFCoefficients(pidP, pidI, pidD, pidF) }
     }
-
     private fun resetEncoders() {
         listOf(outTake1, outTake2).forEach { motor ->
             motor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
             motor.mode = DcMotor.RunMode.RUN_USING_ENCODER
             motor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE }
     }
-
     private fun initializePedroPathing() {
         panels = PanelsTelemetry.telemetry
 
@@ -275,7 +310,6 @@ class TeleOP : OpMode() {
         follower = Constants.createFollower(hardwareMap)
         follower.activateAllPIDFs()
     }
-
     private fun ensureVelocityMode() {
         if (!velocityModeInitialized) {
             outTake1.mode = DcMotor.RunMode.RUN_USING_ENCODER
@@ -283,7 +317,6 @@ class TeleOP : OpMode() {
             velocityModeInitialized = true
         }
     }
-
     private fun powerToTicksPerSecond(motor: DcMotorEx, power: Double): Double {
         val clipped = max(-1.0, min(1.0, power))
         val maxRpm = motor.motorType.maxRPM
@@ -291,12 +324,13 @@ class TeleOP : OpMode() {
         val maxTicksPerSec = (maxRpm * tpr) / 60.0
         return clipped * velocityPowerScale * maxTicksPerSec
     }
-
     private fun setMotorVelocityFromPseudoPower(motor: DcMotorEx, power: Double) {
         ensureVelocityMode()
         motor.velocity = powerToTicksPerSecond(motor, power)
     }
-
+    private fun clip(v: Double, min: Double, max: Double): Double {
+        return max(min, min(max, v))
+    }
     private fun read(): Int {
         val file = File(hardwareMap.appContext.filesDir, AprilTagIds.FILENAME)
         return (if (file.exists()) {
@@ -305,7 +339,6 @@ class TeleOP : OpMode() {
             0
         }) as Int
     }
-
     fun getOrder() {
         var tagID = read()
         when (tagID) {
