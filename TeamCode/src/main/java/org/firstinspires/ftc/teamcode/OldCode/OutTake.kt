@@ -3,8 +3,8 @@ package org.firstinspires.ftc.teamcode.OldCode
 import com.bylazar.configurables.annotations.Configurable
 import com.bylazar.telemetry.PanelsTelemetry
 import com.bylazar.telemetry.TelemetryManager
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.DcMotorSimple
@@ -13,7 +13,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 @Configurable
-@TeleOp
+@Disabled
 class OutTake : OpMode() {
     private var panels: TelemetryManager? = null
     private lateinit var motor1: DcMotorEx
@@ -22,15 +22,15 @@ class OutTake : OpMode() {
     //endregion
     @Volatile
     var velocityModeInitialized = false
-    var velocityPowerScale = 0.95
+    var velocityPowerScale = 1.0
     companion object {
         @JvmField
         var power1 = 0.toDouble()
         var power2 = 0.toDouble()
-        var p = 10.toDouble()
-        var i = 3.toDouble()
+        var p = 8.05.toDouble()
+        var i = 0.6.toDouble()
         var d = 2.toDouble()
-        var f = 8.toDouble()
+        var f = 12.toDouble()
     }
 
     override fun init() {
@@ -43,8 +43,10 @@ class OutTake : OpMode() {
     override fun loop() {
         motor1.setVelocityPIDFCoefficients(p, i, d, f)
         motor2.setVelocityPIDFCoefficients(p, i, d, f)
-        setMotorVelocityFromPseudoPower(motor1, power1) // 0.33
-        setMotorVelocityFromPseudoPower(motor2, power2) // 0.33
+        //setMotorVelocityFromPseudoPower(motor1, power1) // 0.33
+        //setMotorVelocityFromPseudoPower(motor2, power2) // 0.33
+        motor1.velocity = 750.0
+        motor2.velocity = 750.0
         panels?.addData("Power1", power1)
         panels?.addData("Power2", power2)
         panels?.addData("Real Motor 1 Power", motor1.power)

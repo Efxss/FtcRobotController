@@ -10,6 +10,7 @@ import com.pedropathing.geometry.Pose
 import com.pedropathing.paths.PathChain
 import com.pedropathing.util.Timer
 import com.qualcomm.hardware.limelightvision.Limelight3A
+import com.qualcomm.hardware.sparkfun.SparkFunOTOS
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.CRServo
@@ -28,8 +29,8 @@ import kotlin.math.hypot
 import kotlin.math.max
 import kotlin.math.min
 
-@Autonomous(name = "Auto", group = "Main")
-class Auto : OpMode() {
+@Autonomous(name = "Front Red Auto", group = "Main Red")
+class FrontRedAuto : OpMode() {
     @IgnoreConfigurable
     var panels: TelemetryManager? = null
     private lateinit var follower: Follower
@@ -46,26 +47,22 @@ class Auto : OpMode() {
     private var visionPortal: VisionPortal? = null
     private var tagProcessor: AprilTagProcessor? = null
     private var pathState: Int = 0
-    private val startPose    = Pose(72.0, 0.0, Math.toRadians(90.0))
-    private val preloadPose  = Pose(74.0, 4.0, Math.toRadians(80.0))
-    private val pickupPoint5 = Pose(80.0, 17.5, Math.toRadians(9.0))
-    private val pickup1      = Pose(86.5, 24.0, Math.toRadians(0.0))
-    private val pickup1Ball1 = Pose(93.3, 24.0, Math.toRadians(0.0))
-    private val pickup1Ball2 = Pose(96.3, 24.0, Math.toRadians(0.0))
-    private val pickup1Ball3 = Pose(104.8, 24.0, Math.toRadians(0.0))
-    private val scoreBack    = Pose(74.0, 10.0, Math.toRadians(73.0))
+    private var timerState = false
+    private val startPose    = Pose(72.0, 144.0, Math.toRadians(90.0))
+    private val preloadPose  = Pose(72.0, 120.0, Math.toRadians(90.0))
+    private val spikeinit    = Pose(80.0, 94.0, Math.toRadians(0.0))
+    private val spikead      = Pose(86.0, 94.0, Math.toRadians(0.0))
+    private val pickballs    = Pose(106.0, 95.0, Math.toRadians(0.0))
     private lateinit var preloadPose1: PathChain
-    private lateinit var pickupPosePoint5: PathChain
-    private lateinit var pickupPose1: PathChain
-    private lateinit var pickupPose1Ball1: PathChain
-    private lateinit var pickupPose1Ball2: PathChain
-    private lateinit var pickupPose1Ball3: PathChain
+    private lateinit var spike1: PathChain
+    private lateinit var spike2: PathChain
+    private lateinit var grabBalls: PathChain
     private lateinit var returnPose: PathChain
     private var dispensingState = 0
-    private val pidP = 8.05
-    private val pidI = 0.6
-    private val pidD = 0.9
-    private val pidF = 0.08
+    private val pidP = 8.5
+    private val pidI = 0.05
+    private val pidD = 8.0
+    private var pidF = 11.7
     private var velocityModeInitialized = false
     private var velocityPowerScale = 1.0
     private var intake = 0
@@ -90,12 +87,12 @@ class Auto : OpMode() {
         const val MIN_Y_POSITION = 0.44
     }
     object Timing {
-        const val DISPENSE_INITIAL_DELAY = 3000L
+        const val DISPENSE_INITIAL_DELAY = 100L
         const val BOWL_MOVE_DELAY = 1300L
         const val CAM_OPEN_DELAY = 500L
-        const val CAM_CLOSE_DELAY = 2000L
+        const val CAM_CLOSE_DELAY = 1500L
         const val DETECTION_COOLDOWN = 1300L
-        const val OUTTAKE_DELAY = 1000L
+        const val OUTTAKE_DELAY = 100L
     }
     object ColorIds {
         const val GREEN = 1
@@ -115,7 +112,7 @@ class Auto : OpMode() {
         const val CAM_HEIGHT_PX = 720
         const val CENTER_DEADZONE = 16
         const val KP_ROTATE = 0.003
-        const val OUTTAKE_SPEED = 0.27
+        const val OUTTAKE_SPEED = 0.215
     }
     private enum class PieceColor(val symbol: String) {
         NONE("N"),
@@ -199,68 +196,27 @@ class Auto : OpMode() {
         handleIntake()
         processVisionDetection()
 
-        val pose = follower.pose
-
-        // Optional numeric telemetry to Panels
-        panels?.debug("path state", pathState)
-        panels?.debug("x", pose.x)
-        panels?.debug("y", pose.y)
-        panels?.debug("heading", Math.toDegrees(pose.heading))
-        /*panels?.debug("pathTimer", pathTimer.elapsedTimeSeconds)
-        panels?.debug("actionTimer", actionTimer.elapsedTimeSeconds)
-        panels?.debug("opmodeTimer", opmodeTimer.elapsedTimeSeconds)
-        panels?.debug("Heading error", follower.headingError)*/
+        panels?.debug("PathState", pathState)
+        panels?.debug("PathTimer", pathTimer.elapsedTimeSeconds)
         panels?.debug("EORD", expectedOrder)
         panels?.debug("ORD", currentOrder)
-        panels?.debug("CLP", currentLoadPosition)
         panels?.update(telemetry)
     }
 
-    private fun buildPaths() {
-        preloadPose1 = follower.pathBuilder()
-            .addPath(BezierCurve(startPose, preloadPose))
-            .setLinearHeadingInterpolation(startPose.heading, preloadPose.heading)
-            .build()
-
-        pickupPosePoint5 = follower.pathBuilder()
-            .addPath(BezierCurve(preloadPose, pickupPoint5))
-            .setLinearHeadingInterpolation(preloadPose.heading, pickupPoint5.heading)
-            .build()
-
-        pickupPose1 = follower.pathBuilder()
-            .addPath(BezierCurve(pickupPoint5, pickup1))
-            .setLinearHeadingInterpolation(pickupPoint5.heading, pickup1.heading)
-            .build()
-
-        pickupPose1Ball1 = follower.pathBuilder()
-            .addPath(BezierCurve(pickup1, pickup1Ball1))
-            .setLinearHeadingInterpolation(pickup1.heading, pickup1Ball1.heading)
-            .build()
-
-        pickupPose1Ball2 = follower.pathBuilder()
-            .addPath(BezierCurve(pickup1Ball1, pickup1Ball2))
-            .setLinearHeadingInterpolation(pickup1Ball1.heading, pickup1Ball2.heading)
-            .build()
-
-        pickupPose1Ball3 = follower.pathBuilder()
-            .addPath(BezierCurve(pickup1Ball2, pickup1Ball3))
-            .setLinearHeadingInterpolation(pickup1Ball2.heading, pickup1Ball3.heading)
-            .build()
-
-        returnPose = follower.pathBuilder()
-            .addPath(BezierCurve(pickup1Ball3, scoreBack))
-            .setLinearHeadingInterpolation(pickup1Ball3.heading, scoreBack.heading)
-            .build()
-    }
-
     private fun autonomousPathUpdate() {
+        val notBusy = (!follower.isBusy)
         when (pathState) {
             0 -> {
-                follower.followPath(preloadPose1, true)
+                follower.followPath(preloadPose1, false)
                 setPathState(1)
             }
             1 -> {
-                if (!follower.isBusy) {
+                if (notBusy && !timerState) {
+                    pathTimer.resetTimer()
+                    timerState = true
+                    follower.turnToDegrees(30.0)
+                }
+                if (timerState && pathTimer.elapsedTimeSeconds > 1.0) {
                     setPathState(2)
                 }
             }
@@ -271,7 +227,7 @@ class Auto : OpMode() {
             }
             3 -> {
                 centerDepo()
-                if (pathTimer.elapsedTimeSeconds > 1.0) {
+                if (pathTimer.elapsedTimeSeconds > 0.5) {
                     setPathState(4)
                 }
             }
@@ -285,68 +241,99 @@ class Auto : OpMode() {
                 }
             }
             5 -> {
-                if (!follower.isBusy && pathTimer.elapsedTimeSeconds > 0.25) {
-                    follower.followPath(pickupPosePoint5, false)
-                    setPathState(6)
+                if (notBusy) {
+                    if (!timerState) {
+                        pathTimer.resetTimer()
+                        timerState = true
+                    }
+                    if (pathTimer.elapsedTimeSeconds > 0.25) {
+                        follower.followPath(spike1, true)
+                        setPathState(6)
+                    }
                 }
             }
             6 -> {
-                if (!follower.isBusy && pathTimer.elapsedTimeSeconds > 0.5) {
-                    follower.setMaxPower(0.2)
-                    follower.followPath(pickupPose1, true)
-                    setPathState(7)
+                if (notBusy) {
+                    if (!timerState) {
+                        pathTimer.resetTimer()
+                        timerState = true
+                    }
+                    if (pathTimer.elapsedTimeSeconds > 0.25) {
+                        follower.followPath(spike2, true)
+                        setPathState(7)
+                    }
                 }
             }
             7 -> {
-                if (!follower.isBusy && pathTimer.elapsedTimeSeconds > 0.5) {
-                    intake = 1
-                    follower.followPath(pickupPose1Ball1, true)
-                    setPathState(8)
+                intake = 1
+                if (notBusy && !timerState) {
+                    follower.setMaxPower(0.13)
+                    pathTimer.resetTimer()
+                    timerState = true
+                    follower.followPath(grabBalls, true)
+                }
+                if (timerState && pathTimer.elapsedTimeSeconds > 0.5) {
+                    if (notBusy || pathTimer.elapsedTimeSeconds > 6.0) {
+                        setPathState(8)
+                    }
                 }
             }
             8 -> {
-                if (!follower.isBusy && pathTimer.elapsedTimeSeconds > 0.5) {
-                    follower.followPath(pickupPose1Ball2, true)
-                    setPathState(9)
-                }
+                intake = 0
+                follower.setMaxPower(0.6)
+                follower.followPath(returnPose, true)
+                setPathState(9)
             }
             9 -> {
-                if (!follower.isBusy && pathTimer.elapsedTimeSeconds > 1.0) {
-                    follower.followPath(pickupPose1Ball3, true)
+                if (notBusy) {
                     setPathState(10)
                 }
             }
             10 -> {
-                if (!follower.isBusy && pathTimer.elapsedTimeSeconds > 1.5) {
-                    follower.setMaxPower(0.6)
-                    follower.followPath(returnPose, true)
+                if (pathTimer.elapsedTimeSeconds > 0.5) {
                     setPathState(11)
                 }
             }
             11 -> {
-                if (!follower.isBusy && pathTimer.elapsedTimeSeconds > 2.0) {
+                centerDepo()
+                if (pathTimer.elapsedTimeSeconds > 0.5) {
                     setPathState(12)
                 }
             }
             12 -> {
-                if (pathTimer.elapsedTimeSeconds > 0.5) {
-                    setPathState(13)
-                }
-            }
-            13 -> {
-                intake = 0
-                centerDepo()
-                if (pathTimer.elapsedTimeSeconds > 1.0) {
-                    setPathState(14)
-                }
-            }
-            14 -> {
                 dispensingState = 1
                 handleDispensingStateMachine()
+                if (dispensingState == 1) {
+                    /* Do nothing shooting */
+                } else {
+                    setPathState(13)
+                }
             }
         }
     }
 
+    private fun buildPaths() {
+        preloadPose1 = follower.pathBuilder()
+            .addPath(BezierCurve(startPose, preloadPose))
+            .setLinearHeadingInterpolation(startPose.heading, preloadPose.heading)
+            .build()
+        spike1 = follower.pathBuilder()
+            .addPath(BezierCurve(preloadPose, spikeinit))
+            .setLinearHeadingInterpolation(preloadPose.heading, spikeinit.heading)
+            .build()
+        spike2 = follower.pathBuilder()
+            .addPath(BezierCurve(spikeinit, spikead))
+            .setLinearHeadingInterpolation(spikeinit.heading, spikead.heading)
+            .build()
+        grabBalls = follower.pathBuilder()
+            .addPath(BezierCurve(spikead, pickballs))
+            .setLinearHeadingInterpolation(spikead.heading, pickballs.heading)
+            .build()
+        returnPose = follower.pathBuilder()
+            .addPath(BezierCurve(pickballs, preloadPose))
+            .setLinearHeadingInterpolation(pickballs.heading, preloadPose.heading)
+            .build()
+    }
     private fun handleIntake() {
         when (intake) {
             0 -> {
@@ -550,6 +537,13 @@ class Auto : OpMode() {
         }
     }
     private fun centerDepo() {
+        if (pathTimer.elapsedTimeSeconds > 0.5) {
+            if (pathState == 3) {
+                setPathState(4)
+            } else if (pathState == 10) {
+                setPathState(11)
+            }
+        }
         val detections = tagProcessor?.detections.orEmpty()
         val target = detections.firstOrNull { it.id == AprilTagIds.RED_DEPO }
         if (target == null) {
@@ -564,8 +558,10 @@ class Auto : OpMode() {
         if (abs(xErrPx) <= DepoCenter.CENTER_DEADZONE) {
             if (pathState == 3) {
                 setPathState(4)
-            } else if (pathState == 13) {
-                setPathState(14)
+                return
+            } else if (pathState == 10) {
+                setPathState(11)
+                return
             }
             return
         }
@@ -607,6 +603,7 @@ class Auto : OpMode() {
             .forEach { it.direction = DcMotorSimple.Direction.REVERSE }
     }
     private fun setupPIDFCoefficients() {
+        pidF = 32767/outTake1.motorType.achieveableMaxTicksPerSecond
         listOf(outTake1, outTake2)
             .forEach { it.setVelocityPIDFCoefficients(pidP, pidI, pidD, pidF) }
     }
@@ -628,7 +625,7 @@ class Auto : OpMode() {
         opmodeTimer = Timer()
         opmodeTimer.resetTimer()
 
-        val otos = hardwareMap.get(com.qualcomm.hardware.sparkfun.SparkFunOTOS::class.java, "otos")
+        val otos = hardwareMap.get(SparkFunOTOS::class.java, "otos")
         otos.calibrateImu()
         otos.resetTracking()
 
@@ -638,6 +635,7 @@ class Auto : OpMode() {
         currentOrder.slot1 = PieceColor.PURPLE
         currentOrder.slot2 = PieceColor.GREEN
         currentOrder.slot3 = PieceColor.PURPLE
+        follower.setMaxPower(0.6)
         buildPaths()
     }
     private fun ensureVelocityMode() {
@@ -669,9 +667,13 @@ class Auto : OpMode() {
     private fun setPathState(pState: Int) {
         pathState = pState
         pathTimer.resetTimer()
+        timerState = false
     }
     private fun saveNumber(num: Int) {
         val file = File(hardwareMap.appContext.filesDir, AprilTagIds.FILENAME)
         file.writeText(num.toString())
+    }
+    override fun stop() {
+        
     }
 }

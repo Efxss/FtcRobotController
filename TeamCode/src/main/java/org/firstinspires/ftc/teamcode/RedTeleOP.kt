@@ -19,7 +19,6 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import org.firstinspires.ftc.vision.VisionPortal
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor
 import java.io.File
-import kotlin.concurrent.thread
 import kotlin.math.abs
 import kotlin.math.hypot
 import kotlin.math.max
@@ -174,27 +173,28 @@ class RedTeleOP : OpMode() {
         limelight.start()
         opmodeTimer.resetTimer()
         follower.startTeleOpDrive()
-        handleDriving()
+        //handleDriving()
     }
 
     override fun loop() {
         follower.update()
+        if (gamepad1.right_bumper) {
+            depoFire()
+        }
+        val rotate = (gamepad1.left_trigger - gamepad1.right_trigger)
+        follower.setTeleOpDrive(
+            gamepad1.right_stick_x.toDouble(),
+            -gamepad1.left_stick_y.toDouble(),
+            rotate * 0.5,
+            false
+        )
     }
 
-    private fun handleDriving() {
+    /*private fun handleDriving() {
         thread {
-            val rotate = (gamepad1.left_trigger - gamepad1.right_trigger)
-            follower.setTeleOpDrive(
-                -gamepad1.right_stick_x.toDouble(),
-                gamepad1.left_stick_y.toDouble(),
-                rotate * 0.5,
-                false
-            )
-            if (gamepad1.right_bumper) {
-                depoFire()
-            }
+
         }
-    }
+    }*/
     private fun depoFire() {
         val detections = tagProcessor?.detections.orEmpty()
         val target = detections.firstOrNull { it.id == AprilTagIds.RED_DEPO }
