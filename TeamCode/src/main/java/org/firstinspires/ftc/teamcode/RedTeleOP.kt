@@ -14,6 +14,7 @@ import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.Servo
+import kotlinx.coroutines.*
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import org.firstinspires.ftc.vision.VisionPortal
@@ -28,6 +29,8 @@ import kotlin.math.min
 class RedTeleOP : OpMode() {
     @IgnoreConfigurable
     var panels: TelemetryManager? = null
+    private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+    private var driveJob: Job? = null
     private lateinit var follower: Follower
     private lateinit var pathTimer: Timer
     private lateinit var actionTimer: Timer
@@ -66,6 +69,10 @@ class RedTeleOP : OpMode() {
         // Camera servo positions
         const val CAM_OPEN = 0.5
         const val CAM_CLOSED = 0.255
+
+        const val INTAKE_ON = 1.0
+        const val INTAKE_REVERSE = -1.0
+        const val INTAKE_OFF = 0.0
     }
     object DetectionThresholds {
         const val MIN_WIDTH = 200.0
@@ -173,14 +180,33 @@ class RedTeleOP : OpMode() {
         limelight.start()
         opmodeTimer.resetTimer()
         follower.startTeleOpDrive()
-        //handleDriving()
+        driveJob = scope.launch {
+            while (isActive) {
+                updateDrive()
+                delay(10)
+            }
+        }
     }
 
     override fun loop() {
-        follower.update()
-        if (gamepad1.right_bumper) {
-            depoFire()
+        handleIntake()
+    }
+
+    private fun handleIntake() {
+        if (gamepad1.cross) {
+            intakeServo1.power = ServoPositions.INTAKE_ON
+            intakeServo2.power = ServoPositions.INTAKE_ON
+        } else if (gamepad1.circle) {
+            intakeServo1.power = ServoPositions.INTAKE_REVERSE
+            intakeServo2.power = ServoPositions.INTAKE_REVERSE
         }
+        else {
+            intakeServo1.power = ServoPositions.INTAKE_OFF
+            intakeServo2.power = ServoPositions.INTAKE_OFF
+        }
+    }
+    private fun updateDrive() {
+        follower.update()
         val rotate = (gamepad1.left_trigger - gamepad1.right_trigger)
         follower.setTeleOpDrive(
             gamepad1.right_stick_x.toDouble(),
@@ -188,75 +214,39 @@ class RedTeleOP : OpMode() {
             rotate * 0.5,
             false
         )
-    }
-
-    /*private fun handleDriving() {
-        thread {
-
+        if (gamepad1.right_bumper) {
+            centerDepo()
         }
-    }*/
-    private fun depoFire() {
+    }
+    private fun centerDepo() {
         val detections = tagProcessor?.detections.orEmpty()
-        val target = detections.firstOrNull { it.id == AprilTagIds.RED_DEPO }
+        val target = detections.firstOrNull { it.id == BackRedAuto.AprilTagIds.RED_DEPO }
         if (target == null) {
-            setMotorVelocityFromPseudoPower(outTake1, 0.0)
-            setMotorVelocityFromPseudoPower(outTake2, 0.0)
             return
         }
-        val xErrPx: Double = target.center.x - (DepoCenter.CAM_WIDTH_PX / 2.0)
+        val xErrPx: Double = target.center.x - (BackRedAuto.DepoCenter.CAM_WIDTH_PX / 2.0)
         val tagWidthPx = hypot(
             target.corners[1].x - target.corners[0].x,
             target.corners[1].y - target.corners[0].y
         )
-        val leftHeightPx = hypot(
-            target.corners[3].x - target.corners[0].x,
-            target.corners[3].y - target.corners[0].y
-        )
-        val rightHeightPx = hypot(
-            target.corners[2].x - target.corners[1].x,
-            target.corners[2].y - target.corners[1].y
-        )
-        val tagHeightPx = (leftHeightPx + rightHeightPx) / 2.0
-        val isCentered = abs(xErrPx) <= DepoCenter.CENTER_DEADZONE
-        if (!isCentered) {
-            val hFovDeg = 70.0
-            val hFovRad = Math.toRadians(hFovDeg)
-            val pixelsToRad = hFovRad / DepoCenter.CAM_WIDTH_PX
-            val angleError = xErrPx * pixelsToRad
-            val maxTurnStepDeg = 10.0
-            val maxTurnStepRad = Math.toRadians(maxTurnStepDeg)
-            val turnStep = clip(
-                angleError,
-                -maxTurnStepRad,
-                maxTurnStepRad
-            )
-            val currentHeading = follower.pose.heading
-            val targetHeading = currentHeading - turnStep
-            follower.turnTo(targetHeading)
-            setMotorVelocityFromPseudoPower(outTake1, 0.0)
-            setMotorVelocityFromPseudoPower(outTake2, 0.0)
-            panels?.debug("Status", "Centering...")
-            panels?.debug("X Error (px)", "%.2f", xErrPx)
-        } else {
-            val minHeight = 50.0
-            val maxHeight = 200.0
-            val minSpeed = 0.20
-            val maxSpeed = 0.40
-            val normalizedHeight = clip(
-                (tagHeightPx - minHeight) / (maxHeight - minHeight),
-                0.0,
-                1.0
-            )
-            val outtakeSpeed = maxSpeed - (maxSpeed - minSpeed) * normalizedHeight
-            setMotorVelocityFromPseudoPower(outTake1, outtakeSpeed)
-            setMotorVelocityFromPseudoPower(outTake2, outtakeSpeed)
-            panels?.debug("Status", "FIRING!")
-            panels?.debug("Tag Height (px)", "%.2f", tagHeightPx)
-            panels?.debug("Normalized Height", "%.2f", normalizedHeight)
-            panels?.debug("Outtake Speed", "%.2f", outtakeSpeed)
+        val widthErrPx = BackRedAuto.DepoCenter.DESIRED_TAG_WIDTH_PX - tagWidthPx
+        if (abs(xErrPx) <= BackRedAuto.DepoCenter.CENTER_DEADZONE) {
+            return
         }
-        panels?.debug("Tag Width (px)", "%.2f", tagWidthPx)
-        panels?.update(telemetry)
+        val hFovDeg = 70.0
+        val hFovRad = Math.toRadians(hFovDeg)
+        val pixelsToRad = hFovRad / BackRedAuto.DepoCenter.CAM_WIDTH_PX
+        val angleError = xErrPx * pixelsToRad
+        val maxTurnStepDeg = 10.0
+        val maxTurnStepRad = Math.toRadians(maxTurnStepDeg)
+        val turnStep = clip(
+            angleError,
+            -maxTurnStepRad,
+            maxTurnStepRad
+        )
+        val currentHeading = follower.pose.heading
+        val targetHeading = currentHeading - turnStep
+        follower.turnTo(targetHeading)
     }
     private fun initializeHardware() {
         outTake1 = hardwareMap.get(DcMotorEx::class.java, "outTake1")
