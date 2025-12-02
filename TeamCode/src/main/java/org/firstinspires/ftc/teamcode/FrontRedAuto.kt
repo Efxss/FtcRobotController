@@ -196,11 +196,11 @@ class FrontRedAuto : OpMode() {
         handleIntake()
         processVisionDetection()
 
-        panels?.debug("PathState", pathState)
+        /*panels?.debug("PathState", pathState)
         panels?.debug("PathTimer", pathTimer.elapsedTimeSeconds)
         panels?.debug("EORD", expectedOrder)
         panels?.debug("ORD", currentOrder)
-        panels?.update(telemetry)
+        panels?.update(telemetry)*/
     }
 
     private fun autonomousPathUpdate() {
@@ -553,6 +553,10 @@ class FrontRedAuto : OpMode() {
         val tagWidthPx = hypot(
             target.corners[1].x - target.corners[0].x,
             target.corners[1].y - target.corners[0].y
+        )
+        val tagHeightPx = hypot(
+            target.corners[3].x - target.corners[0].x,
+            target.corners[3].y - target.corners[0].y
         )
         val widthErrPx = DepoCenter.DESIRED_TAG_WIDTH_PX - tagWidthPx
         if (abs(xErrPx) <= DepoCenter.CENTER_DEADZONE) {

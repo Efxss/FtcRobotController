@@ -5,6 +5,7 @@ import com.bylazar.configurables.annotations.IgnoreConfigurable
 import com.bylazar.telemetry.PanelsTelemetry
 import com.bylazar.telemetry.TelemetryManager
 import com.pedropathing.follower.Follower
+import com.pedropathing.geometry.Pose
 import com.pedropathing.util.Timer
 import com.qualcomm.hardware.limelightvision.Limelight3A
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
@@ -14,12 +15,18 @@ import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.Servo
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import org.firstinspires.ftc.vision.VisionPortal
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor
-import java.io.File
+import java.lang.Thread.sleep
 import kotlin.math.abs
 import kotlin.math.hypot
 import kotlin.math.max
@@ -30,13 +37,14 @@ class RedTeleOP : OpMode() {
     @IgnoreConfigurable
     var panels: TelemetryManager? = null
     private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
-    private var driveJob: Job? = null
+    private var outTakeCalc: Job? = null
+    private var actVision: Job?   = null
+    private var patDect: Job?     = null
+    private val startPose = Pose(72.0, 72.0, Math.toRadians(0.0))
     private lateinit var follower: Follower
     private lateinit var pathTimer: Timer
     private lateinit var actionTimer: Timer
     private lateinit var opmodeTimer: Timer
-    private val slowMode = false
-    private val slowModeMultiplier = 0.5
     private lateinit var outTake1: DcMotorEx
     private lateinit var outTake2: DcMotorEx
     private lateinit var intakeServo1: CRServo
@@ -48,6 +56,8 @@ class RedTeleOP : OpMode() {
     private var tagProcessor: AprilTagProcessor? = null
     private var pathState: Int = 0
     private var dispensingState = 0
+    private var isCentering = false
+    private var rightBumperPressed = false
     private val pidP = 8.05
     private val pidI = 0.6
     private val pidD = 0.9
@@ -77,14 +87,14 @@ class RedTeleOP : OpMode() {
     object DetectionThresholds {
         const val MIN_WIDTH = 200.0
         const val MIN_HEIGHT = 90.0
-        const val MIN_Y_POSITION = 0.44
+        const val MIN_Y_POSITION = 0.76
     }
     object Timing {
-        const val DISPENSE_INITIAL_DELAY = 3000L
+        const val DISPENSE_INITIAL_DELAY = 100L
         const val BOWL_MOVE_DELAY = 1300L
         const val CAM_OPEN_DELAY = 500L
         const val CAM_CLOSE_DELAY = 2000L
-        const val DETECTION_COOLDOWN = 1300L
+        const val DETECTION_COOLDOWN = 1500L
         const val OUTTAKE_DELAY = 1000L
     }
     object ColorIds {
@@ -92,11 +102,14 @@ class RedTeleOP : OpMode() {
         const val PURPLE = 2
     }
     object AprilTagIds {
-        const val FILENAME = "tower.txt"
         const val GPP_ORDER = 21
         const val PGP_ORDER = 22
         const val PPG_ORDER = 23
         const val RED_DEPO =  24
+    }
+    object EndGame {
+        const val LIFTMAX = 11400
+        var ISENDGAME = 0
     }
     object DepoCenter {
         const val DESIRED_TAG_WIDTH_PX = 110
@@ -105,7 +118,7 @@ class RedTeleOP : OpMode() {
         const val CAM_HEIGHT_PX = 720
         const val CENTER_DEADZONE = 15
         const val KP_ROTATE = 0.003
-        const val OUTTAKE_SPEED = 0.26
+        var OUTTAKE_SPEED = 0.26
     }
     private enum class PieceColor(val symbol: String) {
         NONE("N"),
@@ -180,18 +193,218 @@ class RedTeleOP : OpMode() {
         limelight.start()
         opmodeTimer.resetTimer()
         follower.startTeleOpDrive()
-        driveJob = scope.launch {
+        outTakeCalc = scope.launch {
             while (isActive) {
-                updateDrive()
-                delay(10)
+                outTakePower()
+                delay(50)
+            }
+        }
+        actVision = scope.launch {
+            while (isActive) {
+                processVisionDetection()
+                delay(5)
+            }
+        }
+        patDect = scope.launch {
+            while (isActive) {
+                processAprilTags()
+                delay(5)
             }
         }
     }
 
     override fun loop() {
+        follower.update()
+
+        if (gamepad1.right_bumper && !rightBumperPressed) {
+            isCentering = !isCentering
+            if (!isCentering) {
+                follower.startTeleOpDrive()
+            }
+        }
+        rightBumperPressed = gamepad1.right_bumper
+
+        if (isCentering) {
+            centerDepo()
+        } else {
+            follower.setMaxPower(0.6)
+            val rotate = (gamepad1.left_trigger - gamepad1.right_trigger)
+            follower.setTeleOpDrive(
+                -gamepad1.left_stick_y.toDouble(),
+                gamepad1.right_stick_x.toDouble(),
+                rotate * 0.5,
+                true
+            )
+        }
+
+        if (gamepad1.left_bumper && gamepad1.cross) {
+            EndGame.ISENDGAME = 1
+        }
+
         handleIntake()
+        panels?.debug("heading", follower.pose.heading)
+        panels?.debug("X", follower.pose.x)
+        panels?.debug("Y", follower.pose.y)
+        panels?.debug("EORD", expectedOrder)
+        panels?.debug("ORD", currentOrder)
+        panels?.update(telemetry)
     }
 
+    private fun parsePythonOutput(py: DoubleArray): List<Target> {
+        val stride = 6
+        val targets = ArrayList<Target>()
+        var i = 0
+        while (i + stride - 1 < py.size) {
+            targets.add(
+                Target(
+                    tx = py[i],
+                    ty = py[i + 1],
+                    ta = py[i + 2],
+                    colorId = py[i + 3].toInt(),
+                    width = py[i + 4],
+                    height = py[i + 5]
+                )
+            )
+            i += stride
+        }
+        return targets
+    }
+    private fun processVisionDetection() {
+        val result = limelight.latestResult ?: return
+
+        //panels?.debug("Data age (ms)", result.staleness)
+
+        val py = result.pythonOutput
+        if (py == null || py.isEmpty()) {
+            return
+        }
+
+        val targets = parsePythonOutput(py)
+        val greenCount = targets.count { it.colorId == ColorIds.GREEN }
+        val purpleCount = targets.count { it.colorId == ColorIds.PURPLE }
+
+        // Process best target
+        targets.maxByOrNull { it.ta }?.let { best ->
+            if (best.meetsDetectionThreshold()) {
+                when (best.colorId) {
+                    ColorIds.GREEN -> attemptAddPiece(PieceColor.GREEN)
+                    ColorIds.PURPLE -> attemptAddPiece(PieceColor.PURPLE)
+                }
+            }
+        }
+    }
+    private fun attemptAddPiece(color: PieceColor) {
+        if (currentOrder.isFull()) {
+            dispensingState = 1
+            return
+        }
+
+        if (currentOrder.addPiece(color)) {
+            advanceBowlPosition()
+            sleep(Timing.DETECTION_COOLDOWN)
+        }
+    }
+    private fun advanceBowlPosition() {
+        when (currentLoadPosition) {
+            1 -> {
+                bowlServo.position = ServoPositions.LOAD_P2
+                currentLoadPosition = 2
+            }
+            2 -> {
+                bowlServo.position = ServoPositions.LOAD_P3
+                currentLoadPosition = 3
+            }
+            3 -> {
+                bowlServo.position = ServoPositions.FIRE_P2
+                handleDispensingStateMachine()
+            }
+        }
+    }
+    private fun handleDispensingStateMachine() {
+        when (dispensingState) {
+            0 -> { /* Idle - collecting pieces */ }
+            1 -> executeDispensing()
+        }
+    }
+    private fun executeDispensing() {
+        lockRobot()
+        sleep(Timing.OUTTAKE_DELAY)
+
+        if (currentOrder.isFull() && !expectedOrder.isEmpty()) {
+            when (EndGame.ISENDGAME) {
+                0 -> {
+                    val randDispenseSequence = listOf(ServoPositions.FIRE_P3, ServoPositions.FIRE_P2, ServoPositions.FIRE_P1)
+                    executeDispenseSequence(randDispenseSequence)
+                }
+                1 -> {
+                    val dispenseSequence = calculateDispenseSequence()
+                    if (dispenseSequence != null) {
+                        executeDispenseSequence(dispenseSequence)
+                    }
+                }
+            }
+        }
+
+        // Lower outtake and reset
+        sleep(Timing.OUTTAKE_DELAY)
+        bowlServo.position = ServoPositions.LOAD_P1
+        sleep(Timing.OUTTAKE_DELAY)
+
+        dispensingState = 0
+        currentLoadPosition = 1
+        currentOrder.reset()
+        unlockRobot(0.6)
+    }
+    private fun calculateDispenseSequence(): List<Double>? {
+        // Map: Expected pattern -> Current pattern -> Dispense sequence
+        val sequenceMap = mapOf(
+            "GPP" to mapOf(
+                "GPP" to listOf(ServoPositions.FIRE_P1, ServoPositions.FIRE_P2, ServoPositions.FIRE_P3),
+                "PPG" to listOf(ServoPositions.FIRE_P3, ServoPositions.FIRE_P2, ServoPositions.FIRE_P1),
+                "PGP" to listOf(ServoPositions.FIRE_P2, ServoPositions.FIRE_P1, ServoPositions.FIRE_P3)
+            ),
+            "PGP" to mapOf(
+                "PGP" to listOf(ServoPositions.FIRE_P1, ServoPositions.FIRE_P2, ServoPositions.FIRE_P3),
+                "PPG" to listOf(ServoPositions.FIRE_P1, ServoPositions.FIRE_P3, ServoPositions.FIRE_P2),
+                "GPP" to listOf(ServoPositions.FIRE_P2, ServoPositions.FIRE_P1, ServoPositions.FIRE_P3)
+            ),
+            "PPG" to mapOf(
+                "PPG" to listOf(ServoPositions.FIRE_P1, ServoPositions.FIRE_P2, ServoPositions.FIRE_P3),
+                "PGP" to listOf(ServoPositions.FIRE_P1, ServoPositions.FIRE_P3, ServoPositions.FIRE_P2),
+                "GPP" to listOf(ServoPositions.FIRE_P2, ServoPositions.FIRE_P3, ServoPositions.FIRE_P1)
+            )
+        )
+
+        return sequenceMap[expectedOrder.toString()]?.get(currentOrder.toString())
+    }
+    private fun executeDispenseSequence(positions: List<Double>) {
+        sleep(Timing.DISPENSE_INITIAL_DELAY)
+        positions.forEach { position ->
+            bowlServo.position = position
+            sleep(Timing.BOWL_MOVE_DELAY)
+            camServo.position = ServoPositions.CAM_OPEN
+            sleep(Timing.CAM_OPEN_DELAY)
+            camServo.position = ServoPositions.CAM_CLOSED
+            sleep(Timing.CAM_CLOSE_DELAY)
+        }
+    }
+    private fun outTakePower() {
+        val detections = tagProcessor?.detections.orEmpty()
+        val target = detections.firstOrNull { it.id == AprilTagIds.RED_DEPO }
+        if (target == null) {
+            return
+        }
+        val tagHeightPx = hypot(
+            target.corners[3].x - target.corners[0].x,
+            target.corners[3].y - target.corners[0].y
+        )
+        val heightCalc = tagHeightPx-65
+        val scale = heightCalc*0.000685
+        val powerResult = 0.27-scale
+        DepoCenter.OUTTAKE_SPEED = powerResult
+        outTake1.power = DepoCenter.OUTTAKE_SPEED
+        outTake2.power = DepoCenter.OUTTAKE_SPEED
+    }
     private fun handleIntake() {
         if (gamepad1.cross) {
             intakeServo1.power = ServoPositions.INTAKE_ON
@@ -205,48 +418,33 @@ class RedTeleOP : OpMode() {
             intakeServo2.power = ServoPositions.INTAKE_OFF
         }
     }
-    private fun updateDrive() {
-        follower.update()
-        val rotate = (gamepad1.left_trigger - gamepad1.right_trigger)
-        follower.setTeleOpDrive(
-            gamepad1.right_stick_x.toDouble(),
-            -gamepad1.left_stick_y.toDouble(),
-            rotate * 0.5,
-            false
-        )
-        if (gamepad1.right_bumper) {
-            centerDepo()
-        }
-    }
     private fun centerDepo() {
+        follower.setMaxPower(0.1)
         val detections = tagProcessor?.detections.orEmpty()
-        val target = detections.firstOrNull { it.id == BackRedAuto.AprilTagIds.RED_DEPO }
+        val target = detections.firstOrNull { it.id == AprilTagIds.RED_DEPO }
+
         if (target == null) {
+            follower.setTeleOpDrive(0.0, 0.0, 0.0, false)
             return
         }
-        val xErrPx: Double = target.center.x - (BackRedAuto.DepoCenter.CAM_WIDTH_PX / 2.0)
-        val tagWidthPx = hypot(
-            target.corners[1].x - target.corners[0].x,
-            target.corners[1].y - target.corners[0].y
-        )
-        val widthErrPx = BackRedAuto.DepoCenter.DESIRED_TAG_WIDTH_PX - tagWidthPx
-        if (abs(xErrPx) <= BackRedAuto.DepoCenter.CENTER_DEADZONE) {
+
+        val xErrPx: Double = target.center.x - (DepoCenter.CAM_WIDTH_PX / 2.0)
+
+        if (abs(xErrPx) <= DepoCenter.CENTER_DEADZONE) {
+            follower.setTeleOpDrive(0.0, 0.0, 0.0, false)
+
+            dispensingState = 1
+            executeDispensing()
+
+            isCentering = false
+            unlockRobot(0.6)
+
             return
         }
-        val hFovDeg = 70.0
-        val hFovRad = Math.toRadians(hFovDeg)
-        val pixelsToRad = hFovRad / BackRedAuto.DepoCenter.CAM_WIDTH_PX
-        val angleError = xErrPx * pixelsToRad
-        val maxTurnStepDeg = 10.0
-        val maxTurnStepRad = Math.toRadians(maxTurnStepDeg)
-        val turnStep = clip(
-            angleError,
-            -maxTurnStepRad,
-            maxTurnStepRad
-        )
-        val currentHeading = follower.pose.heading
-        val targetHeading = currentHeading - turnStep
-        follower.turnTo(targetHeading)
+
+        val rotationPower = clip(xErrPx * DepoCenter.KP_ROTATE, -0.3, 0.3)
+
+        follower.setTeleOpDrive(0.0, 0.0, -rotationPower, false)
     }
     private fun initializeHardware() {
         outTake1 = hardwareMap.get(DcMotorEx::class.java, "outTake1")
@@ -257,7 +455,7 @@ class RedTeleOP : OpMode() {
         camServo = hardwareMap.get(Servo::class.java, "camServo")
         limelight = hardwareMap.get(Limelight3A::class.java, "limelight")
         camServo.position = ServoPositions.CAM_CLOSED
-        bowlServo.position = ServoPositions.LOAD_P1
+        bowlServo.position = ServoPositions.FIRE_P3
         setupMotorDirections()
         setupPIDFCoefficients()
         resetEncoders()
@@ -297,7 +495,13 @@ class RedTeleOP : OpMode() {
         opmodeTimer = Timer()
         opmodeTimer.resetTimer()
 
+
+        currentOrder.slot1 = PieceColor.PURPLE
+        currentOrder.slot2 = PieceColor.GREEN
+        currentOrder.slot3 = PieceColor.PURPLE
+
         follower = Constants.createFollower(hardwareMap)
+        follower.setStartingPose(startPose)
         follower.activateAllPIDFs()
     }
     private fun ensureVelocityMode() {
@@ -321,31 +525,39 @@ class RedTeleOP : OpMode() {
     private fun clip(v: Double, min: Double, max: Double): Double {
         return max(min, min(max, v))
     }
-    private fun read(): Int {
-        val file = File(hardwareMap.appContext.filesDir, AprilTagIds.FILENAME)
-        return (if (file.exists()) {
-            file.readText()
-        } else {
-            0
-        }) as Int
+    private fun lockRobot() {
+        follower.pausePathFollowing()
+        follower.setMaxPower(0.0)
     }
-    fun getOrder() {
-        var tagID = read()
-        when (tagID) {
-            21 -> {
-                expectedOrder.slot1 = PieceColor.GREEN
-                expectedOrder.slot2 = PieceColor.PURPLE
-                expectedOrder.slot3 = PieceColor.PURPLE
-            }
-            22 -> {
-                expectedOrder.slot1 = PieceColor.PURPLE
-                expectedOrder.slot2 = PieceColor.GREEN
-                expectedOrder.slot3 = PieceColor.PURPLE
-            }
-            23 -> {
-                expectedOrder.slot1 = PieceColor.PURPLE
-                expectedOrder.slot2 = PieceColor.PURPLE
-                expectedOrder.slot3 = PieceColor.GREEN
+    private fun unlockRobot(maxPower: Double) {
+        follower.setMaxPower(maxPower)
+        follower.resumePathFollowing()
+        follower.startTeleOpDrive()
+    }
+    private fun processAprilTags() {
+        val detections = tagProcessor?.detections.orEmpty()
+        val tagIds = detections.map { it.id }
+
+        tagIds.firstOrNull()?.let { id ->
+            when (id) {
+                AprilTagIds.GPP_ORDER -> {
+                    expectedOrder.slot1 = PieceColor.GREEN
+                    expectedOrder.slot2 = PieceColor.PURPLE
+                    expectedOrder.slot3 = PieceColor.PURPLE
+                    patDect?.cancel()
+                }
+                AprilTagIds.PGP_ORDER -> {
+                    expectedOrder.slot1 = PieceColor.PURPLE
+                    expectedOrder.slot2 = PieceColor.GREEN
+                    expectedOrder.slot3 = PieceColor.PURPLE
+                    patDect?.cancel()
+                }
+                AprilTagIds.PPG_ORDER -> {
+                    expectedOrder.slot1 = PieceColor.PURPLE
+                    expectedOrder.slot2 = PieceColor.PURPLE
+                    expectedOrder.slot3 = PieceColor.GREEN
+                    patDect?.cancel()
+                }
             }
         }
     }

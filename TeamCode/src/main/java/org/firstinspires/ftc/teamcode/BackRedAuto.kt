@@ -192,7 +192,7 @@ class BackRedAuto : OpMode() {
         opmodeTimer.resetTimer()
         setPathState(0)
         runOutTake()
-        runTelemetryThread()
+        //runTelemetryThread()
     }
 
     override fun loop() {
@@ -589,14 +589,20 @@ class BackRedAuto : OpMode() {
             target.corners[1].x - target.corners[0].x,
             target.corners[1].y - target.corners[0].y
         )
+        val tagHeightPx = hypot(
+            target.corners[3].x - target.corners[0].x,
+            target.corners[3].y - target.corners[0].y
+        )
+        panels?.debug("H", tagHeightPx)
+        panels?.update(telemetry)
         val widthErrPx = DepoCenter.DESIRED_TAG_WIDTH_PX - tagWidthPx
         if (abs(xErrPx) <= DepoCenter.CENTER_DEADZONE) {
-            if (pathState == 3) {
+            /*if (pathState == 3) {
                 setPathState(4)
             } else if (pathState == 13) {
                 setPathState(14)
             }
-            return
+            return*/
         }
         val hFovDeg = 70.0
         val hFovRad = Math.toRadians(hFovDeg)
