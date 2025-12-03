@@ -18,6 +18,13 @@ import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.Servo
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import org.firstinspires.ftc.vision.VisionPortal
@@ -34,6 +41,8 @@ import kotlin.math.min
 class BackRedAuto : OpMode() {
     @IgnoreConfigurable
     var panels: TelemetryManager? = null
+    private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+    private var actVision: Job?   = null
     private lateinit var follower: Follower
     private lateinit var pathTimer: Timer
     private lateinit var actionTimer: Timer
@@ -48,6 +57,7 @@ class BackRedAuto : OpMode() {
     private var visionPortal: VisionPortal? = null
     private var tagProcessor: AprilTagProcessor? = null
     private var pathState: Int = 0
+    private var timerState = false
     private val startPose    = Pose(72.0, 0.0, Math.toRadians(90.0))
     private val preloadPose  = Pose(74.0, 4.0, Math.toRadians(80.0))
     private val pickupPoint5 = Pose(80.0, 17.5, Math.toRadians(9.0))
@@ -89,15 +99,15 @@ class BackRedAuto : OpMode() {
     object DetectionThresholds {
         const val MIN_WIDTH = 200.0
         const val MIN_HEIGHT = 90.0
-        const val MIN_Y_POSITION = 0.44
+        const val MIN_Y_POSITION = 0.76
     }
     object Timing {
-        const val DISPENSE_INITIAL_DELAY = 3000L
+        const val DISPENSE_INITIAL_DELAY = 100L
         const val BOWL_MOVE_DELAY = 1300L
         const val CAM_OPEN_DELAY = 500L
-        const val CAM_CLOSE_DELAY = 2000L
+        const val CAM_CLOSE_DELAY = 1500L
         const val DETECTION_COOLDOWN = 1300L
-        const val OUTTAKE_DELAY = 1000L
+        const val OUTTAKE_DELAY = 100L
     }
     object ColorIds {
         const val GREEN = 1
@@ -192,7 +202,12 @@ class BackRedAuto : OpMode() {
         opmodeTimer.resetTimer()
         setPathState(0)
         runOutTake()
-        //runTelemetryThread()
+        actVision = scope.launch {
+            while (isActive) {
+                processVisionDetection()
+                delay(5)
+            }
+        }
     }
 
     override fun loop() {
@@ -200,7 +215,6 @@ class BackRedAuto : OpMode() {
         processAprilTags()
         autonomousPathUpdate()
         handleIntake()
-        processVisionDetection()
 
         val pose = follower.pose
 
@@ -275,10 +289,15 @@ class BackRedAuto : OpMode() {
     }
 
     private fun autonomousPathUpdate() {
+        val notBusy = (!follower.isBusy)
         when (pathState) {
             0 -> {
-                follower.followPath(preloadPose1, true)
-                setPathState(1)
+                if (notBusy && !timerState) {
+                    pathTimer.resetTimer()
+                    timerState = true
+                    follower.followPath(preloadPose1, true)
+                    setPathState(1)
+                }
             }
             1 -> {
                 if (!follower.isBusy) {
@@ -310,38 +329,68 @@ class BackRedAuto : OpMode() {
                 if (!follower.isBusy/* && pathTimer.elapsedTimeSeconds > 0.25 */) {
                     follower.followPath(pickupPosePoint5, false)
                     setPathState(6)
-                    sleep(500)
                 }
             }
             6 -> {
-                if (!follower.isBusy/* && pathTimer.elapsedTimeSeconds > 0.5*/) {
-                    follower.setMaxPower(0.4)
-                    follower.followPath(pickupPose1, true)
-                    setPathState(7)
-                    sleep(500)
+                if (notBusy) {
+                    if (!timerState) {
+                        pathTimer.resetTimer()
+                        timerState = true
+                    }
+                    if (pathTimer.elapsedTimeSeconds > 0.5) {
+                        follower.setMaxPower(0.4)
+                        follower.followPath(pickupPose1, true)
+                        setPathState(7)
+                    }
                 }
             }
             7 -> {
-                if (!follower.isBusy/* && pathTimer.elapsedTimeSeconds > 0.5*/) {
-                    follower.setMaxPower(0.2)
-                    intake = 1
-                    follower.followPath(pickupPose1Ball1, true)
-                    setPathState(8)
-                    sleep(500)
+                if (notBusy) {
+                    if (!timerState) {
+                        pathTimer.resetTimer()
+                        timerState = true
+                    }
+                    if (pathTimer.elapsedTimeSeconds > 0.2) {
+                        follower.setMaxPower(0.18)
+                        intake = 1
+                        follower.followPath(pickupPose1Ball1, true)
+                        setPathState(8)
+                    }
                 }
             }
             8 -> {
-                if (!follower.isBusy/* && pathTimer.elapsedTimeSeconds > 0.5*/) {
-                    follower.followPath(pickupPose1Ball2, true)
-                    setPathState(9)
-                    sleep(1000)
+                if (notBusy) {
+                    if (!timerState) {
+                        pathTimer.resetTimer()
+                        timerState = true
+                    }
+                    if (pathTimer.elapsedTimeSeconds > 0.2) {
+                        follower.setMaxPower(0.16)
+                        follower.setMaxPower(0.2)
+                        intake = 1
+                        follower.followPath(pickupPose1Ball2, true)
+                        setPathState(9)
+                    }
                 }
             }
             9 -> {
-                if (!follower.isBusy/* && pathTimer.elapsedTimeSeconds > 1.0*/) {
-                    follower.followPath(pickupPose1Ball3, true)
-                    setPathState(10)
-                    sleep(1500)
+                if (notBusy) {
+                    if (!timerState) {
+                        pathTimer.resetTimer()
+                        timerState = true
+                    }
+                    if (pathTimer.elapsedTimeSeconds > 1.0) {
+                        if (!timerState) {
+                            pathTimer.resetTimer()
+                            timerState = true
+                        }
+                        follower.setMaxPower(0.2)
+                        intake = 1
+                        follower.followPath(pickupPose1Ball3, true)
+                        if (pathTimer.elapsedTimeSeconds > 7.0) {
+                            stop()
+                        }
+                    }
                 }
             }
             10 -> {
@@ -597,12 +646,12 @@ class BackRedAuto : OpMode() {
         panels?.update(telemetry)
         val widthErrPx = DepoCenter.DESIRED_TAG_WIDTH_PX - tagWidthPx
         if (abs(xErrPx) <= DepoCenter.CENTER_DEADZONE) {
-            /*if (pathState == 3) {
+            if (pathState == 3) {
                 setPathState(4)
             } else if (pathState == 13) {
                 setPathState(14)
             }
-            return*/
+            return
         }
         val hFovDeg = 70.0
         val hFovRad = Math.toRadians(hFovDeg)
@@ -712,5 +761,7 @@ class BackRedAuto : OpMode() {
     }
     override fun stop() {
         isRunning = false
+        limelight.stop()
+        visionPortal?.close()
     }
 }

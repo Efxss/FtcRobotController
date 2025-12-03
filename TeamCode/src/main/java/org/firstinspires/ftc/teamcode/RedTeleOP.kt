@@ -38,15 +38,19 @@ class RedTeleOP : OpMode() {
     var panels: TelemetryManager? = null
     private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     private var outTakeCalc: Job? = null
+    private var manualFire: Job?  = null
     private var actVision: Job?   = null
     private var patDect: Job?     = null
+    private var actLift: Job?     = null
     private val startPose = Pose(72.0, 72.0, Math.toRadians(0.0))
     private lateinit var follower: Follower
     private lateinit var pathTimer: Timer
     private lateinit var actionTimer: Timer
     private lateinit var opmodeTimer: Timer
-    private lateinit var outTake1: DcMotorEx
-    private lateinit var outTake2: DcMotorEx
+    private lateinit var outTake1:  DcMotorEx
+    private lateinit var outTake2:  DcMotorEx
+    private lateinit var liftLeft:  DcMotorEx
+    private lateinit var liftRight: DcMotorEx
     private lateinit var intakeServo1: CRServo
     private lateinit var intakeServo2: CRServo
     private lateinit var bowlServo: Servo
@@ -58,6 +62,7 @@ class RedTeleOP : OpMode() {
     private var dispensingState = 0
     private var isCentering = false
     private var rightBumperPressed = false
+    var endgameTogglePressed = false
     private val pidP = 8.05
     private val pidI = 0.6
     private val pidD = 0.9
@@ -109,6 +114,9 @@ class RedTeleOP : OpMode() {
     }
     object EndGame {
         const val LIFTMAX = 11400
+        const val SLOWMODE = 1000
+        const val NORMALSPEED = 0.6
+        const val SLOWSPEED = 0.2
         var ISENDGAME = 0
     }
     object DepoCenter {
@@ -118,7 +126,7 @@ class RedTeleOP : OpMode() {
         const val CAM_HEIGHT_PX = 720
         const val CENTER_DEADZONE = 15
         const val KP_ROTATE = 0.003
-        var OUTTAKE_SPEED = 0.26
+        var OUTTAKE_SPEED = 0.20
     }
     private enum class PieceColor(val symbol: String) {
         NONE("N"),
@@ -199,6 +207,12 @@ class RedTeleOP : OpMode() {
                 delay(50)
             }
         }
+        manualFire = scope.launch {
+            while (isActive) {
+                overrideShoot()
+                delay(10)
+            }
+        }
         actVision = scope.launch {
             while (isActive) {
                 processVisionDetection()
@@ -209,6 +223,12 @@ class RedTeleOP : OpMode() {
             while (isActive) {
                 processAprilTags()
                 delay(5)
+            }
+        }
+        actLift = scope.launch {
+            while(isActive){
+                runLift()
+                delay(20)
             }
         }
     }
@@ -236,20 +256,66 @@ class RedTeleOP : OpMode() {
                 true
             )
         }
-
-        if (gamepad1.left_bumper && gamepad1.cross) {
-            EndGame.ISENDGAME = 1
+        val endgameButtonPressed = gamepad1.left_bumper && gamepad1.cross
+        if (endgameButtonPressed && !endgameTogglePressed) {
+            EndGame.ISENDGAME = if (EndGame.ISENDGAME == 0) 1 else 0
         }
+        endgameTogglePressed = endgameButtonPressed
 
         handleIntake()
-        panels?.debug("heading", follower.pose.heading)
+        /*panels?.debug("heading", follower.pose.heading)
         panels?.debug("X", follower.pose.x)
         panels?.debug("Y", follower.pose.y)
         panels?.debug("EORD", expectedOrder)
         panels?.debug("ORD", currentOrder)
-        panels?.update(telemetry)
+        panels?.debug("Lift Left Power", liftLeft.power)
+        panels?.debug("Lift Right Power", liftRight.power)
+        panels?.debug("Lift Left Position", liftLeft.currentPosition)
+        panels?.debug("Lift Right Position", liftRight.currentPosition)
+        panels?.update(telemetry)*/
     }
 
+    private fun runLift() {
+        var isRunning = false
+        when (EndGame.ISENDGAME) {
+            0 -> { /* Do nothing */ }
+            1 -> {
+                if (gamepad1.dpad_up && gamepad1.triangle) {
+                    isRunning = true
+                    outTakeCalc?.cancel()
+                    outTake1.power=0.0
+                    outTake2.power=0.0
+                }
+                if (isRunning) {
+                    if (liftLeft.currentPosition < EndGame.SLOWMODE || liftRight.currentPosition < EndGame.SLOWMODE) {
+                        listOf(liftLeft, liftRight).forEach { motor ->
+                            motor.power = EndGame.NORMALSPEED
+                        }
+                    } else if (liftLeft.currentPosition > EndGame.SLOWMODE || liftRight.currentPosition > EndGame.SLOWMODE) {
+                        listOf(liftLeft, liftRight).forEach { motor ->
+                            motor.power = EndGame.SLOWSPEED
+                        }
+                    } else if (liftLeft.currentPosition > EndGame.LIFTMAX || liftRight.currentPosition > EndGame.LIFTMAX) {
+                        listOf(liftLeft, liftRight).forEach { motor ->
+                            motor.power = 0.0
+                        }
+                    }
+                }
+            }
+        }
+    }
+    private fun overrideShoot() {
+        if (gamepad1.square) {
+            outTakeCalc?.cancel()
+            outTake1.power = DepoCenter.OUTTAKE_SPEED
+            outTake2.power = DepoCenter.OUTTAKE_SPEED
+            val randDispenseSequence = listOf(ServoPositions.FIRE_P3, ServoPositions.FIRE_P2, ServoPositions.FIRE_P1)
+            executeDispenseSequence(randDispenseSequence)
+            currentOrder.reset()
+            bowlServo.position = ServoPositions.LOAD_P1
+            outTakeCalc?.start()
+        }
+    }
     private fun parsePythonOutput(py: DoubleArray): List<Target> {
         val stride = 6
         val targets = ArrayList<Target>()
@@ -449,6 +515,8 @@ class RedTeleOP : OpMode() {
     private fun initializeHardware() {
         outTake1 = hardwareMap.get(DcMotorEx::class.java, "outTake1")
         outTake2 = hardwareMap.get(DcMotorEx::class.java, "outTake2")
+        liftLeft = hardwareMap.get(DcMotorEx::class.java, "liftLeft")
+        liftRight = hardwareMap.get(DcMotorEx::class.java, "liftRight")
         intakeServo1 = hardwareMap.get(CRServo::class.java, "intakeServo1")
         intakeServo2 = hardwareMap.get(CRServo::class.java, "intakeServo2")
         bowlServo = hardwareMap.get(Servo::class.java, "bowlServo")
@@ -474,7 +542,7 @@ class RedTeleOP : OpMode() {
             .build()
     }
     private fun setupMotorDirections() {
-        listOf(intakeServo2, outTake2)
+        listOf(intakeServo2, outTake2, liftLeft)
             .forEach { it.direction = DcMotorSimple.Direction.REVERSE }
     }
     private fun setupPIDFCoefficients() {
@@ -486,6 +554,12 @@ class RedTeleOP : OpMode() {
             motor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
             motor.mode = DcMotor.RunMode.RUN_USING_ENCODER
             motor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE }
+        listOf(liftLeft, liftRight).forEach { motor ->
+            motor.targetPosition = EndGame.LIFTMAX
+            motor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+            motor.mode = DcMotor.RunMode.RUN_TO_POSITION
+            motor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+        }
     }
     private fun initializePedroPathing() {
         panels = PanelsTelemetry.telemetry

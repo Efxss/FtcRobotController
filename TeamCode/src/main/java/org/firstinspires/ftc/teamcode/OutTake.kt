@@ -21,8 +21,11 @@ import kotlin.math.min
 @TeleOp
 class OutTake : OpMode() {
     private var panels: TelemetryManager? = null
+    //private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+    //private var fire: Job?   = null
     private lateinit var motor1: DcMotorEx
     private lateinit var motor2: DcMotorEx
+    //private lateinit var camServo: Servo
     private var visionPortal: VisionPortal? = null
     private var tagProcessor: AprilTagProcessor? = null
     object ServoPositions {
@@ -141,15 +144,26 @@ class OutTake : OpMode() {
         @JvmField
         var power1 = 0.toDouble()
         var power2 = 0.toDouble()
-        var p = 8.5.toDouble()
-        var i = 0.05.toDouble()
-        var d = 8.0.toDouble()
-        var f = 11.7.toDouble()
+        var p = 8.5
+        var i = 0.05
+        var d = 8.0
+        var f = 11.7
+        var shoot = false
+    }
+
+    override fun start() {
+        /*fire = scope.launch {
+            while (isActive) {
+                shooter()
+                delay(30)
+            }
+        }*/
     }
 
     override fun init() {
         motor1 = hardwareMap.get(DcMotorEx::class.java, "outTake1")
         motor2 = hardwareMap.get(DcMotorEx::class.java, "outTake2")
+        //camServo = hardwareMap.get(Servo::class.java, "camServo")
         motor2.direction = DcMotorSimple.Direction.REVERSE
         panels = PanelsTelemetry.telemetry
         f = 32767/motor1.motorType.achieveableMaxTicksPerSecond
@@ -184,6 +198,15 @@ class OutTake : OpMode() {
         panels?.debug("H", tagHeightPx)
         panels?.update(telemetry)
     }
+
+    /*private fun shooter() {
+        if (shoot) {
+            camServo.position = 0.5
+            !shoot
+        } else if (!shoot) {
+            camServo.position = 0.255
+        }
+    }*/
 
     private fun setupVision() {
         tagProcessor = AprilTagProcessor.easyCreateWithDefaults()

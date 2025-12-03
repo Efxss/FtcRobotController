@@ -36,8 +36,8 @@ import kotlin.math.hypot
 import kotlin.math.max
 import kotlin.math.min
 
-@Autonomous(name = "Front Red Auto", group = "Main Red")
-class FrontRedAuto : OpMode() {
+@Autonomous(name = "Front Blue Auto", group = "Main Blue")
+class FrontBlueAuto : OpMode() {
     @IgnoreConfigurable
     var panels: TelemetryManager? = null
     private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
@@ -57,11 +57,11 @@ class FrontRedAuto : OpMode() {
     private var tagProcessor: AprilTagProcessor? = null
     private var pathState: Int = 0
     private var timerState = false
-    private val startPose    = Pose(72.0, 144.0, Math.toRadians(90.0))
-    private val preloadPose  = Pose(72.0, 120.0, Math.toRadians(90.0))
-    private val spikeinit    = Pose(80.0, 94.0, Math.toRadians(0.0))
-    private val spikead      = Pose(86.0, 94.0, Math.toRadians(0.0))
-    private val pickballs    = Pose(106.0, 95.0, Math.toRadians(0.0))
+    private val startPose    = Pose(54.0, 144.0, Math.toRadians(90.0))
+    private val preloadPose  = Pose(51.0, 120.0, Math.toRadians(90.0))
+    private val spikeinit    = Pose(46.0, 99.0, Math.toRadians(180.0))
+    private val spikead      = Pose(40.0, 99.0, Math.toRadians(180.0))
+    private val pickballs    = Pose(15.0, 99.0, Math.toRadians(180.0))
     private lateinit var preloadPose1: PathChain
     private lateinit var spike1: PathChain
     private lateinit var spike2: PathChain
@@ -109,10 +109,10 @@ class FrontRedAuto : OpMode() {
     }
     object AprilTagIds {
         const val FILENAME = "tower.txt"
+        const val BLUE_DEPO = 20
         const val GPP_ORDER = 21
         const val PGP_ORDER = 22
         const val PPG_ORDER = 23
-        const val RED_DEPO =  24
     }
     object DepoCenter {
         const val DESIRED_TAG_WIDTH_PX = 110
@@ -209,13 +209,12 @@ class FrontRedAuto : OpMode() {
         processAprilTags()
         autonomousPathUpdate()
         handleIntake()
-        processVisionDetection()
 
-        /*panels?.debug("PathState", pathState)
+        panels?.debug("PathState", pathState)
         panels?.debug("PathTimer", pathTimer.elapsedTimeSeconds)
         panels?.debug("EORD", expectedOrder)
         panels?.debug("ORD", currentOrder)
-        panels?.update(telemetry)*/
+        panels?.update(telemetry)
     }
 
     private fun autonomousPathUpdate() {
@@ -229,7 +228,7 @@ class FrontRedAuto : OpMode() {
                 if (notBusy && !timerState) {
                     pathTimer.resetTimer()
                     timerState = true
-                    follower.turnToDegrees(30.0)
+                    follower.turnToDegrees(150.0)
                 }
                 if (timerState && pathTimer.elapsedTimeSeconds > 1.0) {
                     setPathState(2)
@@ -282,7 +281,7 @@ class FrontRedAuto : OpMode() {
             7 -> {
                 intake = 1
                 if (notBusy && !timerState) {
-                    follower.setMaxPower(0.13)
+                    follower.setMaxPower(0.14)
                     pathTimer.resetTimer()
                     timerState = true
                     follower.followPath(grabBalls, true)
@@ -561,7 +560,7 @@ class FrontRedAuto : OpMode() {
             }
         }
         val detections = tagProcessor?.detections.orEmpty()
-        val target = detections.firstOrNull { it.id == AprilTagIds.RED_DEPO }
+        val target = detections.firstOrNull { it.id == AprilTagIds.BLUE_DEPO }
         if (target == null) {
             return
         }
