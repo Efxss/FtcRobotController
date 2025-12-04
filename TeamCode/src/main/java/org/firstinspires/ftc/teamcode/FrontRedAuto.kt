@@ -97,7 +97,7 @@ class FrontRedAuto : OpMode() {
     }
     object Timing {
         const val DISPENSE_INITIAL_DELAY = 100L
-        const val BOWL_MOVE_DELAY = 1300L
+        const val BOWL_MOVE_DELAY = 1350L
         const val CAM_OPEN_DELAY = 500L
         const val CAM_CLOSE_DELAY = 1500L
         const val DETECTION_COOLDOWN = 1300L
@@ -696,5 +696,6 @@ class FrontRedAuto : OpMode() {
     override fun stop() {
         limelight.stop()
         visionPortal?.close()
+        actVision?.cancel()
     }
 }

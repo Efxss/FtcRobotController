@@ -34,8 +34,8 @@ import kotlin.math.max
 import kotlin.math.min
 
 @SuppressLint("DefaultLocale")
-@TeleOp(name = "Red TeleOP", group = "Main Red")
-class RedTeleOP : OpMode() {
+@TeleOp(name = "Blue TeleOP", group = "Main Blue")
+class BlueTeleOP : OpMode() {
     @IgnoreConfigurable
     var panels: TelemetryManager? = null
     private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
@@ -112,10 +112,10 @@ class RedTeleOP : OpMode() {
         const val PURPLE = 2
     }
     object AprilTagIds {
+        const val BLUE_DEPO = 20
         const val GPP_ORDER = 21
         const val PGP_ORDER = 22
         const val PPG_ORDER = 23
-        const val RED_DEPO =  24
     }
     object EndGame {
         const val LIFTMAX = 11400
@@ -558,7 +558,7 @@ class RedTeleOP : OpMode() {
     }
     private fun outTakePower() {
         val detections = tagProcessor?.detections.orEmpty()
-        val target = detections.firstOrNull { it.id == AprilTagIds.RED_DEPO }
+        val target = detections.firstOrNull { it.id == AprilTagIds.BLUE_DEPO }
         if (target == null) {
             return
         }
@@ -589,7 +589,7 @@ class RedTeleOP : OpMode() {
     private fun centerDepo() {
         follower.setMaxPower(0.1)
         val detections = tagProcessor?.detections.orEmpty()
-        val target = detections.firstOrNull { it.id == AprilTagIds.RED_DEPO }
+        val target = detections.firstOrNull { it.id == AprilTagIds.BLUE_DEPO }
 
         if (target == null) {
             follower.setTeleOpDrive(0.0, 0.0, 0.0, false)

@@ -763,5 +763,6 @@ class BackRedAuto : OpMode() {
         isRunning = false
         limelight.stop()
         visionPortal?.close()
+        actVision?.cancel()
     }
 }
