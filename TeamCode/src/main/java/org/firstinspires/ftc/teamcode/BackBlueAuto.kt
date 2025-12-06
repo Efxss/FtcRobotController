@@ -217,11 +217,6 @@ class BackBlueAuto : OpMode() {
         handleIntake()
 
         val pose = follower.pose
-        panels?.debug("PathState", pathState)
-        panels?.debug("PathTimer", pathTimer.elapsedTimeSeconds)
-        panels?.debug("EORD", expectedOrder)
-        panels?.debug("ORD", currentOrder)
-        panels?.update(telemetry)
 
         // Optional numeric telemetry to Panels
         /*panels?.debug("path state", pathState)

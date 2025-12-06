@@ -140,7 +140,7 @@ class BlueTeleOP : OpMode() {
 
         companion object {
             fun fromString(s: String): PieceColor =
-                entries.find { it.symbol == s } ?: NONE  // Changed from values() to entries
+                entries.find { it.symbol == s } ?: NONE
         }
     }
     private data class GamePieceOrder(
@@ -566,9 +566,9 @@ class BlueTeleOP : OpMode() {
             target.corners[3].x - target.corners[0].x,
             target.corners[3].y - target.corners[0].y
         )
-        val heightCalc = tagHeightPx-65
-        val scale = heightCalc*0.000685
-        val powerResult = 0.27-scale
+        var heightCalc = tagHeightPx-85
+        var scale = heightCalc*0.000685
+        var powerResult = 0.27-scale
         DepoCenter.OUTTAKE_SPEED = powerResult
         outTake1.power = DepoCenter.OUTTAKE_SPEED
         outTake2.power = DepoCenter.OUTTAKE_SPEED
