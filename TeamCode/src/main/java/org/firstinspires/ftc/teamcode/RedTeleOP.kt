@@ -34,7 +34,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 @SuppressLint("DefaultLocale")
-@TeleOp(name = "Red TeleOP", group = "Main Red")
+@TeleOp(name = "Red TeleOP (OLD)", group = "Main Red")
 class RedTeleOP : OpMode() {
     @IgnoreConfigurable
     var panels: TelemetryManager? = null
