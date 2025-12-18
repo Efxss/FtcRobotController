@@ -1,4 +1,5 @@
-package org.firstinspires.ftc.teamcode
+package org.firstinspires.ftc.teamcode.testing
+
 import android.util.Size
 import com.bylazar.configurables.annotations.IgnoreConfigurable
 import com.bylazar.telemetry.PanelsTelemetry
@@ -20,7 +21,6 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import org.firstinspires.ftc.vision.VisionPortal
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor
-import java.lang.Thread.sleep
 import kotlin.math.abs
 import kotlin.math.hypot
 import kotlin.math.max
@@ -284,7 +284,7 @@ class PreloadTest : OpMode() {
         }
         if (currentOrder.addPiece(color)) {
             advanceBowlPosition()
-            sleep(Timing.DETECTION_COOLDOWN)
+            Thread.sleep(Timing.DETECTION_COOLDOWN)
         }
     }
     private fun advanceBowlPosition() {
@@ -313,18 +313,18 @@ class PreloadTest : OpMode() {
         lockRobot()
         setMotorVelocityFromPseudoPower(outTake1, DepoCenter.OUTTAKE_SPEED)
         setMotorVelocityFromPseudoPower(outTake2, DepoCenter.OUTTAKE_SPEED)
-        sleep(Timing.OUTTAKE_DELAY)
+        Thread.sleep(Timing.OUTTAKE_DELAY)
         if (currentOrder.isFull() && !expectedOrder.isEmpty()) {
             val dispenseSequence = calculateDispenseSequence()
             if (dispenseSequence != null) {
                 executeDispenseSequence(dispenseSequence)
             }
         }
-        sleep(Timing.OUTTAKE_DELAY)
+        Thread.sleep(Timing.OUTTAKE_DELAY)
         setMotorVelocityFromPseudoPower(outTake1, 0.0)
         setMotorVelocityFromPseudoPower(outTake2, 0.0)
         bowlServo.position = ServoPositions.LOAD_P1
-        sleep(Timing.OUTTAKE_DELAY)
+        Thread.sleep(Timing.OUTTAKE_DELAY)
         dispensingState = 0
         currentLoadPosition = 1
         currentOrder.reset()
@@ -352,14 +352,14 @@ class PreloadTest : OpMode() {
         return sequenceMap[expectedOrder.toString()]?.get(currentOrder.toString())
     }
     private fun executeDispenseSequence(positions: List<Double>) {
-        sleep(Timing.DISPENSE_INITIAL_DELAY)
+        Thread.sleep(Timing.DISPENSE_INITIAL_DELAY)
         positions.forEach { position ->
             bowlServo.position = position
-            sleep(Timing.BOWL_MOVE_DELAY)
+            Thread.sleep(Timing.BOWL_MOVE_DELAY)
             camServo.position = ServoPositions.CAM_OPEN
-            sleep(Timing.CAM_OPEN_DELAY)
+            Thread.sleep(Timing.CAM_OPEN_DELAY)
             camServo.position = ServoPositions.CAM_CLOSED
-            sleep(Timing.CAM_CLOSE_DELAY)
+            Thread.sleep(Timing.CAM_CLOSE_DELAY)
         }
     }
     private fun processAprilTags() {

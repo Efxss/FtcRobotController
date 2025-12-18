@@ -4,12 +4,10 @@ import com.bylazar.telemetry.PanelsTelemetry
 import com.bylazar.telemetry.TelemetryManager
 import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.Servo
 import kotlin.concurrent.thread
 
 @Disabled
-@TeleOp
 class ServoTest : OpMode() {
     var panels: TelemetryManager? = null
     lateinit var servo : Servo

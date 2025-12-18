@@ -51,7 +51,7 @@ class NewRedTeleOP : OpMode() {
     private lateinit var liftLeft:  DcMotorEx
     private lateinit var liftRight: DcMotorEx
     private lateinit var intakeServo1: CRServo
-    private lateinit var intakeServo2: CRServo
+    //private lateinit var intakeServo2: CRServo
     private lateinit var bowlServo: Servo
     private lateinit var camServo: Servo
     private lateinit var limelight: Limelight3A
@@ -67,12 +67,12 @@ class NewRedTeleOP : OpMode() {
     var isSlowMode = false
     var depoCentered = false
     var lastTriggerPressed = false
-    private val pidP = 8.05
-    private val pidI = 0.6
-    private val pidD = 0.9
-    private val pidF = 0.01
+    private val pidP = 150.0
+    private val pidI = 0.0
+    private val pidD = 0.0
+    private val pidF = 13.5
     private var velocityModeInitialized = false
-    private var velocityPowerScale = 0.95
+    private var velocityPowerScale = 1.0
     private var intake = 0
     var isSeen = false
     object ServoPositions {
@@ -181,6 +181,7 @@ class NewRedTeleOP : OpMode() {
     }
 
     private suspend fun handleFiring() {
+        if (isDispensing) return
         val triggerPressed = gamepad1.right_trigger > 0.5
 
         if (triggerPressed && !lastTriggerPressed && !isDispensing) {
@@ -196,7 +197,7 @@ class NewRedTeleOP : OpMode() {
     private suspend fun centerDepo() {
         if (isDispensing) return  // Guard clause
 
-        follower.setMaxPower(0.1)
+        follower.setMaxPower(0.3)
         val result: LLResult? = limelight.latestResult
         val fiducialResults = result?.fiducialResults
         val target = fiducialResults?.firstOrNull { it.fiducialId == AprilTagIds.RED_DEPO }
@@ -227,7 +228,7 @@ class NewRedTeleOP : OpMode() {
         follower.setTeleOpDrive(0.0, 0.0, -rotationPower, false)
     }
     private suspend fun executeDispensing() {
-        delay(100) // OUTTAKE_DELAY
+        //delay(100) // OUTTAKE_DELAY
 
         val isFull = ord.none { it == "N" }
 
@@ -275,7 +276,7 @@ class NewRedTeleOP : OpMode() {
             return
         }
         val targetY = target.targetYPixels
-        var powerResult = 0.000204*targetY+0.13
+        var powerResult = 0.000204*targetY+0.15
         DepoCenter.OUTTAKE_SPEED = powerResult
         outTake1.power = DepoCenter.OUTTAKE_SPEED
         outTake2.power = DepoCenter.OUTTAKE_SPEED
@@ -300,10 +301,10 @@ class NewRedTeleOP : OpMode() {
         }*/
         if (isFull) {
             intakeServo1.power = ServoPositions.INTAKE_REVERSE
-            intakeServo2.power = ServoPositions.INTAKE_REVERSE
+            //intakeServo2.power = ServoPositions.INTAKE_REVERSE
         } else {
             intakeServo1.power = ServoPositions.INTAKE_ON
-            intakeServo2.power = ServoPositions.INTAKE_ON
+            //intakeServo2.power = ServoPositions.INTAKE_ON
         }
 
     }
@@ -313,13 +314,13 @@ class NewRedTeleOP : OpMode() {
         liftLeft = hardwareMap.get(DcMotorEx::class.java, "liftLeft")
         liftRight = hardwareMap.get(DcMotorEx::class.java, "liftRight")
         intakeServo1 = hardwareMap.get(CRServo::class.java, "intakeServo1")
-        intakeServo2 = hardwareMap.get(CRServo::class.java, "intakeServo2")
+        //intakeServo2 = hardwareMap.get(CRServo::class.java, "intakeServo2")
         bowlServo = hardwareMap.get(Servo::class.java, "bowlServo")
         camServo = hardwareMap.get(Servo::class.java, "camServo")
         limelight = hardwareMap.get(Limelight3A::class.java, "limelight")
         colorSensor = hardwareMap.get(ColorSensor::class.java, "ColorSensor")
         camServo.position = ServoPositions.CAM_CLOSED
-        bowlServo.position = ServoPositions.LOAD_P2
+        bowlServo.position = ServoPositions.LOAD_P1
         setupMotorDirections()
         setupPIDFCoefficients()
         resetEncoders()
@@ -331,7 +332,7 @@ class NewRedTeleOP : OpMode() {
         limelight.start()
     }
     private fun setupMotorDirections() {
-        listOf(intakeServo2, outTake2, liftLeft)
+        listOf(/*intakeServo2,*/ outTake2, liftLeft)
             .forEach { it.direction = DcMotorSimple.Direction.REVERSE }
     }
     private fun setupPIDFCoefficients() {

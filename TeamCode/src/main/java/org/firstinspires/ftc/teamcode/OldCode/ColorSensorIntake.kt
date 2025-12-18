@@ -1,13 +1,13 @@
-package org.firstinspires.ftc.teamcode
+package org.firstinspires.ftc.teamcode.OldCode
 
 import com.bylazar.telemetry.PanelsTelemetry
 import com.bylazar.telemetry.TelemetryManager
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.ColorSensor
 import com.qualcomm.robotcore.hardware.Servo
 
-@TeleOp
+@Disabled
 class ColorSensorIntake : OpMode() {
     var panels: TelemetryManager? = null
     private lateinit var colorSensor: ColorSensor
