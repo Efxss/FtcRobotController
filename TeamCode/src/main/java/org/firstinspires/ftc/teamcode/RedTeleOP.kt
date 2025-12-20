@@ -9,6 +9,7 @@ import com.pedropathing.follower.Follower
 import com.pedropathing.geometry.Pose
 import com.pedropathing.util.Timer
 import com.qualcomm.hardware.limelightvision.Limelight3A
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.CRServo
@@ -34,7 +35,8 @@ import kotlin.math.max
 import kotlin.math.min
 
 @SuppressLint("DefaultLocale")
-@TeleOp(name = "Red TeleOP (OLD)", group = "Main Red")
+//@TeleOp(name = "Red TeleOP (OLD)", group = "Main Red")
+@Disabled
 class RedTeleOP : OpMode() {
     @IgnoreConfigurable
     var panels: TelemetryManager? = null

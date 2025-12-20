@@ -12,6 +12,7 @@ import com.pedropathing.util.Timer
 import com.qualcomm.hardware.limelightvision.Limelight3A
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.CRServo
 import com.qualcomm.robotcore.hardware.DcMotor
@@ -37,7 +38,8 @@ import kotlin.math.hypot
 import kotlin.math.max
 import kotlin.math.min
 
-@Autonomous(name = "Back Blue Auto", group = "Main Blue")
+//@Autonomous(name = "Back Blue Auto", group = "Main Blue")
+@Disabled
 class BackBlueAuto : OpMode() {
     @IgnoreConfigurable
     var panels: TelemetryManager? = null

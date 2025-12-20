@@ -27,7 +27,6 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
-
 @TeleOp(name = "Red TeleOP (NEW)", group = "Main Red")
 class NewRedTeleOP : OpMode() {
     var panels: TelemetryManager? = null
@@ -60,6 +59,7 @@ class NewRedTeleOP : OpMode() {
     private var pathState: Int = 0
     private var dispensingState = 0
     private var isCentering = false
+    @Volatile
     private var isDispensing = false
     private var rightBumperPressed = false
     var endgameTogglePressed = false
@@ -77,14 +77,14 @@ class NewRedTeleOP : OpMode() {
     var isSeen = false
     object ServoPositions {
         // Loading positions
-        const val LOAD_P1 = 0.0
-        const val LOAD_P2 = 0.075
-        const val LOAD_P3 = 0.148
+        const val LOAD_P1 = 0.004
+        const val LOAD_P2 = 0.080
+        const val LOAD_P3 = 0.153
 
         // Firing/dispensing positions
-        const val FIRE_P1 = 0.114
-        const val FIRE_P2 = 0.1845
-        const val FIRE_P3 = 0.258
+        const val FIRE_P1 = 0.118
+        const val FIRE_P2 = 0.1885
+        const val FIRE_P3 = 0.042
 
         // Camera servo positions
         const val CAM_OPEN = 0.5
@@ -118,9 +118,9 @@ class NewRedTeleOP : OpMode() {
     }
     object Timing {
         const val DISPENSE_INITIAL_DELAY = 100L
-        const val BOWL_MOVE_DELAY = 1000L
+        const val BOWL_MOVE_DELAY = 650L
         const val CAM_OPEN_DELAY = 400L
-        const val CAM_CLOSE_DELAY = 1500L
+        const val CAM_CLOSE_DELAY = 900L
         const val DETECTION_COOLDOWN = 1500L
         const val OUTTAKE_DELAY = 800L
     }
@@ -157,7 +157,7 @@ class NewRedTeleOP : OpMode() {
             }
         }
     }
-    
+
     override fun loop() {
         follower.update()
         var rotate = if(gamepad1.left_bumper) 0.5 else if (gamepad1.right_bumper) -0.5 else 0.0
@@ -173,7 +173,7 @@ class NewRedTeleOP : OpMode() {
         )
 
     }
-    
+
     override fun stop() {
         outTakeCalc?.cancel()
         runIntake?.cancel()
@@ -181,22 +181,20 @@ class NewRedTeleOP : OpMode() {
     }
 
     private suspend fun handleFiring() {
-        if (isDispensing) return
         val triggerPressed = gamepad1.right_trigger > 0.5
 
         if (triggerPressed && !lastTriggerPressed && !isDispensing) {
-            depoCentered = !depoCentered
+            depoCentered = true
+            isDispensing = true
         }
 
         lastTriggerPressed = triggerPressed
 
-        if (depoCentered && !isDispensing) {
+        if (depoCentered && isDispensing) {
             centerDepo()
         }
     }
     private suspend fun centerDepo() {
-        if (isDispensing) return  // Guard clause
-
         follower.setMaxPower(0.3)
         val result: LLResult? = limelight.latestResult
         val fiducialResults = result?.fiducialResults
@@ -212,7 +210,6 @@ class NewRedTeleOP : OpMode() {
         if (abs(xErrPx) <= DepoCenter.CENTER_DEADZONE) {
             follower.setTeleOpDrive(0.0, 0.0, 0.0, false)
 
-            isDispensing = true  // Lock before dispensing
             try {
                 dispensingState = 1
                 executeDispensing()
@@ -234,9 +231,9 @@ class NewRedTeleOP : OpMode() {
 
         if (isFull) {
             val dispenseSequence = listOf(
-                ServoPositions.FIRE_P3,
                 ServoPositions.FIRE_P2,
-                ServoPositions.FIRE_P1
+                ServoPositions.FIRE_P1,
+                ServoPositions.FIRE_P3
             )
             executeDispenseSequence(dispenseSequence)
             isCentering = false
@@ -283,28 +280,20 @@ class NewRedTeleOP : OpMode() {
         panels?.debug("targetY", targetY)
         panels?.debug("OutTake 1 Power", outTake1.power)
         panels?.debug("OutTake 2 Power", outTake2.power)
+        panels?.debug("OutTake 1 velocity", outTake1.velocity)
+        panels?.debug("OutTake 2 velocity", outTake2.velocity)
         panels?.debug("OUTTAKE_SPEED", DepoCenter.OUTTAKE_SPEED)
         panels?.update(telemetry)
     }
     private fun handleIntake() {
         val isFull = ord.none { it == "N" }
-        /*if (gamepad1.cross) {
-            intakeServo1.power = ServoPositions.INTAKE_ON
-            intakeServo2.power = ServoPositions.INTAKE_ON
-        } else if (gamepad1.circle) {
+        if (gamepad1.circle) {
             intakeServo1.power = ServoPositions.INTAKE_REVERSE
-            intakeServo2.power = ServoPositions.INTAKE_REVERSE
         }
-        else {
-            intakeServo1.power = ServoPositions.INTAKE_OFF
-            intakeServo2.power = ServoPositions.INTAKE_OFF
-        }*/
         if (isFull) {
             intakeServo1.power = ServoPositions.INTAKE_REVERSE
-            //intakeServo2.power = ServoPositions.INTAKE_REVERSE
         } else {
             intakeServo1.power = ServoPositions.INTAKE_ON
-            //intakeServo2.power = ServoPositions.INTAKE_ON
         }
 
     }
@@ -385,11 +374,12 @@ class NewRedTeleOP : OpMode() {
         return max(min, min(max, v))
     }
     private suspend fun handleDetections() {
+        if (isDispensing) return
         var r = colorSensor.red();var g = colorSensor.green();var b = colorSensor.blue()
-        if (g <= 85 && b <= 110) {
+        if (g <= 80 && b <= 110) {
             isSeen = false
         }
-        if (g >= 85 && b >= 110) {
+        if (g >= 80 && b >= 110) {
             if (!isSeen) {
                 val slot = nextSlot()
                 if (slot != -1) {
@@ -400,7 +390,7 @@ class NewRedTeleOP : OpMode() {
                 isSeen = true
             }
         }
-        if (g >= 100) {
+        if (g >= 110) {
             if (!isSeen) {
                 val slot = nextSlot()
                 if (slot != -1) {
@@ -424,7 +414,7 @@ class NewRedTeleOP : OpMode() {
         bowlServo.position = when (slot) {
             0 -> ServoPositions.LOAD_P2
             1 -> ServoPositions.LOAD_P3
-            2 -> ServoPositions.FIRE_P3
+            2 -> ServoPositions.FIRE_P2
             else -> bowlServo.position // Stay in place if full
         }
     }
