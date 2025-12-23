@@ -37,7 +37,7 @@ import kotlin.math.hypot
 import kotlin.math.max
 import kotlin.math.min
 
-//@Autonomous(name = "Back Red Auto", group = "Main Red")
+//@Autonomous(name = "Back Red Auto (OLD)", group = "Main Red")
 @Disabled
 class BackRedAuto : OpMode() {
     @IgnoreConfigurable

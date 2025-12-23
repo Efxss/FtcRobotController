@@ -55,6 +55,7 @@ class NewRedTeleOP : OpMode() {
     private lateinit var camServo: Servo
     private lateinit var limelight: Limelight3A
     private lateinit var colorSensor: ColorSensor
+    @Volatile
     var ord = arrayOf("N", "N", "N")
     private var pathState: Int = 0
     private var dispensingState = 0
@@ -101,7 +102,7 @@ class NewRedTeleOP : OpMode() {
         const val RED_DEPO =  24
     }
     object DepoCenter {
-        const val DESIRED_TAG_WIDTH_PX = 110
+        const val DESIRED_TAG_WIDTH_PX = 80
         const val ROTATE_POWER = 0.2
         const val CAM_WIDTH_PX = 1280
         const val CAM_HEIGHT_PX = 960
@@ -195,7 +196,7 @@ class NewRedTeleOP : OpMode() {
         }
     }
     private suspend fun centerDepo() {
-        follower.setMaxPower(0.3)
+        follower.setMaxPower(0.25)
         val result: LLResult? = limelight.latestResult
         val fiducialResults = result?.fiducialResults
         val target = fiducialResults?.firstOrNull { it.fiducialId == AprilTagIds.RED_DEPO }
@@ -224,17 +225,53 @@ class NewRedTeleOP : OpMode() {
         val rotationPower = clip(xErrPx * DepoCenter.KP_ROTATE, -0.3, 0.3)
         follower.setTeleOpDrive(0.0, 0.0, -rotationPower, false)
     }
+    private suspend fun reCenterDepo() {
+        follower.setMaxPower(0.25)
+        val result: LLResult? = limelight.latestResult
+        val fiducialResults = result?.fiducialResults
+        val target = fiducialResults?.firstOrNull { it.fiducialId == AprilTagIds.RED_DEPO }
+
+        if (target == null) {
+            follower.setTeleOpDrive(0.0, 0.0, 0.0, false)
+            return
+        }
+
+        val xErrPx: Double = target.targetXPixels - (DepoCenter.CAM_WIDTH_PX / 2.0)
+
+        if (abs(xErrPx) <= DepoCenter.CENTER_DEADZONE) {
+            follower.setTeleOpDrive(0.0, 0.0, 0.0, false)
+            return
+        }
+
+        val rotationPower = clip(xErrPx * DepoCenter.KP_ROTATE, -0.3, 0.3)
+        follower.setTeleOpDrive(0.0, 0.0, -rotationPower, false)
+    }
     private suspend fun executeDispensing() {
-        //delay(100) // OUTTAKE_DELAY
+        delay(100)
 
-        val isFull = ord.none { it == "N" }
+        // Build dispense sequence only for filled slots
+        val dispenseSequence = mutableListOf<Double>()
 
-        if (isFull) {
-            val dispenseSequence = listOf(
-                ServoPositions.FIRE_P2,
-                ServoPositions.FIRE_P1,
-                ServoPositions.FIRE_P3
-            )
+        // Map each slot to its firing position
+        val slotToFirePosition = mapOf(
+            0 to ServoPositions.FIRE_P1,
+            1 to ServoPositions.FIRE_P2,
+            2 to ServoPositions.FIRE_P3
+        )
+
+        // The order we want to dispense: slot 1 (index 1), slot 0 (index 0), slot 2 (index 2)
+        // This matches your original sequence: FIRE_P2, FIRE_P1, FIRE_P3
+        val dispenseOrder = listOf(1, 0, 2)
+
+        for (slotIndex in dispenseOrder) {
+            if (ord[slotIndex] != "N") {
+                slotToFirePosition[slotIndex]?.let { dispenseSequence.add(it) }
+            }
+        }
+
+        // Only dispense if we have at least one ball
+        if (dispenseSequence.isNotEmpty()) {
+            reCenterDepo()
             executeDispenseSequence(dispenseSequence)
             isCentering = false
         }
@@ -273,29 +310,24 @@ class NewRedTeleOP : OpMode() {
             return
         }
         val targetY = target.targetYPixels
-        var powerResult = 0.000204*targetY+0.15
+        var powerResult = 0.0002416*targetY+0.105
         DepoCenter.OUTTAKE_SPEED = powerResult
         outTake1.power = DepoCenter.OUTTAKE_SPEED
         outTake2.power = DepoCenter.OUTTAKE_SPEED
-        panels?.debug("targetY", targetY)
+        /*panels?.debug("targetY", targetY)
         panels?.debug("OutTake 1 Power", outTake1.power)
         panels?.debug("OutTake 2 Power", outTake2.power)
         panels?.debug("OutTake 1 velocity", outTake1.velocity)
         panels?.debug("OutTake 2 velocity", outTake2.velocity)
-        panels?.debug("OUTTAKE_SPEED", DepoCenter.OUTTAKE_SPEED)
-        panels?.update(telemetry)
+        panels?.debug("OUTTAKE_SPEED", DepoCenter.OUTTAKE_SPEED)*/
     }
     private fun handleIntake() {
-        val isFull = ord.none { it == "N" }
-        if (gamepad1.circle) {
-            intakeServo1.power = ServoPositions.INTAKE_REVERSE
-        }
+        val isFull: Boolean = if (gamepad1.circle) { true } else { ord.none { it == "N" } }
         if (isFull) {
             intakeServo1.power = ServoPositions.INTAKE_REVERSE
         } else {
             intakeServo1.power = ServoPositions.INTAKE_ON
         }
-
     }
     private fun initializeHardware() {
         outTake1 = hardwareMap.get(DcMotorEx::class.java, "outTake1")
@@ -303,7 +335,6 @@ class NewRedTeleOP : OpMode() {
         liftLeft = hardwareMap.get(DcMotorEx::class.java, "liftLeft")
         liftRight = hardwareMap.get(DcMotorEx::class.java, "liftRight")
         intakeServo1 = hardwareMap.get(CRServo::class.java, "intakeServo1")
-        //intakeServo2 = hardwareMap.get(CRServo::class.java, "intakeServo2")
         bowlServo = hardwareMap.get(Servo::class.java, "bowlServo")
         camServo = hardwareMap.get(Servo::class.java, "camServo")
         limelight = hardwareMap.get(Limelight3A::class.java, "limelight")
@@ -321,7 +352,7 @@ class NewRedTeleOP : OpMode() {
         limelight.start()
     }
     private fun setupMotorDirections() {
-        listOf(/*intakeServo2,*/ outTake2, liftLeft)
+        listOf(outTake2, liftLeft)
             .forEach { it.direction = DcMotorSimple.Direction.REVERSE }
     }
     private fun setupPIDFCoefficients() {
@@ -401,6 +432,10 @@ class NewRedTeleOP : OpMode() {
                 isSeen = true
             }
         }
+        panels?.debug("ord[0]", ord[0])
+        panels?.debug("ord[1]", ord[1])
+        panels?.debug("ord[2]", ord[2])
+        panels?.update(telemetry)
     }
     private fun nextSlot(): Int {
         return when {

@@ -16,7 +16,7 @@ class ObjectHelper {
         // Firing/dispensing positions
         const val FIRE_P1 = 0.118
         const val FIRE_P2 = 0.1885
-        const val FIRE_P3 = 0.264
+        const val FIRE_P3 = 0.042
 
         // Camera servo positions
         const val CAM_OPEN = 0.5
