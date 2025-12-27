@@ -9,6 +9,7 @@ import com.pedropathing.paths.PathChain
 import com.pedropathing.util.Timer
 import com.qualcomm.hardware.limelightvision.LLResult
 import com.qualcomm.hardware.limelightvision.Limelight3A
+import com.qualcomm.hardware.sparkfun.SparkFunOTOS
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.CRServo
@@ -32,61 +33,57 @@ import kotlin.math.min
 @Autonomous(name = "Back Red Auto (NEW)", group = "Main Red")
 class NewBackRedAuto : OpMode() {
     var panels: TelemetryManager? = null
-    private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
-    private var colorDetection: Job? = null
-    private var outTakeCalc: Job? = null
+    val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+    var runDetections: Job? = null
+    var outTakeCalc: Job? = null
 
-    private lateinit var follower: Follower
-    private lateinit var pathTimer: Timer
-    private lateinit var actionTimer: Timer
-    private lateinit var opmodeTimer: Timer
+    lateinit var follower: Follower
+    lateinit var pathTimer: Timer
+    lateinit var actionTimer: Timer
+    lateinit var opmodeTimer: Timer
 
-    private lateinit var outTake1: DcMotorEx
-    private lateinit var outTake2: DcMotorEx
-    private lateinit var liftLeft: DcMotorEx
-    private lateinit var liftRight: DcMotorEx
-    private lateinit var intakeServo1: CRServo
-    private lateinit var bowlServo: Servo
-    private lateinit var camServo: Servo
-    private lateinit var limelight: Limelight3A
-    private lateinit var colorSensor: ColorSensor
+    lateinit var outTake1: DcMotorEx
+    lateinit var outTake2: DcMotorEx
+    lateinit var intakeServo1: CRServo
+    lateinit var bowlServo: Servo
+    lateinit var camServo: Servo
+    lateinit var limelight: Limelight3A
+    lateinit var colorSensor: ColorSensor
 
-    private var pathState: Int = 0
-    private var timerState = false
-    private var intake = 0
-    private var isSeen = false
     @Volatile
-    private var isDispensing = false
-
-    // Piece tracking array: "N" = None, "G" = Green, "P" = Purple
     var ord = arrayOf("N", "N", "N")
+    @set:JvmName("PathStateVar")
+    var pathState: Int = 0
+    var timerState = false
+    var isSeen = false
+    @Volatile
+    var isDispensing = false
 
-    // Poses - same strategy as before
-    private val startPose = Pose(72.0, 0.0, Math.toRadians(90.0))
-    private val preloadPose = Pose(74.0, 4.0, Math.toRadians(80.0))
+    // Poses
+    private val startPose    = Pose(72.0, 0.0, Math.toRadians(90.0))
+    private val preloadPose  = Pose(74.0, 4.0, Math.toRadians(90.0))
     private val pickupPoint5 = Pose(80.0, 17.5, Math.toRadians(9.0))
-    private val pickup1 = Pose(86.5, 24.0, Math.toRadians(0.0))
+    private val pickup1      = Pose(86.5, 24.0, Math.toRadians(0.0))
     private val pickup1Ball1 = Pose(93.3, 24.0, Math.toRadians(0.0))
-    private val pickup1Ball2 = Pose(96.3, 24.0, Math.toRadians(0.0))
+    private val pickup1Ball2 = Pose(98.3, 24.0, Math.toRadians(0.0))
     private val pickup1Ball3 = Pose(104.8, 24.0, Math.toRadians(0.0))
-    private val scoreBack = Pose(74.0, 10.0, Math.toRadians(73.0))
+    private val scoreBack    = Pose(74.0, 10.0, Math.toRadians(73.0))
 
-    // Path chains
-    private lateinit var preloadPath: PathChain
-    private lateinit var pickupPointPath: PathChain
-    private lateinit var pickupPath1: PathChain
-    private lateinit var pickupBall1Path: PathChain
-    private lateinit var pickupBall2Path: PathChain
-    private lateinit var pickupBall3Path: PathChain
-    private lateinit var returnPath: PathChain
+    // Paths
+    private lateinit var preloadPose1: PathChain
+    private lateinit var pickupPosePoint5: PathChain
+    private lateinit var pickupPose1: PathChain
+    private lateinit var pickupPose1Ball1: PathChain
+    private lateinit var pickupPose1Ball2: PathChain
+    private lateinit var pickupPose1Ball3: PathChain
+    private lateinit var returnPose: PathChain
 
-    // PID coefficients matching new TeleOP
-    private val pidP = 150.0
-    private val pidI = 0.0
-    private val pidD = 0.0
-    private val pidF = 13.5
-    private var velocityModeInitialized = false
-    private var velocityPowerScale = 1.0
+    val pidP = 150.0
+    val pidI = 0.0
+    val pidD = 0.0
+    val pidF = 13.5
+    var velocityModeInitialized = false
+    var velocityPowerScale = 1.0
 
     object ServoPositions {
         // Loading positions
@@ -100,11 +97,10 @@ class NewBackRedAuto : OpMode() {
         const val FIRE_P3 = 0.042
 
         // Camera servo positions
-        const val CAM_OPEN = 0.5
+        const val CAM_OPEN = 0.43
         const val CAM_CLOSED = 0.255
 
         const val INTAKE_ON = 1.0
-        const val INTAKE_REVERSE = -1.0
         const val INTAKE_OFF = 0.0
     }
 
@@ -121,24 +117,21 @@ class NewBackRedAuto : OpMode() {
 
     object Timing {
         const val DISPENSE_INITIAL_DELAY = 100L
-        const val BOWL_MOVE_DELAY = 650L
-        const val CAM_OPEN_DELAY = 400L
-        const val CAM_CLOSE_DELAY = 900L
-        const val DETECTION_COOLDOWN = 1500L
+        const val BOWL_MOVE_DELAY = 500L
+        const val CAM_OPEN_DELAY = 200L
+        const val CAM_CLOSE_DELAY = 350L
+        const val DETECTION_COOLDOWN = 1200L
     }
 
     override fun init() {
         initializeHardware()
         initializePedroPathing()
-        buildPaths()
     }
 
     override fun start() {
-        limelight.start()
         opmodeTimer.resetTimer()
         setPathState(0)
 
-        // Start outtake power calculation coroutine
         outTakeCalc = scope.launch {
             while (isActive) {
                 outTakePower()
@@ -146,8 +139,7 @@ class NewBackRedAuto : OpMode() {
             }
         }
 
-        // Start color detection coroutine
-        colorDetection = scope.launch {
+        runDetections = scope.launch {
             while (isActive) {
                 handleDetections()
                 delay(25)
@@ -160,52 +152,58 @@ class NewBackRedAuto : OpMode() {
         autonomousPathUpdate()
         handleIntake()
 
-        // Debug telemetry
+        val r = colorSensor.red()
+        val g = colorSensor.green()
+        val b = colorSensor.blue()
+
         panels?.debug("Path State", pathState)
-        panels?.debug("Order", "${ord[0]}${ord[1]}${ord[2]}")
+        panels?.debug("ord[0]", ord[0])
+        panels?.debug("ord[1]", ord[1])
+        panels?.debug("ord[2]", ord[2])
         panels?.debug("Timer", pathTimer.elapsedTimeSeconds)
-        panels?.debug("Is Dispensing", isDispensing)
+        panels?.debug("R", r, "G", g, "B", b)
+        panels?.debug("isSeen", isSeen)
         panels?.update(telemetry)
     }
 
     override fun stop() {
-        limelight.stop()
-        colorDetection?.cancel()
         outTakeCalc?.cancel()
+        runDetections?.cancel()
+        limelight.stop()
     }
 
     private fun buildPaths() {
-        preloadPath = follower.pathBuilder()
+        preloadPose1 = follower.pathBuilder()
             .addPath(BezierCurve(startPose, preloadPose))
             .setLinearHeadingInterpolation(startPose.heading, preloadPose.heading)
             .build()
 
-        pickupPointPath = follower.pathBuilder()
+        pickupPosePoint5 = follower.pathBuilder()
             .addPath(BezierCurve(preloadPose, pickupPoint5))
             .setLinearHeadingInterpolation(preloadPose.heading, pickupPoint5.heading)
             .build()
 
-        pickupPath1 = follower.pathBuilder()
+        pickupPose1 = follower.pathBuilder()
             .addPath(BezierCurve(pickupPoint5, pickup1))
             .setLinearHeadingInterpolation(pickupPoint5.heading, pickup1.heading)
             .build()
 
-        pickupBall1Path = follower.pathBuilder()
+        pickupPose1Ball1 = follower.pathBuilder()
             .addPath(BezierCurve(pickup1, pickup1Ball1))
             .setLinearHeadingInterpolation(pickup1.heading, pickup1Ball1.heading)
             .build()
 
-        pickupBall2Path = follower.pathBuilder()
+        pickupPose1Ball2 = follower.pathBuilder()
             .addPath(BezierCurve(pickup1Ball1, pickup1Ball2))
             .setLinearHeadingInterpolation(pickup1Ball1.heading, pickup1Ball2.heading)
             .build()
 
-        pickupBall3Path = follower.pathBuilder()
+        pickupPose1Ball3 = follower.pathBuilder()
             .addPath(BezierCurve(pickup1Ball2, pickup1Ball3))
             .setLinearHeadingInterpolation(pickup1Ball2.heading, pickup1Ball3.heading)
             .build()
 
-        returnPath = follower.pathBuilder()
+        returnPose = follower.pathBuilder()
             .addPath(BezierCurve(pickup1Ball3, scoreBack))
             .setLinearHeadingInterpolation(pickup1Ball3.heading, scoreBack.heading)
             .build()
@@ -213,41 +211,31 @@ class NewBackRedAuto : OpMode() {
 
     private fun autonomousPathUpdate() {
         val notBusy = !follower.isBusy
-
         when (pathState) {
-            // Initial state - start preload path
             0 -> {
                 if (notBusy && !timerState) {
                     pathTimer.resetTimer()
                     timerState = true
-                    follower.followPath(preloadPath, true)
+                    follower.followPath(preloadPose1, true)
                     setPathState(1)
                 }
             }
-
-            // Wait for preload path to complete
             1 -> {
                 if (notBusy) {
                     setPathState(2)
                 }
             }
-
-            // Small delay before centering
             2 -> {
                 if (pathTimer.elapsedTimeSeconds > 0.5) {
                     setPathState(3)
                 }
             }
-
-            // Center on depo and shoot preload
             3 -> {
-                centerDepo()
-                if (pathTimer.elapsedTimeSeconds > 0.5) {
+                val centered = centerDepo()
+                if (centered || pathTimer.elapsedTimeSeconds > 2.0) {
                     setPathState(4)
                 }
             }
-
-            // Execute preload dispense
             4 -> {
                 if (!isDispensing) {
                     isDispensing = true
@@ -258,16 +246,14 @@ class NewBackRedAuto : OpMode() {
                     }
                 }
             }
-
-            // Start heading to pickup zone
             5 -> {
-                if (!isDispensing && notBusy) {
-                    follower.followPath(pickupPointPath, false)
+                if (!isDispensing) {
+                    follower.breakFollowing()  // Clear any previous turn/path state
+                    follower.setMaxPower(0.6)  // Reset max power
+                    follower.followPath(pickupPosePoint5, false)
                     setPathState(6)
                 }
             }
-
-            // Wait to reach pickup point, then continue
             6 -> {
                 if (notBusy) {
                     if (!timerState) {
@@ -276,13 +262,11 @@ class NewBackRedAuto : OpMode() {
                     }
                     if (pathTimer.elapsedTimeSeconds > 0.5) {
                         follower.setMaxPower(0.4)
-                        follower.followPath(pickupPath1, true)
+                        follower.followPath(pickupPose1, true)
                         setPathState(7)
                     }
                 }
             }
-
-            // Start slow pickup - ball 1
             7 -> {
                 if (notBusy) {
                     if (!timerState) {
@@ -291,14 +275,11 @@ class NewBackRedAuto : OpMode() {
                     }
                     if (pathTimer.elapsedTimeSeconds > 0.2) {
                         follower.setMaxPower(0.18)
-                        intake = 1
-                        follower.followPath(pickupBall1Path, true)
+                        follower.followPath(pickupPose1Ball1, true)
                         setPathState(8)
                     }
                 }
             }
-
-            // Continue to ball 2
             8 -> {
                 if (notBusy) {
                     if (!timerState) {
@@ -307,13 +288,11 @@ class NewBackRedAuto : OpMode() {
                     }
                     if (pathTimer.elapsedTimeSeconds > 0.2) {
                         follower.setMaxPower(0.2)
-                        follower.followPath(pickupBall2Path, true)
+                        follower.followPath(pickupPose1Ball2, true)
                         setPathState(9)
                     }
                 }
             }
-
-            // Continue to ball 3
             9 -> {
                 if (notBusy) {
                     if (!timerState) {
@@ -322,47 +301,34 @@ class NewBackRedAuto : OpMode() {
                     }
                     if (pathTimer.elapsedTimeSeconds > 1.0) {
                         follower.setMaxPower(0.2)
-                        follower.followPath(pickupBall3Path, true)
+                        follower.followPath(pickupPose1Ball3, true)
                         setPathState(10)
                     }
                 }
             }
-
-            // Check if we have all 3 pieces, then return to score
             10 -> {
-                val isFull = ord.none { it == "N" }
-                if (notBusy || isFull) {
-                    intake = 0
+                if (notBusy) {
                     follower.setMaxPower(0.6)
-                    follower.followPath(returnPath, true)
+                    follower.followPath(returnPose, true)
                     setPathState(11)
                 }
             }
-
-            // Wait to reach scoring position
             11 -> {
                 if (notBusy) {
                     setPathState(12)
                 }
             }
-
-            // Small delay before centering
             12 -> {
                 if (pathTimer.elapsedTimeSeconds > 0.5) {
                     setPathState(13)
                 }
             }
-
-            // Center on depo for final score
             13 -> {
-                intake = 0
-                centerDepo()
-                if (pathTimer.elapsedTimeSeconds > 0.5) {
+                val centered = centerDepo()
+                if (centered || pathTimer.elapsedTimeSeconds > 2.0) {
                     setPathState(14)
                 }
             }
-
-            // Execute final dispense
             14 -> {
                 if (!isDispensing) {
                     isDispensing = true
@@ -373,101 +339,66 @@ class NewBackRedAuto : OpMode() {
                     }
                 }
             }
-
-            // Done!
             15 -> {
-                // Autonomous complete
+                // Done - autonomous complete
             }
         }
     }
 
-    private fun handleIntake() {
-        val isFull = ord.none { it == "N" }
-        when (intake) {
-            0 -> {
-                intakeServo1.power = ServoPositions.INTAKE_OFF
-            }
-            1 -> {
-                if (isFull) {
-                    intakeServo1.power = ServoPositions.INTAKE_REVERSE
-                } else {
-                    intakeServo1.power = ServoPositions.INTAKE_ON
-                }
-            }
+    private fun centerDepo(): Boolean {
+        val result: LLResult? = limelight.latestResult
+        val fiducialResults = result?.fiducialResults
+        val target = fiducialResults?.firstOrNull { it.fiducialId == AprilTagIds.RED_DEPO }
+
+        if (target == null) {
+            return false
         }
+
+        val xErrPx: Double = target.targetXPixels - (DepoCenter.CAM_WIDTH_PX / 2.0)
+
+        // Already centered
+        if (abs(xErrPx) <= DepoCenter.CENTER_DEADZONE) {
+            return true
+        }
+
+        // Convert pixel error to angle
+        val hFovDeg = 70.0  // Limelight 3A horizontal FOV
+        val hFovRad = Math.toRadians(hFovDeg)
+        val pixelsToRad = hFovRad / DepoCenter.CAM_WIDTH_PX
+        val angleError = xErrPx * pixelsToRad
+
+        // Calculate target heading
+        val currentHeading = follower.pose.heading
+        val targetHeading = currentHeading - angleError
+
+        // Use PedroPathing's turnTo
+        follower.turnTo(targetHeading)
+
+        return false
     }
 
-    private fun handleDetections() {
-        if (isDispensing) return
+    suspend fun executeDispensing() {
+        delay(100)
 
-        val r = colorSensor.red()
-        val g = colorSensor.green()
-        val b = colorSensor.blue()
+        // Fixed dispense order: slot 1, slot 0, slot 2 (FIRE_P2, FIRE_P1, FIRE_P3)
+        val dispenseSequence = mutableListOf<Double>()
+        val slotToFirePosition = mapOf(
+            0 to ServoPositions.FIRE_P1,
+            1 to ServoPositions.FIRE_P2,
+            2 to ServoPositions.FIRE_P3
+        )
+        val dispenseOrder = listOf(1, 0, 2)
 
-        // Reset seen flag when no piece detected
-        if (g <= 80 && b <= 110) {
-            isSeen = false
-        }
-
-        // Purple detection
-        if (g >= 80 && b >= 110 && g < 110) {
-            if (!isSeen) {
-                val slot = nextSlot()
-                if (slot != -1) {
-                    ord[slot] = "P"
-                    advanceBowl(slot)
-                    Thread.sleep(Timing.DETECTION_COOLDOWN)
-                }
-                isSeen = true
+        for (slotIndex in dispenseOrder) {
+            if (ord[slotIndex] != "N") {
+                slotToFirePosition[slotIndex]?.let { dispenseSequence.add(it) }
             }
         }
 
-        // Green detection
-        if (g >= 110) {
-            if (!isSeen) {
-                val slot = nextSlot()
-                if (slot != -1) {
-                    ord[slot] = "G"
-                    advanceBowl(slot)
-                    Thread.sleep(Timing.DETECTION_COOLDOWN)
-                }
-                isSeen = true
-            }
-        }
-    }
-
-    private fun nextSlot(): Int {
-        return when {
-            ord[0] == "N" -> 0
-            ord[1] == "N" -> 1
-            ord[2] == "N" -> 2
-            else -> -1
-        }
-    }
-
-    private fun advanceBowl(slot: Int) {
-        bowlServo.position = when (slot) {
-            0 -> ServoPositions.LOAD_P2
-            1 -> ServoPositions.LOAD_P3
-            2 -> ServoPositions.FIRE_P2
-            else -> bowlServo.position
-        }
-    }
-
-    private suspend fun executeDispensing() {
-        val isFull = ord.none { it == "N" }
-
-        if (isFull) {
-            // Fixed dispense sequence - no sorting needed
-            val dispenseSequence = listOf(
-                ServoPositions.FIRE_P2,
-                ServoPositions.FIRE_P1,
-                ServoPositions.FIRE_P3
-            )
+        if (dispenseSequence.isNotEmpty()) {
             executeDispenseSequence(dispenseSequence)
         }
 
-        // Reset
         delay(100)
         bowlServo.position = ServoPositions.LOAD_P1
         delay(100)
@@ -475,7 +406,7 @@ class NewBackRedAuto : OpMode() {
         ord = arrayOf("N", "N", "N")
     }
 
-    private suspend fun executeDispenseSequence(positions: List<Double>) {
+    suspend fun executeDispenseSequence(positions: List<Double>) {
         delay(Timing.DISPENSE_INITIAL_DELAY)
 
         positions.forEach { position ->
@@ -490,70 +421,86 @@ class NewBackRedAuto : OpMode() {
         }
     }
 
-    private fun centerDepo() {
+    fun outTakePower() {
         val result: LLResult? = limelight.latestResult
         if (result == null || !result.isValid) {
             return
         }
-
         val fiducialResults = result.fiducialResults
         val target = fiducialResults.firstOrNull { it.fiducialId == AprilTagIds.RED_DEPO }
-
         if (target == null) {
             return
         }
-
-        val xErrPx: Double = target.targetXPixels - (DepoCenter.CAM_WIDTH_PX / 2.0)
-
-        if (abs(xErrPx) <= DepoCenter.CENTER_DEADZONE) {
-            // Centered - advance to next state
-            if (pathState == 3) {
-                setPathState(4)
-            } else if (pathState == 13) {
-                setPathState(14)
-            }
-            return
-        }
-
-        // Calculate turn correction
-        val hFovDeg = 70.0
-        val hFovRad = Math.toRadians(hFovDeg)
-        val pixelsToRad = hFovRad / DepoCenter.CAM_WIDTH_PX
-        val angleError = xErrPx * pixelsToRad
-        val maxTurnStepRad = Math.toRadians(10.0)
-        val turnStep = clip(angleError, -maxTurnStepRad, maxTurnStepRad)
-
-        val currentHeading = follower.pose.heading
-        val targetHeading = currentHeading - turnStep
-        follower.turnTo(targetHeading)
-    }
-
-    private fun outTakePower() {
-        val result: LLResult? = limelight.latestResult
-        if (result == null || !result.isValid) {
-            return
-        }
-
-        val fiducialResults = result.fiducialResults
-        val target = fiducialResults.firstOrNull { it.fiducialId == AprilTagIds.RED_DEPO }
-
-        if (target == null) {
-            return
-        }
-
         val targetY = target.targetYPixels
-        val powerResult = 0.000204 * targetY + 0.15
+        val powerResult = 0.0002416 * targetY + 0.105
         DepoCenter.OUTTAKE_SPEED = powerResult
-
         outTake1.power = DepoCenter.OUTTAKE_SPEED
         outTake2.power = DepoCenter.OUTTAKE_SPEED
     }
 
-    private fun initializeHardware() {
+    fun handleIntake() {
+        val isFull = ord.none { it == "N" }  // True if all 3 slots filled
+
+        if (isFull || isDispensing) {
+            intakeServo1.power = -ServoPositions.INTAKE_ON  // Reverse/outtake
+        } else {
+            intakeServo1.power = ServoPositions.INTAKE_ON   // Intake
+        }
+    }
+
+    suspend fun handleDetections() {
+        if (isDispensing) return
+
+        val r = colorSensor.red()
+        val g = colorSensor.green()
+        val b = colorSensor.blue()
+
+        // Reset when no ball is present (use OR instead of AND for more reliable reset)
+        val noBallPresent = g <= 80 && b <= 100
+        if (noBallPresent) {
+            isSeen = false
+            return  // Exit early, no ball to process
+        }
+
+        // Only process if we haven't already seen this ball
+        if (isSeen) return
+
+        // Determine color - check green FIRST (more specific condition)
+        val isGreen = g >= 110
+        val isPurple = g >= 80 && b >= 110 && !isGreen  // Purple only if NOT green
+
+        if (isGreen || isPurple) {
+            val slot = nextSlot()
+            if (slot != -1) {
+                ord[slot] = if (isGreen) "G" else "P"
+                advanceBowl(slot)
+                isSeen = true
+                delay(Timing.DETECTION_COOLDOWN)
+            }
+        }
+    }
+
+    fun nextSlot(): Int {
+        return when {
+            ord[0] == "N" -> 0
+            ord[1] == "N" -> 1
+            ord[2] == "N" -> 2
+            else -> -1
+        }
+    }
+
+    fun advanceBowl(slot: Int) {
+        bowlServo.position = when (slot) {
+            0 -> ServoPositions.LOAD_P2
+            1 -> ServoPositions.LOAD_P3
+            2 -> ServoPositions.FIRE_P2
+            else -> bowlServo.position
+        }
+    }
+
+    fun initializeHardware() {
         outTake1 = hardwareMap.get(DcMotorEx::class.java, "outTake1")
         outTake2 = hardwareMap.get(DcMotorEx::class.java, "outTake2")
-        liftLeft = hardwareMap.get(DcMotorEx::class.java, "liftLeft")
-        liftRight = hardwareMap.get(DcMotorEx::class.java, "liftRight")
         intakeServo1 = hardwareMap.get(CRServo::class.java, "intakeServo1")
         bowlServo = hardwareMap.get(Servo::class.java, "bowlServo")
         camServo = hardwareMap.get(Servo::class.java, "camServo")
@@ -561,7 +508,7 @@ class NewBackRedAuto : OpMode() {
         colorSensor = hardwareMap.get(ColorSensor::class.java, "ColorSensor")
 
         camServo.position = ServoPositions.CAM_CLOSED
-        bowlServo.position = ServoPositions.LOAD_P1
+        bowlServo.position = ServoPositions.FIRE_P2
 
         setupMotorDirections()
         setupPIDFCoefficients()
@@ -569,36 +516,31 @@ class NewBackRedAuto : OpMode() {
         setupVision()
     }
 
-    private fun setupVision() {
+    fun setupVision() {
         limelight.setPollRateHz(100)
         limelight.pipelineSwitch(0)
+        limelight.start()
     }
 
-    private fun setupMotorDirections() {
-        listOf(outTake2, liftLeft)
-            .forEach { it.direction = DcMotorSimple.Direction.REVERSE }
+    fun setupMotorDirections() {
+        outTake2.direction = DcMotorSimple.Direction.REVERSE
     }
 
-    private fun setupPIDFCoefficients() {
-        listOf(outTake1, outTake2)
-            .forEach { it.setVelocityPIDFCoefficients(pidP, pidI, pidD, pidF) }
+    fun setupPIDFCoefficients() {
+        listOf(outTake1, outTake2).forEach {
+            it.setVelocityPIDFCoefficients(pidP, pidI, pidD, pidF)
+        }
     }
 
-    private fun resetEncoders() {
+    fun resetEncoders() {
         listOf(outTake1, outTake2).forEach { motor ->
             motor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
             motor.mode = DcMotor.RunMode.RUN_USING_ENCODER
             motor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         }
-        listOf(liftLeft, liftRight).forEach { motor ->
-            motor.targetPosition = 11400 // EndGame.LIFTMAX
-            motor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-            motor.mode = DcMotor.RunMode.RUN_TO_POSITION
-            motor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
-        }
     }
 
-    private fun initializePedroPathing() {
+    fun initializePedroPathing() {
         panels = PanelsTelemetry.telemetry
 
         pathTimer = Timer()
@@ -606,36 +548,23 @@ class NewBackRedAuto : OpMode() {
         opmodeTimer = Timer()
         opmodeTimer.resetTimer()
 
+        val otos = hardwareMap.get(SparkFunOTOS::class.java, "otos")
+        otos.calibrateImu()
+        otos.resetTracking()
+
+        ord = arrayOf("P", "G", "P")
+
         follower = Constants.createFollower(hardwareMap)
         follower.setStartingPose(startPose)
         follower.activateAllPIDFs()
+
+        buildPaths()
     }
 
-    private fun ensureVelocityMode() {
-        if (!velocityModeInitialized) {
-            outTake1.mode = DcMotor.RunMode.RUN_USING_ENCODER
-            outTake2.mode = DcMotor.RunMode.RUN_USING_ENCODER
-            velocityModeInitialized = true
-        }
-    }
-
-    private fun powerToTicksPerSecond(motor: DcMotorEx, power: Double): Double {
-        val clipped = max(-1.0, min(1.0, power))
-        val maxRpm = motor.motorType.maxRPM
-        val tpr = motor.motorType.ticksPerRev
-        val maxTicksPerSec = (maxRpm * tpr) / 60.0
-        return clipped * velocityPowerScale * maxTicksPerSec
-    }
-
-    private fun setMotorVelocityFromPseudoPower(motor: DcMotorEx, power: Double) {
-        ensureVelocityMode()
-        motor.velocity = powerToTicksPerSecond(motor, power)
-    }
-
-    private fun clip(v: Double, min: Double, max: Double): Double {
+    fun clip(v: Double, min: Double, max: Double): Double {
         return max(min, min(max, v))
     }
-
+    @JvmName("SetPathStateFunction")
     private fun setPathState(pState: Int) {
         pathState = pState
         pathTimer.resetTimer()
