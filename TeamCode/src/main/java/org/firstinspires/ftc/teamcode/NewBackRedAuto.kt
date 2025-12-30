@@ -156,14 +156,6 @@ class NewBackRedAuto : OpMode() {
         val g = colorSensor.green()
         val b = colorSensor.blue()
 
-        panels?.debug("Path State", pathState)
-        panels?.debug("ord[0]", ord[0])
-        panels?.debug("ord[1]", ord[1])
-        panels?.debug("ord[2]", ord[2])
-        panels?.debug("Timer", pathTimer.elapsedTimeSeconds)
-        panels?.debug("R", r, "G", g, "B", b)
-        panels?.debug("isSeen", isSeen)
-        panels?.update(telemetry)
     }
 
     override fun stop() {
@@ -346,6 +338,7 @@ class NewBackRedAuto : OpMode() {
     }
 
     private fun centerDepo(): Boolean {
+        follower.setMaxPower(0.6)
         val result: LLResult? = limelight.latestResult
         val fiducialResults = result?.fiducialResults
         val target = fiducialResults?.firstOrNull { it.fiducialId == AprilTagIds.RED_DEPO }
@@ -450,34 +443,46 @@ class NewBackRedAuto : OpMode() {
 
     suspend fun handleDetections() {
         if (isDispensing) return
+        var r = colorSensor.red()
+        var g = colorSensor.green()
+        var b = colorSensor.blue()
 
-        val r = colorSensor.red()
-        val g = colorSensor.green()
-        val b = colorSensor.blue()
-
-        // Reset when no ball is present (use OR instead of AND for more reliable reset)
-        val noBallPresent = g <= 80 && b <= 100
-        if (noBallPresent) {
+        if (g <= 80 && b <= 110) {
             isSeen = false
-            return  // Exit early, no ball to process
         }
-
-        // Only process if we haven't already seen this ball
-        if (isSeen) return
-
-        // Determine color - check green FIRST (more specific condition)
-        val isGreen = g >= 110
-        val isPurple = g >= 80 && b >= 110 && !isGreen  // Purple only if NOT green
-
-        if (isGreen || isPurple) {
-            val slot = nextSlot()
-            if (slot != -1) {
-                ord[slot] = if (isGreen) "G" else "P"
-                advanceBowl(slot)
+        if (g >= 80 && b >= 110) {
+            if (!isSeen) {
+                val slot = nextSlot()
+                if (slot != -1) {
+                    ord[slot] = "P"
+                    delay(200)
+                    advanceBowl(slot)
+                    delay(Timing.DETECTION_COOLDOWN)
+                }
                 isSeen = true
-                delay(Timing.DETECTION_COOLDOWN)
             }
         }
+        if (g >= 110) {
+            if (!isSeen) {
+                val slot = nextSlot()
+                if (slot != -1) {
+                    ord[slot] = "G"
+                    delay(200)
+                    advanceBowl(slot)
+                    delay(Timing.DETECTION_COOLDOWN)
+                }
+                isSeen = true
+            }
+        }
+
+        panels?.debug("Path State", pathState)
+        panels?.debug("ord[0]", ord[0])
+        panels?.debug("ord[1]", ord[1])
+        panels?.debug("ord[2]", ord[2])
+        panels?.debug("Timer", pathTimer.elapsedTimeSeconds)
+        panels?.debug("R", r, "G", g, "B", b)
+        panels?.debug("isSeen", isSeen)
+        panels?.update(telemetry)
     }
 
     fun nextSlot(): Int {

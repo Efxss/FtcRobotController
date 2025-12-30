@@ -172,6 +172,32 @@ class NewRedTeleOP : OpMode() {
             true
         )
 
+        panels?.debug("OutTake 1 Power", outTake1.power)
+        panels?.debug("OutTake 2 Power", outTake2.power)
+        panels?.debug("OutTake 1 velocity", outTake1.velocity)
+        panels?.debug("OutTake 2 velocity", outTake2.velocity)
+        panels?.debug("OUTTAKE_SPEED", DepoCenter.OUTTAKE_SPEED)
+        panels?.debug("ord[0]", ord[0])
+        panels?.debug("ord[1]", ord[1])
+        panels?.debug("ord[2]", ord[2])
+        panels?.debug("Run Time", runtime)
+        panels?.update(telemetry)
+        
+        if (gamepad1.dpad_up && gamepad1.triangle) {
+            if (liftLeft.currentPosition < EndGame.SLOWMODE || liftRight.currentPosition < EndGame.SLOWMODE) {
+                listOf(liftLeft, liftRight).forEach { motor ->
+                    motor.power = EndGame.NORMALSPEED
+                }
+            } else if (liftLeft.currentPosition > EndGame.SLOWMODE || liftRight.currentPosition > EndGame.SLOWMODE) {
+                listOf(liftLeft, liftRight).forEach { motor ->
+                    motor.power = EndGame.SLOWSPEED
+                }
+            } else if (liftLeft.currentPosition > EndGame.LIFTMAX || liftRight.currentPosition > EndGame.LIFTMAX) {
+                listOf(liftLeft, liftRight).forEach { motor ->
+                    motor.power = 0.0
+                }
+            }
+        }
     }
 
     override fun stop() {
@@ -313,12 +339,6 @@ class NewRedTeleOP : OpMode() {
         DepoCenter.OUTTAKE_SPEED = powerResult
         outTake1.power = DepoCenter.OUTTAKE_SPEED
         outTake2.power = DepoCenter.OUTTAKE_SPEED
-        /*panels?.debug("targetY", targetY)
-        panels?.debug("OutTake 1 Power", outTake1.power)
-        panels?.debug("OutTake 2 Power", outTake2.power)
-        panels?.debug("OutTake 1 velocity", outTake1.velocity)
-        panels?.debug("OutTake 2 velocity", outTake2.velocity)
-        panels?.debug("OUTTAKE_SPEED", DepoCenter.OUTTAKE_SPEED)*/
     }
     fun handleIntake() {
         val isFull: Boolean = if (gamepad1.circle) { true } else { ord.none { it == "N" } }
@@ -414,6 +434,7 @@ class NewRedTeleOP : OpMode() {
                 val slot = nextSlot()
                 if (slot != -1) {
                     ord[slot] = "P"
+                    delay(200)
                     advanceBowl(slot)
                     delay(Timing.DETECTION_COOLDOWN)
                 }
@@ -425,16 +446,13 @@ class NewRedTeleOP : OpMode() {
                 val slot = nextSlot()
                 if (slot != -1) {
                     ord[slot] = "G"
+                    delay(200)
                     advanceBowl(slot)
                     delay(Timing.DETECTION_COOLDOWN)
                 }
                 isSeen = true
             }
         }
-        panels?.debug("ord[0]", ord[0])
-        panels?.debug("ord[1]", ord[1])
-        panels?.debug("ord[2]", ord[2])
-        panels?.update(telemetry)
     }
     fun nextSlot(): Int {
         return when {
