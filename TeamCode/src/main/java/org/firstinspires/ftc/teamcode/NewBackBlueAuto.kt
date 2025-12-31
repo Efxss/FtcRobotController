@@ -30,8 +30,8 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
-@Autonomous(name = "Back Red Auto (NEW)", group = "Main Red")
-class NewBackRedAuto : OpMode() {
+@Autonomous(name = "Back Blue Auto (NEW)", group = "Main Blue")
+class NewBackBlueAuto : OpMode() {
     var panels: TelemetryManager? = null
     val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     var runDetections: Job? = null
@@ -60,17 +60,17 @@ class NewBackRedAuto : OpMode() {
     @Volatile
     var isDispensing = false
 
-    // Poses
-    private val startPose    = Pose(72.0, 0.0, Math.toRadians(90.0))
-    private val preloadPose  = Pose(74.0, 4.0, Math.toRadians(64.0))
-    private val pickupPoint5 = Pose(80.0, 17.5, Math.toRadians(9.0))
-    private val pickup1      = Pose(86.5, 24.0, Math.toRadians(0.0))
-    private val pickup1Ball1 = Pose(93.3, 24.0, Math.toRadians(0.0))
-    private val pickup1Ball2 = Pose(98.3, 24.0, Math.toRadians(0.0))
-    private val pickup1Ball3 = Pose(104.8, 24.0, Math.toRadians(0.0))
-    private val scoreBack    = Pose(78.0, 10.0, Math.toRadians(68.0))
-    private val spike2       = Pose(89.0, 46.0, Math.toRadians(0.0))
-    private val spike2Balls  = Pose(104.8, 48.0, Math.toRadians(0.0))
+    // Poses (Blue side - mirrored from red)
+    private val startPose    = Pose(54.0, 0.0, Math.toRadians(90.0))
+    private val preloadPose  = Pose(52.0, 4.0, Math.toRadians(116.0))
+    private val pickupPoint5 = Pose(46.0, 30.0, Math.toRadians(171.0))
+    private val pickup1      = Pose(32.0, 30.0, Math.toRadians(180.0))
+    private val pickup1Ball1 = Pose(27.7, 30.0, Math.toRadians(180.0))
+    private val pickup1Ball2 = Pose(21.7, 30.0, Math.toRadians(180.0))
+    private val pickup1Ball3 = Pose(17.2, 30.0, Math.toRadians(180.0))
+    private val scoreBack    = Pose(48.0, 10.0, Math.toRadians(112.0))
+    private val spike2       = Pose(32.0, 52.0, Math.toRadians(180.0))
+    private val spike2Balls  = Pose(17.2, 54.0, Math.toRadians(180.0))
 
     // Paths
     private lateinit var preloadPose1:     PathChain
@@ -110,7 +110,7 @@ class NewBackRedAuto : OpMode() {
     }
 
     object AprilTagIds {
-        const val RED_DEPO = 24
+        const val BLUE_DEPO = 20
     }
 
     object DepoCenter {
@@ -213,10 +213,12 @@ class NewBackRedAuto : OpMode() {
             .addPath(BezierCurve(pickup1Ball3, scoreBack))
             .setLinearHeadingInterpolation(pickup1Ball3.heading, scoreBack.heading)
             .build()
+
         stripe2 = follower.pathBuilder()
             .addPath(BezierCurve(scoreBack, spike2))
             .setLinearHeadingInterpolation(scoreBack.heading, spike2.heading)
             .build()
+
         stripe2Grab = follower.pathBuilder()
             .addPath(BezierCurve(spike2, spike2Balls))
             .setLinearHeadingInterpolation(spike2.heading, spike2Balls.heading)
@@ -262,8 +264,8 @@ class NewBackRedAuto : OpMode() {
             }
             5 -> {
                 if (!isDispensing) {
-                    follower.breakFollowing()  // Clear any previous turn/path state
-                    follower.setMaxPower(0.6)  // Reset max power
+                    follower.breakFollowing()
+                    follower.setMaxPower(0.6)
                     follower.followPath(pickupPosePoint5, false)
                     setPathState(6)
                 }
@@ -385,7 +387,7 @@ class NewBackRedAuto : OpMode() {
         follower.setMaxPower(0.8)
         val result: LLResult? = limelight.latestResult
         val fiducialResults = result?.fiducialResults
-        val target = fiducialResults?.firstOrNull { it.fiducialId == AprilTagIds.RED_DEPO }
+        val target = fiducialResults?.firstOrNull { it.fiducialId == AprilTagIds.BLUE_DEPO }
 
         if (target == null) {
             return false
@@ -460,7 +462,7 @@ class NewBackRedAuto : OpMode() {
             return
         }
         val fiducialResults = result.fiducialResults
-        val target = fiducialResults.firstOrNull { it.fiducialId == AprilTagIds.RED_DEPO }
+        val target = fiducialResults.firstOrNull { it.fiducialId == AprilTagIds.BLUE_DEPO }
         if (target == null) {
             return
         }
@@ -601,6 +603,7 @@ class NewBackRedAuto : OpMode() {
     fun clip(v: Double, min: Double, max: Double): Double {
         return max(min, min(max, v))
     }
+
     @JvmName("SetPathStateFunction")
     private fun setPathState(pState: Int) {
         pathState = pState

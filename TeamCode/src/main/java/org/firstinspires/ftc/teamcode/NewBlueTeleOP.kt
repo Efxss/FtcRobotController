@@ -28,8 +28,8 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
-@TeleOp(name = "Red TeleOP (NEW)", group = "Main Red")
-class NewRedTeleOP : OpMode() {
+@TeleOp(name = "Blue TeleOP (NEW)", group = "Main Blue")
+class NewBlueTeleOP : OpMode() {
     var panels: TelemetryManager? = null
     val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     var handleTelemetry: Job? = null
@@ -98,10 +98,10 @@ class NewRedTeleOP : OpMode() {
         const val INTAKE_OFF = 0.0
     }
     object AprilTagIds {
+        const val BLUE_DEPO = 20
         const val GPP_ORDER = 21
         const val PGP_ORDER = 22
         const val PPG_ORDER = 23
-        const val RED_DEPO =  24
     }
     object DepoCenter {
         const val DESIRED_TAG_WIDTH_PX = 80
@@ -186,7 +186,7 @@ class NewRedTeleOP : OpMode() {
         panels?.debug("ord[2]", ord[2])
         panels?.debug("Run Time", runtime)
         panels?.update(telemetry)
-        
+
         if (gamepad1.dpad_up && gamepad1.triangle) {
             if (liftLeft.currentPosition < EndGame.SLOWMODE || liftRight.currentPosition < EndGame.SLOWMODE) {
                 listOf(liftLeft, liftRight).forEach { motor ->
@@ -228,7 +228,7 @@ class NewRedTeleOP : OpMode() {
         follower.setMaxPower(0.15)
         val result: LLResult? = limelight.latestResult
         val fiducialResults = result?.fiducialResults
-        val target = fiducialResults?.firstOrNull { it.fiducialId == AprilTagIds.RED_DEPO }
+        val target = fiducialResults?.firstOrNull { it.fiducialId == AprilTagIds.BLUE_DEPO }
 
         if (target == null) {
             follower.setTeleOpDrive(0.0, 0.0, 0.0, false)
@@ -258,7 +258,7 @@ class NewRedTeleOP : OpMode() {
         follower.setMaxPower(0.15)
         val result: LLResult? = limelight.latestResult
         val fiducialResults = result?.fiducialResults
-        val target = fiducialResults?.firstOrNull { it.fiducialId == AprilTagIds.RED_DEPO }
+        val target = fiducialResults?.firstOrNull { it.fiducialId == AprilTagIds.BLUE_DEPO }
 
         if (target == null) {
             follower.setTeleOpDrive(0.0, 0.0, 0.0, false)
@@ -334,7 +334,7 @@ class NewRedTeleOP : OpMode() {
             return
         }
         val fiducialResults = result.fiducialResults
-        val target = fiducialResults.firstOrNull { it.fiducialId == AprilTagIds.RED_DEPO }
+        val target = fiducialResults.firstOrNull { it.fiducialId == AprilTagIds.BLUE_DEPO }
         if (target == null) {
             return
         }
