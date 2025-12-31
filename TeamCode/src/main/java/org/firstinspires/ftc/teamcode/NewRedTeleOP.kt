@@ -359,7 +359,7 @@ class NewRedTeleOP : OpMode() {
         limelight = hardwareMap.get(Limelight3A::class.java, "limelight")
         colorSensor = hardwareMap.get(ColorSensor::class.java, "ColorSensor")
         camServo.position = ServoPositions.CAM_CLOSED
-        bowlServo.position = ServoPositions.LOAD_P1
+        bowlServo.position = ServoPositions.FIRE_P2
         setupMotorDirections()
         setupPIDFCoefficients()
         resetEncoders()
@@ -397,6 +397,8 @@ class NewRedTeleOP : OpMode() {
         actionTimer = Timer()
         opmodeTimer = Timer()
         opmodeTimer.resetTimer()
+
+        ord = arrayOf("P", "G", "P")
 
         follower = Constants.createFollower(hardwareMap)
         follower.setStartingPose(startPose)

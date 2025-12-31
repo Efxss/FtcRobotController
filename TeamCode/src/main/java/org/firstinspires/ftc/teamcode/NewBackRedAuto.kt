@@ -36,11 +36,12 @@ class NewBackRedAuto : OpMode() {
     val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     var runDetections: Job? = null
     var outTakeCalc: Job? = null
+    var slowDown: Job? = null
 
-    lateinit var follower: Follower
-    lateinit var pathTimer: Timer
-    lateinit var actionTimer: Timer
-    lateinit var opmodeTimer: Timer
+    @Volatile lateinit var follower: Follower
+    @Volatile lateinit var pathTimer: Timer
+    @Volatile lateinit var actionTimer: Timer
+    @Volatile lateinit var opmodeTimer: Timer
 
     lateinit var outTake1: DcMotorEx
     lateinit var outTake2: DcMotorEx
@@ -61,22 +62,26 @@ class NewBackRedAuto : OpMode() {
 
     // Poses
     private val startPose    = Pose(72.0, 0.0, Math.toRadians(90.0))
-    private val preloadPose  = Pose(74.0, 4.0, Math.toRadians(90.0))
+    private val preloadPose  = Pose(74.0, 4.0, Math.toRadians(64.0))
     private val pickupPoint5 = Pose(80.0, 17.5, Math.toRadians(9.0))
     private val pickup1      = Pose(86.5, 24.0, Math.toRadians(0.0))
     private val pickup1Ball1 = Pose(93.3, 24.0, Math.toRadians(0.0))
     private val pickup1Ball2 = Pose(98.3, 24.0, Math.toRadians(0.0))
     private val pickup1Ball3 = Pose(104.8, 24.0, Math.toRadians(0.0))
-    private val scoreBack    = Pose(74.0, 10.0, Math.toRadians(73.0))
+    private val scoreBack    = Pose(78.0, 10.0, Math.toRadians(68.0))
+    private val spike2       = Pose(89.0, 46.0, Math.toRadians(0.0))
+    private val spike2Balls  = Pose(104.8, 48.0, Math.toRadians(0.0))
 
     // Paths
-    private lateinit var preloadPose1: PathChain
+    private lateinit var preloadPose1:     PathChain
     private lateinit var pickupPosePoint5: PathChain
-    private lateinit var pickupPose1: PathChain
+    private lateinit var pickupPose1:      PathChain
     private lateinit var pickupPose1Ball1: PathChain
     private lateinit var pickupPose1Ball2: PathChain
     private lateinit var pickupPose1Ball3: PathChain
-    private lateinit var returnPose: PathChain
+    private lateinit var returnPose:       PathChain
+    private lateinit var stripe2:          PathChain
+    private lateinit var stripe2Grab:      PathChain
 
     val pidP = 150.0
     val pidI = 0.0
@@ -97,7 +102,7 @@ class NewBackRedAuto : OpMode() {
         const val FIRE_P3 = 0.042
 
         // Camera servo positions
-        const val CAM_OPEN = 0.43
+        const val CAM_OPEN = 0.44
         const val CAM_CLOSED = 0.255
 
         const val INTAKE_ON = 1.0
@@ -121,6 +126,7 @@ class NewBackRedAuto : OpMode() {
         const val CAM_OPEN_DELAY = 200L
         const val CAM_CLOSE_DELAY = 350L
         const val DETECTION_COOLDOWN = 1200L
+        var nextDetectAllowedMs = 0L
     }
 
     override fun init() {
@@ -145,6 +151,7 @@ class NewBackRedAuto : OpMode() {
                 delay(25)
             }
         }
+        resetRuntime()
     }
 
     override fun loop() {
@@ -152,15 +159,22 @@ class NewBackRedAuto : OpMode() {
         autonomousPathUpdate()
         handleIntake()
 
-        val r = colorSensor.red()
-        val g = colorSensor.green()
-        val b = colorSensor.blue()
-
+        panels?.debug("Path State", pathState)
+        panels?.debug("ord[0]", ord[0])
+        panels?.debug("ord[1]", ord[1])
+        panels?.debug("ord[2]", ord[2])
+        panels?.debug("Timer", pathTimer.elapsedTimeSeconds)
+        panels?.debug("RunTime", runtime)
+        panels?.update(telemetry)
+        if (runtime >= 29.0) {
+            terminateOpModeNow()
+        }
     }
 
     override fun stop() {
-        outTakeCalc?.cancel()
         runDetections?.cancel()
+        outTakeCalc?.cancel()
+        slowDown?.cancel()
         limelight.stop()
     }
 
@@ -199,6 +213,14 @@ class NewBackRedAuto : OpMode() {
             .addPath(BezierCurve(pickup1Ball3, scoreBack))
             .setLinearHeadingInterpolation(pickup1Ball3.heading, scoreBack.heading)
             .build()
+        stripe2 = follower.pathBuilder()
+            .addPath(BezierCurve(scoreBack, spike2))
+            .setLinearHeadingInterpolation(scoreBack.heading, spike2.heading)
+            .build()
+        stripe2Grab = follower.pathBuilder()
+            .addPath(BezierCurve(spike2, spike2Balls))
+            .setLinearHeadingInterpolation(spike2.heading, spike2Balls.heading)
+            .build()
     }
 
     private fun autonomousPathUpdate() {
@@ -224,7 +246,7 @@ class NewBackRedAuto : OpMode() {
             }
             3 -> {
                 val centered = centerDepo()
-                if (centered || pathTimer.elapsedTimeSeconds > 2.0) {
+                if (centered || pathTimer.elapsedTimeSeconds > 0.5) {
                     setPathState(4)
                 }
             }
@@ -252,7 +274,7 @@ class NewBackRedAuto : OpMode() {
                         pathTimer.resetTimer()
                         timerState = true
                     }
-                    if (pathTimer.elapsedTimeSeconds > 0.5) {
+                    if (pathTimer.elapsedTimeSeconds > 0.3) {
                         follower.setMaxPower(0.4)
                         follower.followPath(pickupPose1, true)
                         setPathState(7)
@@ -291,8 +313,8 @@ class NewBackRedAuto : OpMode() {
                         pathTimer.resetTimer()
                         timerState = true
                     }
-                    if (pathTimer.elapsedTimeSeconds > 1.0) {
-                        follower.setMaxPower(0.2)
+                    if (pathTimer.elapsedTimeSeconds > 0.2) {
+                        follower.setMaxPower(0.22)
                         follower.followPath(pickupPose1Ball3, true)
                         setPathState(10)
                     }
@@ -317,7 +339,7 @@ class NewBackRedAuto : OpMode() {
             }
             13 -> {
                 val centered = centerDepo()
-                if (centered || pathTimer.elapsedTimeSeconds > 2.0) {
+                if (centered || pathTimer.elapsedTimeSeconds > 0.3) {
                     setPathState(14)
                 }
             }
@@ -326,19 +348,41 @@ class NewBackRedAuto : OpMode() {
                     isDispensing = true
                     scope.launch {
                         executeDispensing()
+                        outTakeCalc?.cancel();outTake1.power=0.0;outTake2.power=0.0
                         isDispensing = false
                         setPathState(15)
                     }
                 }
             }
             15 -> {
-                // Done - autonomous complete
+                if (notBusy || pathTimer.elapsedTimeSeconds > 1.0) {
+                    follower.setMaxPower(0.6)
+                    follower.followPath(stripe2, true)
+                    setPathState(16)
+                }
+            }
+            16 -> {
+                if (notBusy) {
+                    follower.setMaxPower(0.18)
+                    slowDown = scope.launch {
+                        while (isActive) {
+                            if (ord[0] != "N") follower.setMaxPower(0.15)
+                        }
+                    }
+                    follower.followPath(stripe2Grab, true)
+                    setPathState(17)
+                }
+            }
+            17 -> {
+                if (notBusy) {
+                    slowDown?.cancel()
+                }
             }
         }
     }
 
     private fun centerDepo(): Boolean {
-        follower.setMaxPower(0.6)
+        follower.setMaxPower(0.8)
         val result: LLResult? = limelight.latestResult
         val fiducialResults = result?.fiducialResults
         val target = fiducialResults?.firstOrNull { it.fiducialId == AprilTagIds.RED_DEPO }
@@ -371,8 +415,6 @@ class NewBackRedAuto : OpMode() {
     }
 
     suspend fun executeDispensing() {
-        delay(100)
-
         // Fixed dispense order: slot 1, slot 0, slot 2 (FIRE_P2, FIRE_P1, FIRE_P3)
         val dispenseSequence = mutableListOf<Double>()
         val slotToFirePosition = mapOf(
@@ -392,9 +434,7 @@ class NewBackRedAuto : OpMode() {
             executeDispenseSequence(dispenseSequence)
         }
 
-        delay(100)
         bowlServo.position = ServoPositions.LOAD_P1
-        delay(100)
 
         ord = arrayOf("N", "N", "N")
     }
@@ -443,46 +483,34 @@ class NewBackRedAuto : OpMode() {
 
     suspend fun handleDetections() {
         if (isDispensing) return
-        var r = colorSensor.red()
-        var g = colorSensor.green()
-        var b = colorSensor.blue()
+        val r = colorSensor.red();val g = colorSensor.green();val b = colorSensor.blue()
 
+        // "Clear" => re-arm immediately (even during cooldown)
         if (g <= 80 && b <= 110) {
             isSeen = false
-        }
-        if (g >= 80 && b >= 110) {
-            if (!isSeen) {
-                val slot = nextSlot()
-                if (slot != -1) {
-                    ord[slot] = "P"
-                    delay(200)
-                    advanceBowl(slot)
-                    delay(Timing.DETECTION_COOLDOWN)
-                }
-                isSeen = true
-            }
-        }
-        if (g >= 110) {
-            if (!isSeen) {
-                val slot = nextSlot()
-                if (slot != -1) {
-                    ord[slot] = "G"
-                    delay(200)
-                    advanceBowl(slot)
-                    delay(Timing.DETECTION_COOLDOWN)
-                }
-                isSeen = true
-            }
+            return
         }
 
-        panels?.debug("Path State", pathState)
-        panels?.debug("ord[0]", ord[0])
-        panels?.debug("ord[1]", ord[1])
-        panels?.debug("ord[2]", ord[2])
-        panels?.debug("Timer", pathTimer.elapsedTimeSeconds)
-        panels?.debug("R", r, "G", g, "B", b)
-        panels?.debug("isSeen", isSeen)
-        panels?.update(telemetry)
+        // If we're still in cooldown, don't trigger a new advance yet
+        val now = System.currentTimeMillis()
+        if (now < Timing.nextDetectAllowedMs) return
+
+        // Ball present and we're armed
+        if (!isSeen) {
+            val slot = nextSlot()
+            if (slot != -1) {
+                // (Optional) choose G vs P here; your current logic makes g>=110 also count as P first.
+                ord[slot] = if (g >= 110) "G" else "P"
+
+                // keep the short settle delay if you need it
+                delay(200)
+                advanceBowl(slot)
+
+                // start cooldown WITHOUT blocking the loop
+                Timing.nextDetectAllowedMs = now + Timing.DETECTION_COOLDOWN
+            }
+            isSeen = true
+        }
     }
 
     fun nextSlot(): Int {
@@ -519,6 +547,10 @@ class NewBackRedAuto : OpMode() {
         setupPIDFCoefficients()
         resetEncoders()
         setupVision()
+    }
+
+    fun followerSpeed(speed: Double) {
+        follower.setMaxPower(speed)
     }
 
     fun setupVision() {
