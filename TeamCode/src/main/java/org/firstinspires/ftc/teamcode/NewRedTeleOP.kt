@@ -67,6 +67,7 @@ class NewRedTeleOP : OpMode() {
     var rightBumperPressed = false
     var endgameTogglePressed = false
     var slowModeTogglePressed = false
+    var dPadDownPressed = false
     var isSlowMode = false
     var depoCentered = false
     var lastTriggerPressed = false
@@ -115,7 +116,7 @@ class NewRedTeleOP : OpMode() {
     object EndGame {
         const val LIFTMAX = 11400
         const val SLOWMODE = 1000
-        const val NORMALSPEED = 0.6
+        const val NORMALSPEED = 0.8
         const val SLOWSPEED = 0.2
         var ISENDGAME = 0
     }
@@ -168,7 +169,7 @@ class NewRedTeleOP : OpMode() {
         var forward = -gamepad1.left_stick_y.toDouble()
         var strafe = gamepad1.right_stick_x.toDouble()
 
-        follower.setMaxPower(0.8)
+        follower.setMaxPower(if (isSlowMode) 0.3 else 0.8)
         follower.setTeleOpDrive(
             forward,
             strafe,
@@ -186,7 +187,14 @@ class NewRedTeleOP : OpMode() {
         panels?.debug("ord[2]", ord[2])
         panels?.debug("Run Time", runtime)
         panels?.update(telemetry)
-        
+
+        if (gamepad1.dpad_down && !dPadDownPressed) {
+            bowlServo.position -= 0.1
+        } else if (!gamepad1.dpad_down && dPadDownPressed) {
+            bowlServo.position += 0.1
+        }
+        dPadDownPressed = gamepad1.dpad_down
+
         if (gamepad1.dpad_up && gamepad1.triangle) {
             if (liftLeft.currentPosition < EndGame.SLOWMODE || liftRight.currentPosition < EndGame.SLOWMODE) {
                 listOf(liftLeft, liftRight).forEach { motor ->
@@ -201,7 +209,15 @@ class NewRedTeleOP : OpMode() {
                     motor.power = 0.0
                 }
             }
+            outTakeCalc?.cancel();outTake1.power=0.0;outTake2.power=0.0
         }
+
+        val slowModeButtonPressed = gamepad1.left_trigger >= 0.5
+        if (slowModeButtonPressed && !slowModeTogglePressed) {
+            isSlowMode = !isSlowMode
+        }
+
+        slowModeTogglePressed = slowModeButtonPressed
     }
 
     override fun stop() {

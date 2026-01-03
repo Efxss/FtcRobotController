@@ -242,7 +242,7 @@ class NewBackBlueAuto : OpMode() {
                 }
             }
             2 -> {
-                if (pathTimer.elapsedTimeSeconds > 0.5) {
+                if (pathTimer.elapsedTimeSeconds > 0.25) {
                     setPathState(3)
                 }
             }
@@ -335,7 +335,7 @@ class NewBackBlueAuto : OpMode() {
                 }
             }
             12 -> {
-                if (pathTimer.elapsedTimeSeconds > 0.5) {
+                if (pathTimer.elapsedTimeSeconds > 0.25) {
                     setPathState(13)
                 }
             }
@@ -551,7 +551,7 @@ class NewBackBlueAuto : OpMode() {
         setupVision()
     }
 
-    fun followerSpeed(speed: Double) {
+    fun setFollowerSpeed(speed: Double) {
         follower.setMaxPower(speed)
     }
 

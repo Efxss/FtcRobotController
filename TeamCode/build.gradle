@@ -35,6 +35,6 @@ android {
 
 dependencies {
     implementation project(':FtcRobotController')
-    implementation 'com.pedropathing:ftc:2.0.5'
-    implementation 'com.pedropathing:telemetry:1.0.0'
+    implementation 'com.pedropathing:ftc:2.0.0'
+    implementation 'com.pedropathing:telemetry:0.0.6'
 }
