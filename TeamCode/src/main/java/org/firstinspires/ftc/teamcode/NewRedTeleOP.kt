@@ -116,7 +116,7 @@ class NewRedTeleOP : OpMode() {
     object EndGame {
         const val LIFTMAX = 11400
         const val SLOWMODE = 1000
-        const val NORMALSPEED = 0.8
+        const val NORMALSPEED = 1.0
         const val SLOWSPEED = 0.2
         var ISENDGAME = 0
     }
@@ -210,6 +210,7 @@ class NewRedTeleOP : OpMode() {
                 }
             }
             outTakeCalc?.cancel();outTake1.power=0.0;outTake2.power=0.0
+            runIntake?.cancel();intakeServo1.power=0.0
         }
 
         val slowModeButtonPressed = gamepad1.left_trigger >= 0.5
