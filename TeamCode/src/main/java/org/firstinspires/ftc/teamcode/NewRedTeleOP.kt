@@ -135,6 +135,7 @@ class NewRedTeleOP : OpMode() {
     }
 
     override fun start() {
+        resetServos()
         opmodeTimer.resetTimer()
         follower.startTeleOpDrive()
         outTakeCalc = scope.launch {
@@ -383,8 +384,6 @@ class NewRedTeleOP : OpMode() {
         colorSensor = hardwareMap.get(ColorSensor::class.java, "ColorSensor")
         statusLEDR = hardwareMap.get(DigitalChannel::class.java, "statusLEDR")
         statusLEDG = hardwareMap.get(DigitalChannel::class.java, "statusLEDG")
-        camServo.position = ServoPositions.CAM_CLOSED
-        bowlServo.position = ServoPositions.FIRE_P2
         statusLEDR.mode = DigitalChannel.Mode.OUTPUT
         statusLEDG.mode = DigitalChannel.Mode.OUTPUT
         setupMotorDirections()
@@ -431,6 +430,10 @@ class NewRedTeleOP : OpMode() {
             motor.mode = DcMotor.RunMode.RUN_TO_POSITION
             motor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         }
+    }
+    fun resetServos() {
+        camServo.position = ServoPositions.CAM_CLOSED
+        bowlServo.position = ServoPositions.FIRE_P2
     }
     fun initializePedroPathing() {
         panels = PanelsTelemetry.telemetry
