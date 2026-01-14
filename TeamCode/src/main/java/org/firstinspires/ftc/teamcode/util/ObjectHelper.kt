@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.helper
+package org.firstinspires.ftc.teamcode.util
 
 /**
  * A helper class that holds different objects for things to make scripts smaller
