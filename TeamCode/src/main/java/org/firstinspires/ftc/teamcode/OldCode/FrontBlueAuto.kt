@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode
+package org.firstinspires.ftc.teamcode.OldCode
 
 import android.util.Size
 import com.bylazar.configurables.annotations.IgnoreConfigurable
@@ -31,15 +31,14 @@ import org.firstinspires.ftc.vision.VisionPortal
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor
 import java.io.File
 import java.lang.Thread.sleep
-import kotlin.concurrent.thread
 import kotlin.math.abs
 import kotlin.math.hypot
 import kotlin.math.max
 import kotlin.math.min
 
-//@Autonomous(name = "Back Red Auto (OLD)", group = "Main Red")
+//@Autonomous(name = "Front Blue Auto", group = "Main Blue")
 @Disabled
-class BackRedAuto : OpMode() {
+class FrontBlueAuto : OpMode() {
     @IgnoreConfigurable
     var panels: TelemetryManager? = null
     private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
@@ -59,20 +58,15 @@ class BackRedAuto : OpMode() {
     private var tagProcessor: AprilTagProcessor? = null
     private var pathState: Int = 0
     private var timerState = false
-    private val startPose    = Pose(72.0, 0.0, Math.toRadians(90.0))
-    private val preloadPose  = Pose(74.0, 4.0, Math.toRadians(80.0))
-    private val pickupPoint5 = Pose(80.0, 17.5, Math.toRadians(9.0))
-    private val pickup1      = Pose(86.5, 24.0, Math.toRadians(0.0))
-    private val pickup1Ball1 = Pose(93.3, 24.0, Math.toRadians(0.0))
-    private val pickup1Ball2 = Pose(96.3, 24.0, Math.toRadians(0.0))
-    private val pickup1Ball3 = Pose(104.8, 24.0, Math.toRadians(0.0))
-    private val scoreBack    = Pose(74.0, 10.0, Math.toRadians(73.0))
+    private val startPose    = Pose(54.0, 144.0, Math.toRadians(90.0))
+    private val preloadPose  = Pose(51.0, 120.0, Math.toRadians(90.0))
+    private val spikeinit    = Pose(46.0, 99.0, Math.toRadians(180.0))
+    private val spikead      = Pose(40.0, 99.0, Math.toRadians(180.0))
+    private val pickballs    = Pose(15.0, 99.0, Math.toRadians(180.0))
     private lateinit var preloadPose1: PathChain
-    private lateinit var pickupPosePoint5: PathChain
-    private lateinit var pickupPose1: PathChain
-    private lateinit var pickupPose1Ball1: PathChain
-    private lateinit var pickupPose1Ball2: PathChain
-    private lateinit var pickupPose1Ball3: PathChain
+    private lateinit var spike1: PathChain
+    private lateinit var spike2: PathChain
+    private lateinit var grabBalls: PathChain
     private lateinit var returnPose: PathChain
     private var dispensingState = 0
     private val pidP = 8.5
@@ -100,11 +94,11 @@ class BackRedAuto : OpMode() {
     object DetectionThresholds {
         const val MIN_WIDTH = 200.0
         const val MIN_HEIGHT = 90.0
-        const val MIN_Y_POSITION = 0.76
+        const val MIN_Y_POSITION = 0.44
     }
     object Timing {
         const val DISPENSE_INITIAL_DELAY = 100L
-        const val BOWL_MOVE_DELAY = 1300L
+        const val BOWL_MOVE_DELAY = 1350L
         const val CAM_OPEN_DELAY = 500L
         const val CAM_CLOSE_DELAY = 1500L
         const val DETECTION_COOLDOWN = 1300L
@@ -116,10 +110,10 @@ class BackRedAuto : OpMode() {
     }
     object AprilTagIds {
         const val FILENAME = "tower.txt"
+        const val BLUE_DEPO = 20
         const val GPP_ORDER = 21
         const val PGP_ORDER = 22
         const val PPG_ORDER = 23
-        const val RED_DEPO =  24
     }
     object DepoCenter {
         const val DESIRED_TAG_WIDTH_PX = 110
@@ -128,7 +122,7 @@ class BackRedAuto : OpMode() {
         const val CAM_HEIGHT_PX = 720
         const val CENTER_DEADZONE = 16
         const val KP_ROTATE = 0.003
-        const val OUTTAKE_SPEED = 0.27
+        const val OUTTAKE_SPEED = 0.215
     }
     private enum class PieceColor(val symbol: String) {
         NONE("N"),
@@ -217,91 +211,27 @@ class BackRedAuto : OpMode() {
         autonomousPathUpdate()
         handleIntake()
 
-        val pose = follower.pose
-
-        // Optional numeric telemetry to Panels
-        /*panels?.debug("path state", pathState)
-        panels?.debug("x", pose.x)
-        panels?.debug("y", pose.y)
-        panels?.debug("heading", Math.toDegrees(pose.heading))
-        panels?.debug("pathTimer", pathTimer.elapsedTimeSeconds)
-        panels?.debug("actionTimer", actionTimer.elapsedTimeSeconds)
-        panels?.debug("opmodeTimer", opmodeTimer.elapsedTimeSeconds)
-        panels?.debug("Heading error", follower.headingError)
+        panels?.debug("PathState", pathState)
+        panels?.debug("PathTimer", pathTimer.elapsedTimeSeconds)
         panels?.debug("EORD", expectedOrder)
         panels?.debug("ORD", currentOrder)
-        panels?.debug("CLP", currentLoadPosition)
-        panels?.update(telemetry)*/
-    }
-    @Volatile
-    private var isRunning = false
-    private fun runTelemetryThread() {
-        isRunning = true
-        thread {
-            while (isRunning) {
-                try {
-                    panels?.debug("OutTake1Power", outTake1.power)
-                    panels?.debug("OutTake2Power", outTake2.power)
-                    panels?.debug("OutTake1velocity", outTake1.velocity)
-                    panels?.debug("OutTake2velocity", outTake2.velocity)
-                    panels?.update(telemetry)
-                } catch (e: Exception) {
-                    break
-                }
-                sleep(50)
-            }
-        }
-    }
-    private fun buildPaths() {
-        preloadPose1 = follower.pathBuilder()
-            .addPath(BezierCurve(startPose, preloadPose))
-            .setLinearHeadingInterpolation(startPose.heading, preloadPose.heading)
-            .build()
-
-        pickupPosePoint5 = follower.pathBuilder()
-            .addPath(BezierCurve(preloadPose, pickupPoint5))
-            .setLinearHeadingInterpolation(preloadPose.heading, pickupPoint5.heading)
-            .build()
-
-        pickupPose1 = follower.pathBuilder()
-            .addPath(BezierCurve(pickupPoint5, pickup1))
-            .setLinearHeadingInterpolation(pickupPoint5.heading, pickup1.heading)
-            .build()
-
-        pickupPose1Ball1 = follower.pathBuilder()
-            .addPath(BezierCurve(pickup1, pickup1Ball1))
-            .setLinearHeadingInterpolation(pickup1.heading, pickup1Ball1.heading)
-            .build()
-
-        pickupPose1Ball2 = follower.pathBuilder()
-            .addPath(BezierCurve(pickup1Ball1, pickup1Ball2))
-            .setLinearHeadingInterpolation(pickup1Ball1.heading, pickup1Ball2.heading)
-            .build()
-
-        pickupPose1Ball3 = follower.pathBuilder()
-            .addPath(BezierCurve(pickup1Ball2, pickup1Ball3))
-            .setLinearHeadingInterpolation(pickup1Ball2.heading, pickup1Ball3.heading)
-            .build()
-
-        returnPose = follower.pathBuilder()
-            .addPath(BezierCurve(pickup1Ball3, scoreBack))
-            .setLinearHeadingInterpolation(pickup1Ball3.heading, scoreBack.heading)
-            .build()
+        panels?.update(telemetry)
     }
 
     private fun autonomousPathUpdate() {
         val notBusy = (!follower.isBusy)
         when (pathState) {
             0 -> {
+                follower.followPath(preloadPose1, false)
+                setPathState(1)
+            }
+            1 -> {
                 if (notBusy && !timerState) {
                     pathTimer.resetTimer()
                     timerState = true
-                    follower.followPath(preloadPose1, true)
-                    setPathState(1)
+                    follower.turnToDegrees(150.0)
                 }
-            }
-            1 -> {
-                if (!follower.isBusy) {
+                if (timerState && pathTimer.elapsedTimeSeconds > 1.0) {
                     setPathState(2)
                 }
             }
@@ -323,13 +253,18 @@ class BackRedAuto : OpMode() {
                     /* Do nothing shooting */
                 } else {
                     setPathState(5)
-                    sleep(250)
                 }
             }
             5 -> {
-                if (!follower.isBusy/* && pathTimer.elapsedTimeSeconds > 0.25 */) {
-                    follower.followPath(pickupPosePoint5, false)
-                    setPathState(6)
+                if (notBusy) {
+                    if (!timerState) {
+                        pathTimer.resetTimer()
+                        timerState = true
+                    }
+                    if (pathTimer.elapsedTimeSeconds > 0.25) {
+                        follower.followPath(spike1, true)
+                        setPathState(6)
+                    }
                 }
             }
             6 -> {
@@ -338,94 +273,83 @@ class BackRedAuto : OpMode() {
                         pathTimer.resetTimer()
                         timerState = true
                     }
-                    if (pathTimer.elapsedTimeSeconds > 0.5) {
-                        follower.setMaxPower(0.4)
-                        follower.followPath(pickupPose1, true)
+                    if (pathTimer.elapsedTimeSeconds > 0.25) {
+                        follower.followPath(spike2, true)
                         setPathState(7)
                     }
                 }
             }
             7 -> {
-                if (notBusy) {
-                    if (!timerState) {
-                        pathTimer.resetTimer()
-                        timerState = true
-                    }
-                    if (pathTimer.elapsedTimeSeconds > 0.2) {
-                        follower.setMaxPower(0.18)
-                        intake = 1
-                        follower.followPath(pickupPose1Ball1, true)
-                        setPathState(8)
+                intake = 1
+                if (notBusy && !timerState) {
+                    follower.setMaxPower(0.14)
+                    pathTimer.resetTimer()
+                    timerState = true
+                    follower.followPath(grabBalls, true)
+                }
+                if (timerState && pathTimer.elapsedTimeSeconds > 0.5) {
+                    if (notBusy || pathTimer.elapsedTimeSeconds > 6.0) {
+                        //setPathState(8)
+                        stop()
                     }
                 }
             }
             8 -> {
-                if (notBusy) {
-                    if (!timerState) {
-                        pathTimer.resetTimer()
-                        timerState = true
-                    }
-                    if (pathTimer.elapsedTimeSeconds > 0.2) {
-                        follower.setMaxPower(0.16)
-                        follower.setMaxPower(0.2)
-                        intake = 1
-                        follower.followPath(pickupPose1Ball2, true)
-                        setPathState(9)
-                    }
-                }
+                intake = 0
+                follower.setMaxPower(0.6)
+                follower.followPath(returnPose, true)
+                setPathState(9)
             }
             9 -> {
                 if (notBusy) {
-                    if (!timerState) {
-                        pathTimer.resetTimer()
-                        timerState = true
-                    }
-                    if (pathTimer.elapsedTimeSeconds > 1.0) {
-                        if (!timerState) {
-                            pathTimer.resetTimer()
-                            timerState = true
-                        }
-                        follower.setMaxPower(0.2)
-                        intake = 1
-                        follower.followPath(pickupPose1Ball3, true)
-                        if (pathTimer.elapsedTimeSeconds > 7.0) {
-                            stop()
-                        }
-                    }
+                    setPathState(10)
                 }
             }
             10 -> {
-                if (!follower.isBusy/* && pathTimer.elapsedTimeSeconds > 1.5*/) {
-                    follower.setMaxPower(0.6)
-                    follower.followPath(returnPose, true)
+                if (pathTimer.elapsedTimeSeconds > 0.5) {
                     setPathState(11)
-                    sleep(2000)
                 }
             }
             11 -> {
-                if (!follower.isBusy/* && pathTimer.elapsedTimeSeconds > 2.0 */) {
+                centerDepo()
+                if (pathTimer.elapsedTimeSeconds > 0.5) {
                     setPathState(12)
                 }
             }
             12 -> {
-                if (pathTimer.elapsedTimeSeconds > 0.5) {
-                    setPathState(13)
-                }
-            }
-            13 -> {
-                intake = 0
-                centerDepo()
-                if (pathTimer.elapsedTimeSeconds > 0.5) {
-                    setPathState(14)
-                }
-            }
-            14 -> {
                 dispensingState = 1
                 handleDispensingStateMachine()
+                if (dispensingState == 1) {
+                    /* Do nothing shooting */
+                } else {
+                    setPathState(13)
+                }
             }
         }
     }
 
+    private fun buildPaths() {
+        preloadPose1 = follower.pathBuilder()
+            .addPath(BezierCurve(startPose, preloadPose))
+            .setLinearHeadingInterpolation(startPose.heading, preloadPose.heading)
+            .build()
+        spike1 = follower.pathBuilder()
+            .addPath(BezierCurve(preloadPose, spikeinit))
+            .setLinearHeadingInterpolation(preloadPose.heading, spikeinit.heading)
+            .build()
+        spike2 = follower.pathBuilder()
+            .addPath(BezierCurve(spikeinit, spikead))
+            .setLinearHeadingInterpolation(spikeinit.heading, spikead.heading)
+            .build()
+        grabBalls = follower.pathBuilder()
+            .addPath(BezierCurve(spikead, pickballs))
+            .setLinearHeadingInterpolation(spikead.heading, pickballs.heading)
+            .build()
+        returnPose = follower.pathBuilder()
+            .addPath(BezierCurve(pickballs, preloadPose))
+            .setLinearHeadingInterpolation(pickballs.heading, preloadPose.heading)
+            .build()
+    }
     private fun handleIntake() {
         when (intake) {
             0 -> {
@@ -629,8 +553,15 @@ class BackRedAuto : OpMode() {
         }
     }
     private fun centerDepo() {
+        if (pathTimer.elapsedTimeSeconds > 0.5) {
+            if (pathState == 3) {
+                setPathState(4)
+            } else if (pathState == 10) {
+                setPathState(11)
+            }
+        }
         val detections = tagProcessor?.detections.orEmpty()
-        val target = detections.firstOrNull { it.id == AprilTagIds.RED_DEPO }
+        val target = detections.firstOrNull { it.id == AprilTagIds.BLUE_DEPO }
         if (target == null) {
             return
         }
@@ -643,14 +574,14 @@ class BackRedAuto : OpMode() {
             target.corners[3].x - target.corners[0].x,
             target.corners[3].y - target.corners[0].y
         )
-        panels?.debug("H", tagHeightPx)
-        panels?.update(telemetry)
         val widthErrPx = DepoCenter.DESIRED_TAG_WIDTH_PX - tagWidthPx
         if (abs(xErrPx) <= DepoCenter.CENTER_DEADZONE) {
             if (pathState == 3) {
                 setPathState(4)
-            } else if (pathState == 13) {
-                setPathState(14)
+                return
+            } else if (pathState == 10) {
+                setPathState(11)
+                return
             }
             return
         }
@@ -724,6 +655,7 @@ class BackRedAuto : OpMode() {
         currentOrder.slot1 = PieceColor.PURPLE
         currentOrder.slot2 = PieceColor.GREEN
         currentOrder.slot3 = PieceColor.PURPLE
+        follower.setMaxPower(0.6)
         buildPaths()
     }
     private fun ensureVelocityMode() {
@@ -755,13 +687,13 @@ class BackRedAuto : OpMode() {
     private fun setPathState(pState: Int) {
         pathState = pState
         pathTimer.resetTimer()
+        timerState = false
     }
     private fun saveNumber(num: Int) {
         val file = File(hardwareMap.appContext.filesDir, AprilTagIds.FILENAME)
         file.writeText(num.toString())
     }
     override fun stop() {
-        isRunning = false
         limelight.stop()
         visionPortal?.close()
         actVision?.cancel()

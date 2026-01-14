@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode
+package org.firstinspires.ftc.teamcode.OldCode
 
 import android.util.Size
 import com.bylazar.configurables.annotations.IgnoreConfigurable
@@ -11,7 +11,6 @@ import com.pedropathing.paths.PathChain
 import com.pedropathing.util.Timer
 import com.qualcomm.hardware.limelightvision.Limelight3A
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.CRServo
@@ -38,9 +37,9 @@ import kotlin.math.hypot
 import kotlin.math.max
 import kotlin.math.min
 
-//@Autonomous(name = "Back Blue Auto", group = "Main Blue")
+//@Autonomous(name = "Back Red Auto (OLD)", group = "Main Red")
 @Disabled
-class BackBlueAuto : OpMode() {
+class BackRedAuto : OpMode() {
     @IgnoreConfigurable
     var panels: TelemetryManager? = null
     private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
@@ -60,13 +59,13 @@ class BackBlueAuto : OpMode() {
     private var tagProcessor: AprilTagProcessor? = null
     private var pathState: Int = 0
     private var timerState = false
-    private val startPose    = Pose(54.0, 0.0, Math.toRadians(90.0))
-    private val preloadPose  = Pose(52.0, 10.0, Math.toRadians(100.0))
-    private val pickupPoint5 = Pose(46.0, 23.5, Math.toRadians(171.0))
-    private val pickup1      = Pose(39.5, 30.0, Math.toRadians(180.0))
-    private val pickup1Ball1 = Pose(32.3, 30.0, Math.toRadians(180.0))
-    private val pickup1Ball2 = Pose(29.3, 30.0, Math.toRadians(180.0))
-    private val pickup1Ball3 = Pose(15.8, 30.0, Math.toRadians(180.0))
+    private val startPose    = Pose(72.0, 0.0, Math.toRadians(90.0))
+    private val preloadPose  = Pose(74.0, 4.0, Math.toRadians(80.0))
+    private val pickupPoint5 = Pose(80.0, 17.5, Math.toRadians(9.0))
+    private val pickup1      = Pose(86.5, 24.0, Math.toRadians(0.0))
+    private val pickup1Ball1 = Pose(93.3, 24.0, Math.toRadians(0.0))
+    private val pickup1Ball2 = Pose(96.3, 24.0, Math.toRadians(0.0))
+    private val pickup1Ball3 = Pose(104.8, 24.0, Math.toRadians(0.0))
     private val scoreBack    = Pose(74.0, 10.0, Math.toRadians(73.0))
     private lateinit var preloadPose1: PathChain
     private lateinit var pickupPosePoint5: PathChain
@@ -117,10 +116,10 @@ class BackBlueAuto : OpMode() {
     }
     object AprilTagIds {
         const val FILENAME = "tower.txt"
-        const val BLUE_DEPO = 20
         const val GPP_ORDER = 21
         const val PGP_ORDER = 22
         const val PPG_ORDER = 23
+        const val RED_DEPO =  24
     }
     object DepoCenter {
         const val DESIRED_TAG_WIDTH_PX = 110
@@ -631,7 +630,7 @@ class BackBlueAuto : OpMode() {
     }
     private fun centerDepo() {
         val detections = tagProcessor?.detections.orEmpty()
-        val target = detections.firstOrNull { it.id == AprilTagIds.BLUE_DEPO }
+        val target = detections.firstOrNull { it.id == AprilTagIds.RED_DEPO }
         if (target == null) {
             return
         }
