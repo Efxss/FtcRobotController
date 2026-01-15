@@ -27,6 +27,8 @@ import org.firstinspires.ftc.teamcode.util.LimelightUtil
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 @TeleOp(name = "Red TeleOP (NEW UTIL)", group = "Main Red")
 class NewRedTeleOpUtil : OpMode() {
@@ -114,6 +116,36 @@ class NewRedTeleOpUtil : OpMode() {
         var nextDetectAllowedMs = 0L
     }
 
+    // ---- Variable drive speed tuning ----
+    private object DriveScale {
+        const val DEADBAND = 0.06   // ignore tiny stick noise
+        const val MIN_SCALE = 0.20  // minimum drive authority when barely moving
+        const val EXPO = 1.6        // 1.0 = linear, >1 = softer near center
+    }
+
+    /**
+     * Returns 0..1 based on how far the driver is commanding motion.
+     * Uses both translation (forward + strafe) and rotation (rotate) so turning-only still scales.
+     */
+    private fun computeDriveScale(forward: Double, strafe: Double, rotate: Double): Double {
+        val transMag = sqrt(forward * forward + strafe * strafe).coerceIn(0.0, 1.0)
+        val rotMag = abs(rotate).coerceIn(0.0, 1.0)
+        var mag = max(transMag, rotMag)
+
+        // Deadband
+        if (mag < DriveScale.DEADBAND) mag = 0.0
+
+        // Normalize after deadband to 0..1
+        val norm = if (mag == 0.0) 0.0
+        else ((mag - DriveScale.DEADBAND) / (1.0 - DriveScale.DEADBAND)).coerceIn(0.0, 1.0)
+
+        // Expo curve
+        val curved = norm.pow(DriveScale.EXPO)
+
+        // Map to MIN_SCALE..1.0
+        return (DriveScale.MIN_SCALE + (1.0 - DriveScale.MIN_SCALE) * curved).coerceIn(0.0, 1.0)
+    }
+
     override fun init() {
         initializeHardware()
         initializePedroPathing()
@@ -163,7 +195,7 @@ class NewRedTeleOpUtil : OpMode() {
         // ---- DRIVE CONTROLS ----
         // Slow mode on LEFT bumper (hold)
         isSlowMode = gamepad1.left_bumper
-        follower.setMaxPower(if (isSlowMode) 0.3 else 0.8)
+        val baseMax = if (isSlowMode) 0.30 else 0.80
 
         // If the auto center+fire routine is running, don't fight it with manual drive commands
         if (!isDispensing) {
@@ -172,12 +204,22 @@ class NewRedTeleOpUtil : OpMode() {
 
             // Triggers = analog turning
             val turnInput = (gamepad1.right_trigger - gamepad1.left_trigger).toDouble()
-            val deadband = 0.05
+            val turnDeadband = 0.05
             val maxTurn = 0.8
-            val rotate = if (abs(turnInput) < deadband) 0.0 else turnInput * maxTurn
+            val rotate = if (abs(turnInput) < turnDeadband) 0.0 else turnInput * maxTurn
+
+            // Variable speed based on stick/trigger demand
+            val demandScale = computeDriveScale(forward, strafe, rotate)
+            follower.setMaxPower(baseMax * demandScale)
 
             follower.setTeleOpDrive(forward, strafe, rotate, true)
+
+            // Telemetry (optional but handy)
+            panels?.debug("Drive baseMax", baseMax)
+            panels?.debug("Drive demandScale", demandScale)
+            panels?.debug("Drive maxPower", baseMax * demandScale)
         } else {
+            follower.setMaxPower(0.0)
             follower.setTeleOpDrive(0.0, 0.0, 0.0, false)
         }
 
@@ -229,7 +271,7 @@ class NewRedTeleOpUtil : OpMode() {
     }
 
     // -------------------------
-    // NEW: Center + Fire on RIGHT bumper using LimelightUtil
+    // Center + Fire on RIGHT bumper using LimelightUtil
     // -------------------------
     private suspend fun handleFiring() {
         val centerPressed = gamepad1.right_bumper
@@ -258,7 +300,7 @@ class NewRedTeleOpUtil : OpMode() {
     }
 
     // -------------------------
-    // Use helper for outtake power calc (same equation you already used)
+    // Outtake power calc
     // -------------------------
     private fun outTakePower() {
         val p = LimelightUtil.calculateOuttakePower(LimelightUtil.Tags.RED_DEPO) ?: return
@@ -329,7 +371,7 @@ class NewRedTeleOpUtil : OpMode() {
     }
 
     // -------------------------
-    // Hardware + setup (mostly your original)
+    // Hardware + setup
     // -------------------------
     private fun initializeHardware() {
         outTake1 = hardwareMap.get(DcMotorEx::class.java, "outTake1")
