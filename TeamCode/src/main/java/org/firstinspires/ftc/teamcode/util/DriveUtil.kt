@@ -43,7 +43,7 @@ object DriveUtil {
         val strafe = gamepad.right_stick_x.toDouble()
 
         // triggers = analog turning
-        val turnInput = (gamepad.right_trigger - gamepad.left_trigger).toDouble()
+        val turnInput = (gamepad.left_trigger - gamepad.right_trigger).toDouble()
         val rotate = if (abs(turnInput) < Turn.DEADBAND) 0.0 else turnInput * Turn.MAX_TURN
 
         val baseMax = if (slowMode) slowCap else normalCap
