@@ -17,18 +17,18 @@ object EndgameUtil {
         val leftPos = liftLeft.currentPosition
         val rightPos = liftRight.currentPosition
 
-        if (leftPos > TeleOpConfig.EndGame.LIFTMAX || rightPos > TeleOpConfig.EndGame.LIFTMAX) {
+        if (leftPos > Config.EndGame.LIFTMAX || rightPos > Config.EndGame.LIFTMAX) {
             liftLeft.power = 0.0
             liftRight.power = 0.0
             return
         }
 
-        if (leftPos < TeleOpConfig.EndGame.SLOWMODE || rightPos < TeleOpConfig.EndGame.SLOWMODE) {
-            liftLeft.power = TeleOpConfig.EndGame.NORMALSPEED
-            liftRight.power = TeleOpConfig.EndGame.NORMALSPEED
+        if (leftPos < Config.EndGame.SLOWMODE || rightPos < Config.EndGame.SLOWMODE) {
+            liftLeft.power = Config.EndGame.NORMALSPEED
+            liftRight.power = Config.EndGame.NORMALSPEED
         } else {
-            liftLeft.power = TeleOpConfig.EndGame.SLOWSPEED
-            liftRight.power = TeleOpConfig.EndGame.SLOWSPEED
+            liftLeft.power = Config.EndGame.SLOWSPEED
+            liftRight.power = Config.EndGame.SLOWSPEED
         }
     }
 }

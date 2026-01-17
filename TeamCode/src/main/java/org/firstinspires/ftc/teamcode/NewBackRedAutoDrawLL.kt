@@ -26,7 +26,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import org.firstinspires.ftc.teamcode.util.Drawing
 import org.firstinspires.ftc.teamcode.util.LimelightUtil
 
-@Autonomous(name = "Back Red Auto (NEW)", group = "Main Red")
+@Autonomous(name = "Back Red Auto (NEW DRAW LL)", group = "Main Red")
 class NewBackRedAutoDrawLL : OpMode() {
 
     // Telemetry & Coroutines

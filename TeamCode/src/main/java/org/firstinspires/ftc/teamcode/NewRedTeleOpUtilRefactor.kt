@@ -23,13 +23,13 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
+import org.firstinspires.ftc.teamcode.util.Config
 import org.firstinspires.ftc.teamcode.util.DriveUtil
 import org.firstinspires.ftc.teamcode.util.EndgameUtil
 import org.firstinspires.ftc.teamcode.util.IntakeUtil
 import org.firstinspires.ftc.teamcode.util.LimelightUtil
 import org.firstinspires.ftc.teamcode.util.LoaderTracker
 import org.firstinspires.ftc.teamcode.util.OuttakeController
-import org.firstinspires.ftc.teamcode.util.TeleOpConfig
 
 @TeleOp(name = "Red TeleOP (UTIL REFACTOR)", group = "Main Red")
 class NewRedTeleOpUtilRefactor : OpMode() {
@@ -141,8 +141,8 @@ class NewRedTeleOpUtilRefactor : OpMode() {
             gamepad = gamepad1,
             isDispensing = isDispensing,
             slowMode = slowMode,
-            normalCap = TeleOpConfig.DriveCaps.NORMAL_MAX,
-            slowCap = TeleOpConfig.DriveCaps.SLOW_MAX,
+            normalCap = Config.DriveCaps.NORMAL_MAX,
+            slowCap = Config.DriveCaps.SLOW_MAX,
             fieldCentric = true
         )
 
@@ -204,7 +204,7 @@ class NewRedTeleOpUtilRefactor : OpMode() {
         if (centerPressed && !rightBumperPressed && !isDispensing) {
             isDispensing = true
             try {
-                follower.setMaxPower(TeleOpConfig.DriveCaps.DISPENSE_MAX)
+                follower.setMaxPower(Config.DriveCaps.DISPENSE_MAX)
 
                 // Center on RED_DEPO and fire loaded balls based on ord[]
                 LimelightUtil.centerAndFire(
@@ -215,7 +215,7 @@ class NewRedTeleOpUtilRefactor : OpMode() {
 
                 // reset after firing
                 loader.clearOrd("N")
-                bowlServo.position = TeleOpConfig.ServoPositions.LOAD_P1
+                bowlServo.position = Config.ServoPositions.LOAD_P1
             } finally {
                 isDispensing = false
             }
@@ -271,7 +271,7 @@ class NewRedTeleOpUtilRefactor : OpMode() {
         }
 
         listOf(liftLeft, liftRight).forEach { motor ->
-            motor.targetPosition = TeleOpConfig.EndGame.LIFTMAX
+            motor.targetPosition = Config.EndGame.LIFTMAX
             motor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
             motor.mode = DcMotor.RunMode.RUN_TO_POSITION
             motor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
@@ -279,8 +279,8 @@ class NewRedTeleOpUtilRefactor : OpMode() {
     }
 
     private fun resetServos() {
-        camServo.position = TeleOpConfig.ServoPositions.CAM_CLOSED
-        bowlServo.position = TeleOpConfig.ServoPositions.FIRE_P2
+        camServo.position = Config.ServoPositions.CAM_CLOSED
+        bowlServo.position = Config.ServoPositions.FIRE_P2
     }
 
     private fun initializePedroPathing() {

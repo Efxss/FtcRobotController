@@ -78,9 +78,9 @@ class LoaderTracker(
     }
 
     private fun bowlPositionForSlot(slot: Int): Double = when (slot) {
-        0 -> TeleOpConfig.ServoPositions.LOAD_P2
-        1 -> TeleOpConfig.ServoPositions.LOAD_P3
-        2 -> TeleOpConfig.ServoPositions.FIRE_P2
-        else -> TeleOpConfig.ServoPositions.FIRE_P2
+        0 -> Config.ServoPositions.LOAD_P2
+        1 -> Config.ServoPositions.LOAD_P3
+        2 -> Config.ServoPositions.FIRE_P2
+        else -> Config.ServoPositions.FIRE_P2
     }
 }

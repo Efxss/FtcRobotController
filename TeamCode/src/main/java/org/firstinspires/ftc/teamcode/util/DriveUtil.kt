@@ -31,8 +31,8 @@ object DriveUtil {
         gamepad: Gamepad,
         isDispensing: Boolean,
         slowMode: Boolean,
-        normalCap: Double = TeleOpConfig.DriveCaps.NORMAL_MAX,
-        slowCap: Double = TeleOpConfig.DriveCaps.SLOW_MAX,
+        normalCap: Double = Config.DriveCaps.NORMAL_MAX,
+        slowCap: Double = Config.DriveCaps.SLOW_MAX,
         fieldCentric: Boolean = true
     ): DriveCommand {
         if (isDispensing) {

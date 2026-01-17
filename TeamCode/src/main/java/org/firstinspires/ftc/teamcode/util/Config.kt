@@ -1,17 +1,17 @@
 package org.firstinspires.ftc.teamcode.util
 
-object TeleOpConfig {
+object Config {
 
     object ServoPositions {
         // Loading positions
-        const val LOAD_P1 = 0.004
-        const val LOAD_P2 = 0.080
-        const val LOAD_P3 = 0.153
+        const val LOAD_P1 = 0.021
+        const val LOAD_P2 = 0.087
+        const val LOAD_P3 = 0.158
 
         // Firing/dispensing positions
-        const val FIRE_P1 = 0.118
-        const val FIRE_P2 = 0.1885
-        const val FIRE_P3 = 0.042
+        const val FIRE_P1 = 0.128
+        const val FIRE_P2 = 0.195
+        const val FIRE_P3 = 0.058
 
         // Camera servo positions
         const val CAM_OPEN = 0.44
@@ -35,3 +35,4 @@ object TeleOpConfig {
         const val DISPENSE_MAX = 0.15
     }
 }
+

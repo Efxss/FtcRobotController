@@ -35,21 +35,21 @@ object LimelightUtil {
         const val CAM_OPEN = 0.44
         const val CAM_CLOSED = 0.255
 
-        // Bowl loading positions
-        const val LOAD_P1 = 0.004
-        const val LOAD_P2 = 0.080
-        const val LOAD_P3 = 0.153
+        // Loading positions
+        const val LOAD_P1 = 0.021
+        const val LOAD_P2 = 0.087
+        const val LOAD_P3 = 0.158
 
-        // Bowl firing positions
-        const val FIRE_P1 = 0.118
-        const val FIRE_P2 = 0.1885
-        const val FIRE_P3 = 0.042
+        // Firing/dispensing positions
+        const val FIRE_P1 = 0.128
+        const val FIRE_P2 = 0.195
+        const val FIRE_P3 = 0.058
 
         // Timing
         const val DISPENSE_INITIAL_DELAY_MS = 100L
-        const val BOWL_MOVE_DELAY_MS = 500L
-        const val CAM_OPEN_DELAY_MS = 200L
-        const val CAM_CLOSE_DELAY_MS = 350L
+        const val BOWL_MOVE_DELAY_MS = 250L
+        const val CAM_OPEN_DELAY_MS = 140L
+        const val CAM_CLOSE_DELAY_MS = 170L
 
         // Poll rate
         const val POLL_RATE_HZ = 100

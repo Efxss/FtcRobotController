@@ -12,10 +12,10 @@ object IntakeUtil {
         ledG: DigitalChannel
     ) {
         if (isFull) {
-            intake.power = TeleOpConfig.ServoPositions.INTAKE_REVERSE
+            intake.power = Config.ServoPositions.INTAKE_REVERSE
             setBothLed(ledR, ledG, on = true)
         } else {
-            intake.power = TeleOpConfig.ServoPositions.INTAKE_ON
+            intake.power = Config.ServoPositions.INTAKE_ON
             setBothLed(ledR, ledG, on = false)
         }
     }

@@ -14,17 +14,17 @@ class SpinDexerTest : OpMode() {
     var panels: TelemetryManager? = null
     object ServoPositions {
         // Loading positions
-        const val LOAD_P1 = 0.0
-        const val LOAD_P2 = 0.45
-        const val LOAD_P3 = 0.9
+        const val LOAD_P1 = 0.004
+        const val LOAD_P2 = 0.080
+        const val LOAD_P3 = 0.153
 
         // Firing/dispensing positions
-        const val FIRE_P1 = 0.68
-        const val FIRE_P2 = 0.1845
-        const val FIRE_P3 = 0.258
+        const val FIRE_P1 = 0.118
+        const val FIRE_P2 = 0.1885
+        const val FIRE_P3 = 0.042
 
         // Camera servo positions
-        const val CAM_OPEN = 0.5
+        const val CAM_OPEN = 0.44
         const val CAM_CLOSED = 0.255
 
         const val INTAKE_ON = 1.0

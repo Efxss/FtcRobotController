@@ -31,7 +31,7 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
-@Autonomous(name = "Back Red Auto (NEW)", group = "Main Red")
+@Autonomous(name = "Back Red Auto (NEW DRAW)", group = "Main Red")
 class NewBackRedAutoDraw : OpMode() {
     var panels: TelemetryManager? = null
     val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
@@ -92,14 +92,20 @@ class NewBackRedAutoDraw : OpMode() {
     var velocityPowerScale = 1.0
 
     object ServoPositions {
-        const val LOAD_P1 = 0.004
-        const val LOAD_P2 = 0.080
-        const val LOAD_P3 = 0.153
-        const val FIRE_P1 = 0.118
-        const val FIRE_P2 = 0.1885
-        const val FIRE_P3 = 0.042
+        // Loading positions
+        const val LOAD_P1 = 0.021
+        const val LOAD_P2 = 0.087
+        const val LOAD_P3 = 0.158
+
+        // Firing/dispensing positions
+        const val FIRE_P1 = 0.128
+        const val FIRE_P2 = 0.195
+        const val FIRE_P3 = 0.058
+
+        // Camera servo positions
         const val CAM_OPEN = 0.44
         const val CAM_CLOSED = 0.255
+
         const val INTAKE_ON = 1.0
         const val INTAKE_OFF = 0.0
     }
@@ -117,9 +123,9 @@ class NewBackRedAutoDraw : OpMode() {
 
     object Timing {
         const val DISPENSE_INITIAL_DELAY = 100L
-        const val BOWL_MOVE_DELAY = 500L
-        const val CAM_OPEN_DELAY = 200L
-        const val CAM_CLOSE_DELAY = 350L
+        const val BOWL_MOVE_DELAY = 250L
+        const val CAM_OPEN_DELAY = 140L
+        const val CAM_CLOSE_DELAY = 170L
         const val DETECTION_COOLDOWN = 1200L
         var nextDetectAllowedMs = 0L
     }
