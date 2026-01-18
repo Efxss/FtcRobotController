@@ -18,8 +18,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
             .mass(12.75)
-            .forwardZeroPowerAcceleration(-25.9346931313679598)
-            .lateralZeroPowerAcceleration(-67.342491844080064)
+            //.forwardZeroPowerAcceleration(-25.9346931313679598) // OLD
+            .forwardZeroPowerAcceleration(-34.918377572914916) // NEW
+            //.lateralZeroPowerAcceleration(-67.342491844080064) // OLD
+            .lateralZeroPowerAcceleration(-75.76916150636166) // NEW
 
             // Primary XY position control
             .translationalPIDFCoefficients(new PIDFCoefficients(
@@ -44,8 +46,8 @@ public class Constants {
             .secondaryDrivePIDFCoefficients(new FilteredPIDFCoefficients(
                     0.5, 0.0, 0.12, 0.0, 0.01
             ))
-            .drivePIDFSwitch(8)
-            .translationalPIDFSwitch(5)
+            .drivePIDFSwitch(18)
+            .translationalPIDFSwitch(15)
             .headingPIDFSwitch(Math.toRadians(15))
 
 
@@ -61,9 +63,9 @@ public class Constants {
             0.1,
             0.009,
             50,
-            1.85,
+            0.86,
             10,
-            1
+            0.2
     );
 
     public static MecanumConstants driveConstants = new MecanumConstants()
@@ -76,8 +78,10 @@ public class Constants {
             .leftRearMotorDirection(DcMotorSimple.Direction.REVERSE)
             .rightFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
             .rightRearMotorDirection(DcMotorSimple.Direction.FORWARD)
-            .xVelocity(78.261926752421046666666666666667)
-            .yVelocity(61.494551922189565);
+            //.xVelocity(78.261926752421046666666666666667) // OLD
+            .xVelocity(49.852386234313485) // NEW
+            //.yVelocity(61.494551922189565); // OLD
+            .yVelocity(43.82936973271408); // NEW
 
 
     /*public static DriveEncoderConstants localizerConstants = new DriveEncoderConstants()

@@ -64,9 +64,9 @@ class NewFrontRedAuto : OpMode() {
     private val startPose    = Pose(123.0, 123.0, Math.toRadians(36.0))
     private val scorePose    = Pose(91.5, 91.5, Math.toRadians(45.0))
     private val spike1pre    = Pose(98.0, 86.0, Math.toRadians(0.0))
-    private val spike1       = Pose(117.0, 86.0, Math.toRadians(0.0))
+    private val spike1       = Pose(117.0, 86.0, Math.toRadians(355.0))
     private val spike2pre    = Pose(98.0, 64.0, Math.toRadians(0.0))
-    private val spike2       = Pose(117.0, 64.0, Math.toRadians(0.0))
+    private val spike2       = Pose(117.0, 64.0, Math.toRadians(355.0))
 
     // Paths
     private lateinit var preLoadScore: PathChain
@@ -85,14 +85,14 @@ class NewFrontRedAuto : OpMode() {
 
     object ServoPositions {
         // Loading positions
-        const val LOAD_P1 = 0.004
-        const val LOAD_P2 = 0.080
-        const val LOAD_P3 = 0.153
+        const val LOAD_P1 = 0.021
+        const val LOAD_P2 = 0.087
+        const val LOAD_P3 = 0.158
 
         // Firing/dispensing positions
-        const val FIRE_P1 = 0.118
-        const val FIRE_P2 = 0.1885
-        const val FIRE_P3 = 0.042
+        const val FIRE_P1 = 0.128
+        const val FIRE_P2 = 0.195
+        const val FIRE_P3 = 0.058
 
         // Camera servo positions
         const val CAM_OPEN = 0.44
@@ -115,9 +115,9 @@ class NewFrontRedAuto : OpMode() {
 
     object Timing {
         const val DISPENSE_INITIAL_DELAY = 100L
-        const val BOWL_MOVE_DELAY = 500L
-        const val CAM_OPEN_DELAY = 200L
-        const val CAM_CLOSE_DELAY = 350L
+        const val BOWL_MOVE_DELAY = 250L
+        const val CAM_OPEN_DELAY = 140L
+        const val CAM_CLOSE_DELAY = 170L
         const val DETECTION_COOLDOWN = 1200L
         var nextDetectAllowedMs = 0L
     }
@@ -181,7 +181,7 @@ class NewFrontRedAuto : OpMode() {
                 }
             }
             1 -> {
-                follower.setMaxPower(0.7)
+                follower.setMaxPower(1.0)
                 if (notBusy) {
                     setPathState(2)
                 }
@@ -193,7 +193,7 @@ class NewFrontRedAuto : OpMode() {
             }
             3 -> {
                 val centered = centerDepo()
-                if (centered || pathTimer.elapsedTimeSeconds > 0.1) {
+                if (centered || pathTimer.elapsedTimeSeconds > 0.08) {
                     setPathState(4)
                 }
             }
@@ -215,7 +215,7 @@ class NewFrontRedAuto : OpMode() {
                 }
             }
             6 -> {
-                follower.setMaxPower(0.40)
+                follower.setMaxPower(0.80)
                 if (notBusy) {
                     if (!timerState) {
                         pathTimer.resetTimer()
@@ -228,7 +228,7 @@ class NewFrontRedAuto : OpMode() {
                 }
             }
             7 -> {
-                follower.setMaxPower(0.16)
+                follower.setMaxPower(0.17)
                 if (notBusy) {
                     if (!timerState) {
                         pathTimer.resetTimer()
@@ -241,7 +241,7 @@ class NewFrontRedAuto : OpMode() {
                 }
             }
             8 -> {
-                follower.setMaxPower(0.8)
+                follower.setMaxPower(1.0)
                 if (notBusy) {
                     setPathState(9)
                 }
@@ -277,21 +277,21 @@ class NewFrontRedAuto : OpMode() {
                 }
             }
             13 -> {
-                follower.setMaxPower(0.47)
+                follower.setMaxPower(0.8)
                 if (notBusy) {
                     if (!timerState) {
                         pathTimer.resetTimer()
                         timerState = true
                     }
                     if (pathTimer.elapsedTimeSeconds > 0.3) {
-                        slowDown = scope.launch { while (isActive) { if (ord[0] != "N") follower.setMaxPower(0.15) } }
+                        slowDown = scope.launch { while (isActive) { if (ord[0] != "N") follower.setMaxPower(0.18) } }
                         follower.followPath(spike2Grab, true)
                         setPathState(14)
                     }
                 }
             }
             14 -> {
-                follower.setMaxPower(0.18)
+                follower.setMaxPower(0.2)
             }
         }
     }
@@ -507,6 +507,14 @@ class NewFrontRedAuto : OpMode() {
         ord = arrayOf("P", "G", "P")
 
         follower = Constants.createFollower(hardwareMap)
+        /*follower.setXVelocity(49.8523862343135)
+        follower.setYVelocity(43.8293697327141)
+        follower.setDrivePIDFCoefficients(FilteredPIDFCoefficients(0.2, 0.0, 0.009, 0.0, 0.01))
+        follower.setSecondaryDrivePIDFCoefficients(FilteredPIDFCoefficients(0.5, 0.0, 0.12, 0.0, 0.01))
+        follower.setTranslationalPIDFCoefficients(PIDFCoefficients(0.08, 0.0, 0.0, 0.01))
+        follower.setSecondaryTranslationalPIDFCoefficients(PIDFCoefficients(0.12, 0.0, 0.013, 0.01))
+        follower.setHeadingPIDFCoefficients(PIDFCoefficients(1.0, 0.0, 0.05, 0.025))
+        follower.setSecondaryHeadingPIDFCoefficients(PIDFCoefficients(0.9, 0.0, 0.06, 0.035))*/
         follower.setStartingPose(startPose)
         follower.activateAllPIDFs()
 
