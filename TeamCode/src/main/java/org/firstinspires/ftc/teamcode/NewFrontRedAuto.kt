@@ -192,7 +192,7 @@ class NewFrontRedAuto : OpMode() {
                 }
             }
             2 -> {
-                if (pathTimer.elapsedTimeSeconds > 0.5) {
+                if (pathTimer.elapsedTimeSeconds > 0.1) {
                     setPathState(3)
                 }
             }
@@ -252,7 +252,7 @@ class NewFrontRedAuto : OpMode() {
                 }
             }
             9 -> {
-                if (pathTimer.elapsedTimeSeconds > 0.5) {
+                if (pathTimer.elapsedTimeSeconds > 0.1) {
                     setPathState(10)
                 }
             }
@@ -268,7 +268,6 @@ class NewFrontRedAuto : OpMode() {
                     scope.launch {
                         executeDispensing()
                         isDispensing = false
-                        outTakeCalc?.cancel();outTake1.power=0.0;outTake2.power=0.0
                         setPathState(12)
                     }
                 }
@@ -312,17 +311,39 @@ class NewFrontRedAuto : OpMode() {
             15 -> {
                 follower.setMaxPower(1.0)
                 if (notBusy) {
-                    if (!timerState) {
-                        pathTimer.resetTimer()
-                        timerState = true
-                    }
-                    if (pathTimer.elapsedTimeSeconds > 0.1) {
-                        follower.followPath(spike2Line, true)
-                        setPathState(16)
-                    }
+                    setPathState(16)
                 }
             }
             16 -> {
+                if (pathTimer.elapsedTimeSeconds > 0.1) {
+                    setPathState(17)
+                }
+            }
+            17 -> {
+                val centered = centerDepo()
+                if (centered || pathTimer.elapsedTimeSeconds > 0.1) {
+                    setPathState(18)
+                }
+            }
+            18 -> {
+                if (!isDispensing) {
+                    isDispensing = true
+                    scope.launch {
+                        executeDispensing()
+                        isDispensing = false
+                        setPathState(19)
+                    }
+                }
+            }
+            19 -> {
+                follower.setMaxPower(0.35)
+                if (!isDispensing) {
+                    follower.breakFollowing()
+                    follower.followPath(spike3Line, false)
+                    setPathState(20)
+                }
+            }
+            20 -> {
                 follower.setMaxPower(0.8)
                 if (notBusy) {
                     if (!timerState) {
@@ -331,11 +352,11 @@ class NewFrontRedAuto : OpMode() {
                     }
                     if (pathTimer.elapsedTimeSeconds > 0.1) {
                         follower.followPath(spike2Grab, true)
-                        setPathState(17)
+                        setPathState(21)
                     }
                 }
             }
-            17 -> {
+            21 -> {
                 follower.setMaxPower(0.17)
             }
         }
