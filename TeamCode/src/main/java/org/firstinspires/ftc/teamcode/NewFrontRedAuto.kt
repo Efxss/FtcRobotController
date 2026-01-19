@@ -30,7 +30,7 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
-@Autonomous(name = "Front Red Auto (NEW)", group = "Main Red")
+@Autonomous(name = "Front Red Auto", group = "Main Red")
 class NewFrontRedAuto : OpMode() {
     var panels: TelemetryManager? = null
     val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
@@ -67,6 +67,8 @@ class NewFrontRedAuto : OpMode() {
     private val spike1       = Pose(117.0, 86.0, Math.toRadians(355.0))
     private val spike2pre    = Pose(98.0, 64.0, Math.toRadians(0.0))
     private val spike2       = Pose(117.0, 64.0, Math.toRadians(355.0))
+    private val spike3pre    = Pose(98.0, 42.0, Math.toRadians(0.0))
+    private val spike3       = Pose(117.0, 42.0, Math.toRadians(355.0))
 
     // Paths
     private lateinit var preLoadScore: PathChain
@@ -75,6 +77,9 @@ class NewFrontRedAuto : OpMode() {
     private lateinit var spike1Score:  PathChain
     private lateinit var spike2Line:   PathChain
     private lateinit var spike2Grab:   PathChain
+    private lateinit var spike2Score:  PathChain
+    private lateinit var spike3Line:   PathChain
+    private lateinit var spike3Grab:   PathChain
 
     val pidP = 150.0
     val pidI = 0.0
@@ -221,7 +226,7 @@ class NewFrontRedAuto : OpMode() {
                         pathTimer.resetTimer()
                         timerState = true
                     }
-                    if (pathTimer.elapsedTimeSeconds > 0.3) {
+                    if (pathTimer.elapsedTimeSeconds > 0.1) {
                         follower.followPath(spike1Grab, true)
                         setPathState(7)
                     }
@@ -234,7 +239,7 @@ class NewFrontRedAuto : OpMode() {
                         pathTimer.resetTimer()
                         timerState = true
                     }
-                    if (pathTimer.elapsedTimeSeconds > 0.3) {
+                    if (pathTimer.elapsedTimeSeconds > 0.1) {
                         follower.followPath(spike1Score, true)
                         setPathState(8)
                     }
@@ -283,7 +288,7 @@ class NewFrontRedAuto : OpMode() {
                         pathTimer.resetTimer()
                         timerState = true
                     }
-                    if (pathTimer.elapsedTimeSeconds > 0.3) {
+                    if (pathTimer.elapsedTimeSeconds > 0.1) {
                         slowDown = scope.launch { while (isActive) { if (ord[0] != "N") follower.setMaxPower(0.18) } }
                         follower.followPath(spike2Grab, true)
                         setPathState(14)
@@ -292,6 +297,46 @@ class NewFrontRedAuto : OpMode() {
             }
             14 -> {
                 follower.setMaxPower(0.2)
+                if (notBusy) {
+                    if (!timerState) {
+                        pathTimer.resetTimer()
+                        timerState = true
+                    }
+                    if (pathTimer.elapsedTimeSeconds > 0.1) {
+                        slowDown?.cancel()
+                        follower.followPath(spike2Score, true)
+                        setPathState(15)
+                    }
+                }
+            }
+            15 -> {
+                follower.setMaxPower(1.0)
+                if (notBusy) {
+                    if (!timerState) {
+                        pathTimer.resetTimer()
+                        timerState = true
+                    }
+                    if (pathTimer.elapsedTimeSeconds > 0.1) {
+                        follower.followPath(spike2Line, true)
+                        setPathState(16)
+                    }
+                }
+            }
+            16 -> {
+                follower.setMaxPower(0.8)
+                if (notBusy) {
+                    if (!timerState) {
+                        pathTimer.resetTimer()
+                        timerState = true
+                    }
+                    if (pathTimer.elapsedTimeSeconds > 0.1) {
+                        follower.followPath(spike2Grab, true)
+                        setPathState(17)
+                    }
+                }
+            }
+            17 -> {
+                follower.setMaxPower(0.17)
             }
         }
     }
@@ -550,6 +595,18 @@ class NewFrontRedAuto : OpMode() {
         spike2Grab = follower.pathBuilder()
             .addPath(BezierCurve(spike2pre, spike2))
             .setLinearHeadingInterpolation(spike2pre.heading, spike2.heading)
+            .build()
+        spike2Score = follower.pathBuilder()
+            .addPath(BezierCurve(spike2, scorePose))
+            .setLinearHeadingInterpolation(spike2.heading, scorePose.heading)
+            .build()
+        spike3Line = follower.pathBuilder()
+            .addPath(BezierCurve(scorePose, spike3pre))
+            .setLinearHeadingInterpolation(scorePose.heading, spike3pre.heading)
+            .build()
+        spike3Grab = follower.pathBuilder()
+            .addPath(BezierCurve(spike3pre, spike3))
+            .setLinearHeadingInterpolation(spike3pre.heading, spike3.heading)
             .build()
     }
 

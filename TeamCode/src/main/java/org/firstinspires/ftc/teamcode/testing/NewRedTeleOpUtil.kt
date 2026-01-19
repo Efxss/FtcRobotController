@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode
+package org.firstinspires.ftc.teamcode.testing
 
 import com.bylazar.telemetry.PanelsTelemetry
 import com.bylazar.telemetry.TelemetryManager
@@ -6,6 +6,7 @@ import com.pedropathing.follower.Follower
 import com.pedropathing.geometry.Pose
 import com.pedropathing.util.Timer
 import com.qualcomm.hardware.limelightvision.Limelight3A
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.CRServo
@@ -30,7 +31,7 @@ import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-@TeleOp(name = "Red TeleOP (NEW UTIL)", group = "Main Red")
+@Disabled
 class NewRedTeleOpUtil : OpMode() {
 
     var panels: TelemetryManager? = null

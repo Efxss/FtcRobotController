@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode
+package org.firstinspires.ftc.teamcode.testing
 
 import com.bylazar.telemetry.PanelsTelemetry
 import com.bylazar.telemetry.TelemetryManager
@@ -6,6 +6,7 @@ import com.pedropathing.follower.Follower
 import com.pedropathing.geometry.Pose
 import com.pedropathing.util.Timer
 import com.qualcomm.hardware.limelightvision.Limelight3A
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.CRServo
@@ -31,7 +32,7 @@ import org.firstinspires.ftc.teamcode.util.LimelightUtil
 import org.firstinspires.ftc.teamcode.util.LoaderTracker
 import org.firstinspires.ftc.teamcode.util.OuttakeController
 
-@TeleOp(name = "Red TeleOP (UTIL REFACTOR)", group = "Main Red")
+@Disabled
 class NewRedTeleOpUtilRefactor : OpMode() {
 
     private var panels: TelemetryManager? = null

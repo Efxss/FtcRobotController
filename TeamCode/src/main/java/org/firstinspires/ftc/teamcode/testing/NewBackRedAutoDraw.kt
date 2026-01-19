@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode
+package org.firstinspires.ftc.teamcode.testing
 
 import com.bylazar.telemetry.PanelsTelemetry
 import com.bylazar.telemetry.TelemetryManager
@@ -7,6 +7,8 @@ import com.pedropathing.geometry.BezierCurve
 import com.pedropathing.geometry.Pose
 import com.pedropathing.paths.PathChain
 import com.pedropathing.util.Timer
+import com.qualcomm.hardware.limelightvision.LLResult
+import com.qualcomm.hardware.limelightvision.Limelight3A
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
@@ -15,6 +17,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.DcMotorSimple
+import com.qualcomm.robotcore.hardware.Servo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -24,37 +27,39 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import org.firstinspires.ftc.teamcode.util.Drawing
-import org.firstinspires.ftc.teamcode.util.LimelightUtil
+import kotlin.math.abs
+import kotlin.math.max
+import kotlin.math.min
 
-@Autonomous(name = "Back Red Auto (NEW DRAW LL)", group = "Main Red")
-class NewBackRedAutoDrawLL : OpMode() {
-
-    // Telemetry & Coroutines
+@Autonomous(name = "Back Red Auto (NEW DRAW)", group = "Main Red")
+class NewBackRedAutoDraw : OpMode() {
     var panels: TelemetryManager? = null
     val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     var runDetections: Job? = null
     var outTakeCalc: Job? = null
     var slowDown: Job? = null
 
-    // Pedro Pathing
     @Volatile lateinit var follower: Follower
     @Volatile lateinit var pathTimer: Timer
     @Volatile lateinit var actionTimer: Timer
     @Volatile lateinit var opmodeTimer: Timer
 
-    // Hardware
     lateinit var outTake1: DcMotorEx
     lateinit var outTake2: DcMotorEx
     lateinit var intakeServo1: CRServo
+    lateinit var bowlServo: Servo
+    lateinit var camServo: Servo
+    lateinit var limelight: Limelight3A
     lateinit var colorSensor: ColorSensor
 
-    // State tracking
-    @Volatile var ord = arrayOf("N", "N", "N")
+    @Volatile
+    var ord = arrayOf("N", "N", "N")
     @set:JvmName("PathStateVar")
     var pathState: Int = 0
     var timerState = false
     var isSeen = false
-    @Volatile var isDispensing = false
+    @Volatile
+    var isDispensing = false
 
     // Poses
     private val startPose    = Pose(72.0, 0.0, Math.toRadians(90.0))
@@ -69,24 +74,58 @@ class NewBackRedAutoDrawLL : OpMode() {
     private val spike2Balls  = Pose(104.8, 48.0, Math.toRadians(0.0))
 
     // Paths
-    private lateinit var preloadPose1:     PathChain
+    private lateinit var preloadPose1: PathChain
     private lateinit var pickupPosePoint5: PathChain
-    private lateinit var pickupPose1:      PathChain
+    private lateinit var pickupPose1: PathChain
     private lateinit var pickupPose1Ball1: PathChain
     private lateinit var pickupPose1Ball2: PathChain
     private lateinit var pickupPose1Ball3: PathChain
-    private lateinit var returnPose:       PathChain
-    private lateinit var stripe2:          PathChain
-    private lateinit var stripe2Grab:      PathChain
+    private lateinit var returnPose: PathChain
+    private lateinit var stripe2: PathChain
+    private lateinit var stripe2Grab: PathChain
 
-    // Motor config
     val pidP = 150.0
     val pidI = 0.0
     val pidD = 0.0
     val pidF = 13.5
+    var velocityModeInitialized = false
+    var velocityPowerScale = 1.0
 
-    // Detection timing
+    object ServoPositions {
+        // Loading positions
+        const val LOAD_P1 = 0.021
+        const val LOAD_P2 = 0.087
+        const val LOAD_P3 = 0.158
+
+        // Firing/dispensing positions
+        const val FIRE_P1 = 0.128
+        const val FIRE_P2 = 0.195
+        const val FIRE_P3 = 0.058
+
+        // Camera servo positions
+        const val CAM_OPEN = 0.44
+        const val CAM_CLOSED = 0.255
+
+        const val INTAKE_ON = 1.0
+        const val INTAKE_OFF = 0.0
+    }
+
+    object AprilTagIds {
+        const val RED_DEPO = 24
+    }
+
+    object DepoCenter {
+        const val CAM_WIDTH_PX = 1280
+        const val CENTER_DEADZONE = 15
+        const val KP_ROTATE = 0.003
+        var OUTTAKE_SPEED = 0.20
+    }
+
     object Timing {
+        const val DISPENSE_INITIAL_DELAY = 100L
+        const val BOWL_MOVE_DELAY = 250L
+        const val CAM_OPEN_DELAY = 140L
+        const val CAM_CLOSE_DELAY = 170L
         const val DETECTION_COOLDOWN = 1200L
         var nextDetectAllowedMs = 0L
     }
@@ -95,12 +134,12 @@ class NewBackRedAutoDrawLL : OpMode() {
         initializeHardware()
         initializePedroPathing()
 
-        // Initialize utilities
+        // Initialize the drawing system
         Drawing.init()
-        LimelightUtil.init(hardwareMap)
     }
 
     override fun init_loop() {
+        // Draw robot position while waiting to start
         follower.update()
         Drawing.drawOnlyCurrent(follower)
 
@@ -113,22 +152,19 @@ class NewBackRedAutoDrawLL : OpMode() {
         opmodeTimer.resetTimer()
         setPathState(0)
 
-        // Outtake power calculation coroutine
         outTakeCalc = scope.launch {
             while (isActive) {
-                updateOuttakePower()
+                outTakePower()
                 delay(5)
             }
         }
 
-        // Ball detection coroutine
         runDetections = scope.launch {
             while (isActive) {
                 handleDetections()
                 delay(25)
             }
         }
-
         resetRuntime()
     }
 
@@ -137,10 +173,9 @@ class NewBackRedAutoDrawLL : OpMode() {
         autonomousPathUpdate()
         handleIntake()
 
-        // Draw robot, path, and history
+        // Draw robot, path, and history on Panels Dashboard
         Drawing.drawDebug(follower)
 
-        // Telemetry
         panels?.debug("Path State", pathState)
         panels?.debug("X", follower.pose.x)
         panels?.debug("Y", follower.pose.y)
@@ -161,7 +196,7 @@ class NewBackRedAutoDrawLL : OpMode() {
         runDetections?.cancel()
         outTakeCalc?.cancel()
         slowDown?.cancel()
-        LimelightUtil.stop()
+        limelight.stop()
     }
 
     private fun buildPaths() {
@@ -213,9 +248,7 @@ class NewBackRedAutoDrawLL : OpMode() {
 
     private fun autonomousPathUpdate() {
         val notBusy = !follower.isBusy
-
         when (pathState) {
-            // Start -> Preload position
             0 -> {
                 if (notBusy && !timerState) {
                     pathTimer.resetTimer()
@@ -224,47 +257,41 @@ class NewBackRedAutoDrawLL : OpMode() {
                     setPathState(1)
                 }
             }
-
-            // Wait for arrival at preload
             1 -> {
-                if (notBusy) setPathState(2)
+                if (notBusy) {
+                    setPathState(2)
+                }
             }
-
-            // Brief pause before centering
             2 -> {
-                if (pathTimer.elapsedTimeSeconds > 0.25) setPathState(3)
+                if (pathTimer.elapsedTimeSeconds > 0.25) {
+                    setPathState(3)
+                }
             }
-
-            // Center on depot and fire preload
             3 -> {
+                val centered = centerDepo()
+                if (centered || pathTimer.elapsedTimeSeconds > 0.5) {
+                    setPathState(4)
+                }
+            }
+            4 -> {
                 if (!isDispensing) {
                     isDispensing = true
                     scope.launch {
-                        LimelightUtil.centerAndFire(
-                            LimelightUtil.Tags.RED_DEPO,
-                            follower,
-                            ord,
-                            centerTimeoutMs = 500L
-                        )
-                        ord = arrayOf("N", "N", "N")
+                        executeDispensing()
                         isDispensing = false
-                        setPathState(4)
+                        setPathState(5)
                     }
                 }
             }
-
-            // Go to pickup intermediate point
-            4 -> {
+            5 -> {
                 if (!isDispensing) {
                     follower.breakFollowing()
                     follower.setMaxPower(0.6)
                     follower.followPath(pickupPosePoint5, false)
-                    setPathState(5)
+                    setPathState(6)
                 }
             }
-
-            // Wait and go to pickup1
-            5 -> {
+            6 -> {
                 if (notBusy) {
                     if (!timerState) {
                         pathTimer.resetTimer()
@@ -273,13 +300,11 @@ class NewBackRedAutoDrawLL : OpMode() {
                     if (pathTimer.elapsedTimeSeconds > 0.3) {
                         follower.setMaxPower(0.4)
                         follower.followPath(pickupPose1, true)
-                        setPathState(6)
+                        setPathState(7)
                     }
                 }
             }
-
-            // Slow pickup - Ball 1
-            6 -> {
+            7 -> {
                 if (notBusy) {
                     if (!timerState) {
                         pathTimer.resetTimer()
@@ -288,13 +313,11 @@ class NewBackRedAutoDrawLL : OpMode() {
                     if (pathTimer.elapsedTimeSeconds > 0.2) {
                         follower.setMaxPower(0.18)
                         follower.followPath(pickupPose1Ball1, true)
-                        setPathState(7)
+                        setPathState(8)
                     }
                 }
             }
-
-            // Slow pickup - Ball 2
-            7 -> {
+            8 -> {
                 if (notBusy) {
                     if (!timerState) {
                         pathTimer.resetTimer()
@@ -303,13 +326,11 @@ class NewBackRedAutoDrawLL : OpMode() {
                     if (pathTimer.elapsedTimeSeconds > 0.2) {
                         follower.setMaxPower(0.2)
                         follower.followPath(pickupPose1Ball2, true)
-                        setPathState(8)
+                        setPathState(9)
                     }
                 }
             }
-
-            // Slow pickup - Ball 3
-            8 -> {
+            9 -> {
                 if (notBusy) {
                     if (!timerState) {
                         pathTimer.resetTimer()
@@ -318,65 +339,54 @@ class NewBackRedAutoDrawLL : OpMode() {
                     if (pathTimer.elapsedTimeSeconds > 0.2) {
                         follower.setMaxPower(0.22)
                         follower.followPath(pickupPose1Ball3, true)
-                        setPathState(9)
+                        setPathState(10)
                     }
                 }
             }
-
-            // Return to scoring position
-            9 -> {
+            10 -> {
                 if (notBusy) {
                     follower.setMaxPower(0.6)
                     follower.followPath(returnPose, true)
-                    setPathState(10)
+                    setPathState(11)
                 }
             }
-
-            // Wait for arrival
-            10 -> {
-                if (notBusy) setPathState(11)
-            }
-
-            // Brief pause before second score
             11 -> {
-                if (pathTimer.elapsedTimeSeconds > 0.25) setPathState(12)
-            }
-
-            // Center and fire second load
-            12 -> {
-                if (!isDispensing) {
-                    isDispensing = true
-                    scope.launch {
-                        LimelightUtil.centerAndFire(
-                            LimelightUtil.Tags.RED_DEPO,
-                            follower,
-                            ord,
-                            centerTimeoutMs = 300L
-                        )
-                        ord = arrayOf("N", "N", "N")
-
-                        // Stop outtake motors after firing
-                        outTakeCalc?.cancel()
-                        outTake1.power = 0.0
-                        outTake2.power = 0.0
-
-                        isDispensing = false
-                        setPathState(13)
-                    }
+                if (notBusy) {
+                    setPathState(12)
                 }
             }
-
-            // Go to spike 2
+            12 -> {
+                if (pathTimer.elapsedTimeSeconds > 0.25) {
+                    setPathState(13)
+                }
+            }
             13 -> {
-                if (!isDispensing && (notBusy || pathTimer.elapsedTimeSeconds > 1.0)) {
-                    follower.setMaxPower(0.6)
-                    follower.followPath(stripe2, true)
+                val centered = centerDepo()
+                if (centered || pathTimer.elapsedTimeSeconds > 0.3) {
                     setPathState(14)
                 }
             }
-
-            // Slow grab at spike 2
             14 -> {
+                if (!isDispensing) {
+                    isDispensing = true
+                    scope.launch {
+                        executeDispensing()
+                        outTakeCalc?.cancel()
+                        outTake1.power = 0.0
+                        outTake2.power = 0.0
+                        isDispensing = false
+                        setPathState(15)
+                    }
+                }
+            }
+            15 -> {
+                if (notBusy || pathTimer.elapsedTimeSeconds > 1.0) {
+                    follower.setMaxPower(0.6)
+                    follower.followPath(stripe2, true)
+                    setPathState(16)
+                }
+            }
+            16 -> {
                 if (notBusy) {
                     follower.setMaxPower(0.18)
                     slowDown = scope.launch {
@@ -385,12 +395,10 @@ class NewBackRedAutoDrawLL : OpMode() {
                         }
                     }
                     follower.followPath(stripe2Grab, true)
-                    setPathState(15)
+                    setPathState(17)
                 }
             }
-
-            // Done
-            15 -> {
+            17 -> {
                 if (notBusy) {
                     slowDown?.cancel()
                 }
@@ -398,55 +406,127 @@ class NewBackRedAutoDrawLL : OpMode() {
         }
     }
 
-    private fun updateOuttakePower() {
-        val power = LimelightUtil.calculateOuttakePower(LimelightUtil.Tags.RED_DEPO)
-        if (power != null) {
-            outTake1.power = power
-            outTake2.power = power
+    private fun centerDepo(): Boolean {
+        follower.setMaxPower(0.8)
+        val result: LLResult? = limelight.latestResult
+        val fiducialResults = result?.fiducialResults
+        val target = fiducialResults?.firstOrNull { it.fiducialId == AprilTagIds.RED_DEPO }
+
+        if (target == null) {
+            return false
+        }
+
+        val xErrPx: Double = target.targetXPixels - (DepoCenter.CAM_WIDTH_PX / 2.0)
+
+        if (abs(xErrPx) <= DepoCenter.CENTER_DEADZONE) {
+            return true
+        }
+
+        val hFovDeg = 70.0
+        val hFovRad = Math.toRadians(hFovDeg)
+        val pixelsToRad = hFovRad / DepoCenter.CAM_WIDTH_PX
+        val angleError = xErrPx * pixelsToRad
+
+        val currentHeading = follower.pose.heading
+        val targetHeading = currentHeading - angleError
+
+        follower.turnTo(targetHeading)
+
+        return false
+    }
+
+    suspend fun executeDispensing() {
+        val dispenseSequence = mutableListOf<Double>()
+        val slotToFirePosition = mapOf(
+            0 to ServoPositions.FIRE_P1,
+            1 to ServoPositions.FIRE_P2,
+            2 to ServoPositions.FIRE_P3
+        )
+        val dispenseOrder = listOf(1, 0, 2)
+
+        for (slotIndex in dispenseOrder) {
+            if (ord[slotIndex] != "N") {
+                slotToFirePosition[slotIndex]?.let { dispenseSequence.add(it) }
+            }
+        }
+
+        if (dispenseSequence.isNotEmpty()) {
+            executeDispenseSequence(dispenseSequence)
+        }
+
+        bowlServo.position = ServoPositions.LOAD_P1
+        ord = arrayOf("N", "N", "N")
+    }
+
+    suspend fun executeDispenseSequence(positions: List<Double>) {
+        delay(Timing.DISPENSE_INITIAL_DELAY)
+
+        positions.forEach { position ->
+            bowlServo.position = position
+            delay(Timing.BOWL_MOVE_DELAY)
+
+            camServo.position = ServoPositions.CAM_OPEN
+            delay(Timing.CAM_OPEN_DELAY)
+
+            camServo.position = ServoPositions.CAM_CLOSED
+            delay(Timing.CAM_CLOSE_DELAY)
         }
     }
 
-    private fun handleIntake() {
+    fun outTakePower() {
+        val result: LLResult? = limelight.latestResult
+        if (result == null || !result.isValid) {
+            return
+        }
+        val fiducialResults = result.fiducialResults
+        val target = fiducialResults.firstOrNull { it.fiducialId == AprilTagIds.RED_DEPO }
+        if (target == null) {
+            return
+        }
+        val targetY = target.targetYPixels
+        val powerResult = 0.0002416 * targetY + 0.105
+        DepoCenter.OUTTAKE_SPEED = powerResult
+        outTake1.power = DepoCenter.OUTTAKE_SPEED
+        outTake2.power = DepoCenter.OUTTAKE_SPEED
+    }
+
+    fun handleIntake() {
         val isFull = ord.none { it == "N" }
 
-        intakeServo1.power = if (isFull || isDispensing) {
-            -1.0  // Reverse when full or dispensing
+        if (isFull || isDispensing) {
+            intakeServo1.power = -ServoPositions.INTAKE_ON
         } else {
-            1.0   // Forward to intake
+            intakeServo1.power = ServoPositions.INTAKE_ON
         }
     }
 
-    private suspend fun handleDetections() {
+    suspend fun handleDetections() {
         if (isDispensing) return
-
         val r = colorSensor.red()
         val g = colorSensor.green()
         val b = colorSensor.blue()
 
-        // No ball detected
         if (g <= 80 && b <= 110) {
             isSeen = false
             return
         }
 
-        // Cooldown check
         val now = System.currentTimeMillis()
         if (now < Timing.nextDetectAllowedMs) return
 
         if (!isSeen) {
             val slot = nextSlot()
             if (slot != -1) {
-                // Determine ball color: G = green/yellow, P = purple/other
                 ord[slot] = if (g >= 110) "G" else "P"
                 delay(200)
-                LimelightUtil.advanceBowl(slot)
+                advanceBowl(slot)
                 Timing.nextDetectAllowedMs = now + Timing.DETECTION_COOLDOWN
             }
             isSeen = true
         }
     }
 
-    private fun nextSlot(): Int {
+    fun nextSlot(): Int {
         return when {
             ord[0] == "N" -> 0
             ord[1] == "N" -> 1
@@ -455,28 +535,54 @@ class NewBackRedAutoDrawLL : OpMode() {
         }
     }
 
-    private fun initializeHardware() {
+    fun advanceBowl(slot: Int) {
+        bowlServo.position = when (slot) {
+            0 -> ServoPositions.LOAD_P2
+            1 -> ServoPositions.LOAD_P3
+            2 -> ServoPositions.FIRE_P2
+            else -> bowlServo.position
+        }
+    }
+
+    fun initializeHardware() {
         outTake1 = hardwareMap.get(DcMotorEx::class.java, "outTake1")
         outTake2 = hardwareMap.get(DcMotorEx::class.java, "outTake2")
         intakeServo1 = hardwareMap.get(CRServo::class.java, "intakeServo1")
+        bowlServo = hardwareMap.get(Servo::class.java, "bowlServo")
+        camServo = hardwareMap.get(Servo::class.java, "camServo")
+        limelight = hardwareMap.get(Limelight3A::class.java, "limelight")
         colorSensor = hardwareMap.get(ColorSensor::class.java, "ColorSensor")
+
+        camServo.position = ServoPositions.CAM_CLOSED
+        bowlServo.position = ServoPositions.FIRE_P2
 
         setupMotorDirections()
         setupPIDFCoefficients()
         resetEncoders()
+        setupVision()
     }
 
-    private fun setupMotorDirections() {
+    fun followerSpeed(speed: Double) {
+        follower.setMaxPower(speed)
+    }
+
+    fun setupVision() {
+        limelight.setPollRateHz(100)
+        limelight.pipelineSwitch(0)
+        limelight.start()
+    }
+
+    fun setupMotorDirections() {
         outTake2.direction = DcMotorSimple.Direction.REVERSE
     }
 
-    private fun setupPIDFCoefficients() {
+    fun setupPIDFCoefficients() {
         listOf(outTake1, outTake2).forEach {
             it.setVelocityPIDFCoefficients(pidP, pidI, pidD, pidF)
         }
     }
 
-    private fun resetEncoders() {
+    fun resetEncoders() {
         listOf(outTake1, outTake2).forEach { motor ->
             motor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
             motor.mode = DcMotor.RunMode.RUN_USING_ENCODER
@@ -484,7 +590,7 @@ class NewBackRedAutoDrawLL : OpMode() {
         }
     }
 
-    private fun initializePedroPathing() {
+    fun initializePedroPathing() {
         panels = PanelsTelemetry.telemetry
 
         pathTimer = Timer()
@@ -496,7 +602,6 @@ class NewBackRedAutoDrawLL : OpMode() {
         otos.calibrateImu()
         otos.resetTracking()
 
-        // Preload balls
         ord = arrayOf("P", "G", "P")
 
         follower = Constants.createFollower(hardwareMap)
@@ -504,6 +609,10 @@ class NewBackRedAutoDrawLL : OpMode() {
         follower.activateAllPIDFs()
 
         buildPaths()
+    }
+
+    fun clip(v: Double, min: Double, max: Double): Double {
+        return max(min, min(max, v))
     }
 
     @JvmName("SetPathStateFunction")

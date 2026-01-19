@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode
 
+import org.firstinspires.ftc.teamcode.util.Drawing
 import com.bylazar.telemetry.PanelsTelemetry
 import com.bylazar.telemetry.TelemetryManager
 import com.pedropathing.follower.Follower
@@ -122,9 +123,9 @@ class NewBackRedAuto : OpMode() {
 
     object Timing {
         const val DISPENSE_INITIAL_DELAY = 100L
-        const val BOWL_MOVE_DELAY = 500L
-        const val CAM_OPEN_DELAY = 200L
-        const val CAM_CLOSE_DELAY = 350L
+        const val BOWL_MOVE_DELAY = 250L
+        const val CAM_OPEN_DELAY = 140L
+        const val CAM_CLOSE_DELAY = 170L
         const val DETECTION_COOLDOWN = 1200L
         var nextDetectAllowedMs = 0L
     }
@@ -132,6 +133,19 @@ class NewBackRedAuto : OpMode() {
     override fun init() {
         initializeHardware()
         initializePedroPathing()
+
+        // Initialize the drawing system
+        Drawing.init()
+    }
+
+    override fun init_loop() {
+        // Draw robot position while waiting to start
+        follower.update()
+        Drawing.drawOnlyCurrent(follower)
+
+        panels?.debug("Status", "Ready to start")
+        panels?.debug("Start Pose", "${startPose.x}, ${startPose.y}")
+        panels?.update(telemetry)
     }
 
     override fun start() {
@@ -158,6 +172,9 @@ class NewBackRedAuto : OpMode() {
         follower.update()
         autonomousPathUpdate()
         handleIntake()
+
+        // Draw robot, path, and history on Panels Dashboard
+        Drawing.drawDebug(follower)
 
         panels?.debug("Path State", pathState)
         panels?.debug("ord[0]", ord[0])
