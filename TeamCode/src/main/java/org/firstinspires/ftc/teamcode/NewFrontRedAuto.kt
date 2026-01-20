@@ -79,6 +79,7 @@ class NewFrontRedAuto : OpMode() {
     private lateinit var spike2Score:  PathChain
     private lateinit var spike3Line:   PathChain
     private lateinit var spike3Grab:   PathChain
+    private lateinit var spike3Score:  PathChain
 
     val pidP = 150.0
     val pidI = 0.0
@@ -122,7 +123,7 @@ class NewFrontRedAuto : OpMode() {
         const val BOWL_MOVE_DELAY = 250L
         const val CAM_OPEN_DELAY = 140L
         const val CAM_CLOSE_DELAY = 170L
-        const val DETECTION_COOLDOWN = 800L
+        const val DETECTION_COOLDOWN = 600L
         var nextDetectAllowedMs = 0L
     }
     override fun init() {
@@ -238,7 +239,7 @@ class NewFrontRedAuto : OpMode() {
                 }
             }
             7 -> {
-                follower.setMaxPower(0.21)
+                follower.setMaxPower(0.25)
                 if (notBusy) {
                     if (!timerState) {
                         pathTimer.resetTimer()
@@ -298,7 +299,7 @@ class NewFrontRedAuto : OpMode() {
                 }
             }
             14 -> {
-                follower.setMaxPower(0.21)
+                follower.setMaxPower(0.25)
                 if (notBusy) {
                     if (!timerState) {
                         pathTimer.resetTimer()
@@ -359,7 +360,43 @@ class NewFrontRedAuto : OpMode() {
                 }
             }
             21 -> {
-                follower.setMaxPower(0.21)
+                follower.setMaxPower(0.25)
+                if (notBusy) {
+                    if (!timerState) {
+                        pathTimer.resetTimer()
+                        timerState = true
+                    }
+                    if (pathTimer.elapsedTimeSeconds > 0.01) {
+                        //slowDown = scope.launch { while (isActive) { if (ord[0] != "N") follower.setMaxPower(0.18) } }
+                        follower.followPath(spike3Score, true)
+                        setPathState(22)
+                    }
+                }
+            }
+            22 -> {
+                follower.setMaxPower(1.0)
+                if (notBusy) {
+                    setPathState(23)
+                }
+            }
+            23 -> {
+                val centered = centerDepo()
+                if (centered || pathTimer.elapsedTimeSeconds > 0.08) {
+                    setPathState(24)
+                }
+            }
+            24 -> {
+                if (!isDispensing) {
+                    isDispensing = true
+                    scope.launch {
+                        executeDispensing()
+                        isDispensing = false
+                        setPathState(25)
+                    }
+                }
+            }
+            25 -> {
+
             }
         }
     }
@@ -629,6 +666,10 @@ class NewFrontRedAuto : OpMode() {
         spike3Grab = follower.pathBuilder()
             .addPath(BezierCurve(spike3pre, spike3))
             .setLinearHeadingInterpolation(spike3pre.heading, spike3.heading)
+            .build()
+        spike3Score = follower.pathBuilder()
+            .addPath(BezierCurve(spike3, scorePose))
+            .setLinearHeadingInterpolation(spike3.heading, scorePose.heading)
             .build()
     }
 
