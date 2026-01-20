@@ -26,6 +26,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
+import org.firstinspires.ftc.teamcode.util.Drawing
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -51,24 +52,22 @@ class NewFrontRedAuto : OpMode() {
     lateinit var limelight: Limelight3A
     lateinit var colorSensor: ColorSensor
 
-    @Volatile
-    var ord = arrayOf("N", "N", "N")
+    @Volatile var ord = arrayOf("N", "N", "N")
     @set:JvmName("PathStateVar")
     var pathState: Int = 0
     var timerState = false
     var isSeen = false
-    @Volatile
-    var isDispensing = false
+    @Volatile var isDispensing = false
 
     // Poses
     private val startPose    = Pose(123.0, 123.0, Math.toRadians(36.0))
     private val scorePose    = Pose(91.5, 91.5, Math.toRadians(45.0))
-    private val spike1pre    = Pose(98.0, 86.0, Math.toRadians(0.0))
-    private val spike1       = Pose(117.0, 86.0, Math.toRadians(355.0))
-    private val spike2pre    = Pose(98.0, 64.0, Math.toRadians(0.0))
-    private val spike2       = Pose(117.0, 64.0, Math.toRadians(355.0))
-    private val spike3pre    = Pose(98.0, 42.0, Math.toRadians(0.0))
-    private val spike3       = Pose(117.0, 42.0, Math.toRadians(355.0))
+    private val spike1pre    = Pose(98.0, 86.0, Math.toRadians(355.0))
+    private val spike1       = Pose(115.0, 86.0, Math.toRadians(355.0))
+    private val spike2pre    = Pose(98.0, 64.0, Math.toRadians(355.0))
+    private val spike2       = Pose(115.0, 64.0, Math.toRadians(355.0))
+    private val spike3pre    = Pose(98.0, 40.0, Math.toRadians(355.0))
+    private val spike3       = Pose(115.0, 40.0, Math.toRadians(355.0))
 
     // Paths
     private lateinit var preLoadScore: PathChain
@@ -123,12 +122,17 @@ class NewFrontRedAuto : OpMode() {
         const val BOWL_MOVE_DELAY = 250L
         const val CAM_OPEN_DELAY = 140L
         const val CAM_CLOSE_DELAY = 170L
-        const val DETECTION_COOLDOWN = 1200L
+        const val DETECTION_COOLDOWN = 800L
         var nextDetectAllowedMs = 0L
     }
     override fun init() {
         initializeHardware()
         initializePedroPathing()
+    }
+
+    override fun init_loop() {
+        follower.update()
+        Drawing.drawOnlyCurrent(follower)
     }
 
     override fun start() {
@@ -155,16 +159,17 @@ class NewFrontRedAuto : OpMode() {
         follower.update()
         autonomousPathUpdate()
         handleIntake()
+        Drawing.drawDebug(follower)
         panels?.debug("Path State", pathState)
         panels?.debug("ord[0]", ord[0])
         panels?.debug("ord[1]", ord[1])
         panels?.debug("ord[2]", ord[2])
+        panels?.debug("follower speed", follower.velocity)
+        panels?.debug("follower distance Remaining", follower.distanceRemaining)
+        panels?.debug("follower distance Traveled On Path", follower.distanceTraveledOnPath)
         panels?.debug("Timer", pathTimer.elapsedTimeSeconds)
         panels?.debug("RunTime", runtime)
         panels?.update(telemetry)
-        if (runtime >= 29.0) {
-            terminateOpModeNow()
-        }
     }
 
     override fun stop() {
@@ -181,7 +186,7 @@ class NewFrontRedAuto : OpMode() {
                 if (notBusy && !timerState) {
                     pathTimer.resetTimer()
                     timerState = true
-                    follower.followPath(preLoadScore, true)
+                    follower.followPath(preLoadScore, false)
                     setPathState(1)
                 }
             }
@@ -192,7 +197,7 @@ class NewFrontRedAuto : OpMode() {
                 }
             }
             2 -> {
-                if (pathTimer.elapsedTimeSeconds > 0.1) {
+                if (pathTimer.elapsedTimeSeconds > 0.01) {
                     setPathState(3)
                 }
             }
@@ -220,27 +225,27 @@ class NewFrontRedAuto : OpMode() {
                 }
             }
             6 -> {
-                follower.setMaxPower(0.80)
+                follower.setMaxPower(1.0)
                 if (notBusy) {
                     if (!timerState) {
                         pathTimer.resetTimer()
                         timerState = true
                     }
-                    if (pathTimer.elapsedTimeSeconds > 0.1) {
-                        follower.followPath(spike1Grab, true)
+                    if (pathTimer.elapsedTimeSeconds > 0.01) {
+                        follower.followPath(spike1Grab, false)
                         setPathState(7)
                     }
                 }
             }
             7 -> {
-                follower.setMaxPower(0.17)
+                follower.setMaxPower(0.21)
                 if (notBusy) {
                     if (!timerState) {
                         pathTimer.resetTimer()
                         timerState = true
                     }
-                    if (pathTimer.elapsedTimeSeconds > 0.1) {
-                        follower.followPath(spike1Score, true)
+                    if (pathTimer.elapsedTimeSeconds > 0.01) {
+                        follower.followPath(spike1Score, false)
                         setPathState(8)
                     }
                 }
@@ -252,13 +257,13 @@ class NewFrontRedAuto : OpMode() {
                 }
             }
             9 -> {
-                if (pathTimer.elapsedTimeSeconds > 0.1) {
+                if (pathTimer.elapsedTimeSeconds > 0.01) {
                     setPathState(10)
                 }
             }
             10 -> {
                 val centered = centerDepo()
-                if (centered || pathTimer.elapsedTimeSeconds > 0.1) {
+                if (centered || pathTimer.elapsedTimeSeconds > 0.01) {
                     setPathState(11)
                 }
             }
@@ -273,7 +278,6 @@ class NewFrontRedAuto : OpMode() {
                 }
             }
             12 -> {
-                follower.setMaxPower(0.35)
                 if (!isDispensing) {
                     follower.breakFollowing()
                     follower.followPath(spike2Line, false)
@@ -281,29 +285,27 @@ class NewFrontRedAuto : OpMode() {
                 }
             }
             13 -> {
-                follower.setMaxPower(0.8)
+                follower.setMaxPower(1.0)
                 if (notBusy) {
                     if (!timerState) {
                         pathTimer.resetTimer()
                         timerState = true
                     }
-                    if (pathTimer.elapsedTimeSeconds > 0.1) {
-                        slowDown = scope.launch { while (isActive) { if (ord[0] != "N") follower.setMaxPower(0.18) } }
-                        follower.followPath(spike2Grab, true)
+                    if (pathTimer.elapsedTimeSeconds > 0.01) {
+                        follower.followPath(spike2Grab, false)
                         setPathState(14)
                     }
                 }
             }
             14 -> {
-                follower.setMaxPower(0.2)
+                follower.setMaxPower(0.21)
                 if (notBusy) {
                     if (!timerState) {
                         pathTimer.resetTimer()
                         timerState = true
                     }
-                    if (pathTimer.elapsedTimeSeconds > 0.1) {
-                        slowDown?.cancel()
-                        follower.followPath(spike2Score, true)
+                    if (pathTimer.elapsedTimeSeconds > 0.01) {
+                        follower.followPath(spike2Score, false)
                         setPathState(15)
                     }
                 }
@@ -315,13 +317,13 @@ class NewFrontRedAuto : OpMode() {
                 }
             }
             16 -> {
-                if (pathTimer.elapsedTimeSeconds > 0.1) {
+                if (pathTimer.elapsedTimeSeconds > 0.01) {
                     setPathState(17)
                 }
             }
             17 -> {
                 val centered = centerDepo()
-                if (centered || pathTimer.elapsedTimeSeconds > 0.1) {
+                if (centered || pathTimer.elapsedTimeSeconds > 0.08) {
                     setPathState(18)
                 }
             }
@@ -336,7 +338,6 @@ class NewFrontRedAuto : OpMode() {
                 }
             }
             19 -> {
-                follower.setMaxPower(0.35)
                 if (!isDispensing) {
                     follower.breakFollowing()
                     follower.followPath(spike3Line, false)
@@ -344,20 +345,21 @@ class NewFrontRedAuto : OpMode() {
                 }
             }
             20 -> {
-                follower.setMaxPower(0.8)
+                follower.setMaxPower(1.0)
                 if (notBusy) {
                     if (!timerState) {
                         pathTimer.resetTimer()
                         timerState = true
                     }
-                    if (pathTimer.elapsedTimeSeconds > 0.1) {
-                        follower.followPath(spike2Grab, true)
+                    if (pathTimer.elapsedTimeSeconds > 0.01) {
+                        //slowDown = scope.launch { while (isActive) { if (ord[0] != "N") follower.setMaxPower(0.18) } }
+                        follower.followPath(spike3Grab, true)
                         setPathState(21)
                     }
                 }
             }
             21 -> {
-                follower.setMaxPower(0.17)
+                follower.setMaxPower(0.21)
             }
         }
     }
@@ -421,8 +423,6 @@ class NewFrontRedAuto : OpMode() {
     }
 
     suspend fun executeDispenseSequence(positions: List<Double>) {
-        delay(Timing.DISPENSE_INITIAL_DELAY)
-
         positions.forEach { position ->
             bowlServo.position = position
             delay(Timing.BOWL_MOVE_DELAY)
@@ -585,6 +585,7 @@ class NewFrontRedAuto : OpMode() {
         follower.activateAllPIDFs()
 
         buildPaths()
+        Drawing.init()
     }
 
     fun buildPaths() {

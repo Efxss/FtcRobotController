@@ -26,11 +26,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
+import org.firstinspires.ftc.teamcode.util.Drawing
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
-@Autonomous(name = "Front Blue Auto (NEW)", group = "Main Blue")
+@Autonomous(name = "Front Blue Auto", group = "Main Blue")
 class NewFrontBlueAuto : OpMode() {
     var panels: TelemetryManager? = null
     val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
@@ -83,14 +84,14 @@ class NewFrontBlueAuto : OpMode() {
 
     object ServoPositions {
         // Loading positions
-        const val LOAD_P1 = 0.004
-        const val LOAD_P2 = 0.080
-        const val LOAD_P3 = 0.153
+        const val LOAD_P1 = 0.021
+        const val LOAD_P2 = 0.087
+        const val LOAD_P3 = 0.158
 
         // Firing/dispensing positions
-        const val FIRE_P1 = 0.118
-        const val FIRE_P2 = 0.1885
-        const val FIRE_P3 = 0.042
+        const val FIRE_P1 = 0.128
+        const val FIRE_P2 = 0.195
+        const val FIRE_P3 = 0.058
 
         // Camera servo positions
         const val CAM_OPEN = 0.44
@@ -113,15 +114,20 @@ class NewFrontBlueAuto : OpMode() {
 
     object Timing {
         const val DISPENSE_INITIAL_DELAY = 100L
-        const val BOWL_MOVE_DELAY = 500L
-        const val CAM_OPEN_DELAY = 200L
-        const val CAM_CLOSE_DELAY = 350L
+        const val BOWL_MOVE_DELAY = 250L
+        const val CAM_OPEN_DELAY = 140L
+        const val CAM_CLOSE_DELAY = 170L
         const val DETECTION_COOLDOWN = 1200L
         var nextDetectAllowedMs = 0L
     }
     override fun init() {
         initializeHardware()
         initializePedroPathing()
+    }
+
+    override fun init_loop() {
+        follower.update()
+        Drawing.drawOnlyCurrent(follower)
     }
 
     override fun start() {
@@ -148,6 +154,7 @@ class NewFrontBlueAuto : OpMode() {
         follower.update()
         autonomousPathUpdate()
         handleIntake()
+        Drawing.drawDebug(follower)
         panels?.debug("Path State", pathState)
         panels?.debug("ord[0]", ord[0])
         panels?.debug("ord[1]", ord[1])
@@ -509,6 +516,7 @@ class NewFrontBlueAuto : OpMode() {
         follower.activateAllPIDFs()
 
         buildPaths()
+        Drawing.init()
     }
 
     fun buildPaths() {

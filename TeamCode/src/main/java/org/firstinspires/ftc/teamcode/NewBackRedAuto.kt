@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode
 
-import org.firstinspires.ftc.teamcode.util.Drawing
 import com.bylazar.telemetry.PanelsTelemetry
 import com.bylazar.telemetry.TelemetryManager
 import com.pedropathing.follower.Follower
@@ -27,11 +26,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
+import org.firstinspires.ftc.teamcode.util.Drawing
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
-@Autonomous(name = "Back Red Auto (NEW)", group = "Main Red")
+@Autonomous(name = "Back Red Auto", group = "Main Red")
 class NewBackRedAuto : OpMode() {
     var panels: TelemetryManager? = null
     val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
@@ -133,9 +133,6 @@ class NewBackRedAuto : OpMode() {
     override fun init() {
         initializeHardware()
         initializePedroPathing()
-
-        // Initialize the drawing system
-        Drawing.init()
     }
 
     override fun init_loop() {
@@ -252,18 +249,19 @@ class NewBackRedAuto : OpMode() {
                 }
             }
             1 -> {
+                follower.setMaxPower(1.0)
                 if (notBusy) {
                     setPathState(2)
                 }
             }
             2 -> {
-                if (pathTimer.elapsedTimeSeconds > 0.25) {
+                if (pathTimer.elapsedTimeSeconds > 0.01) {
                     setPathState(3)
                 }
             }
             3 -> {
                 val centered = centerDepo()
-                if (centered || pathTimer.elapsedTimeSeconds > 0.5) {
+                if (centered || pathTimer.elapsedTimeSeconds > 0.08) {
                     setPathState(4)
                 }
             }
@@ -279,8 +277,8 @@ class NewBackRedAuto : OpMode() {
             }
             5 -> {
                 if (!isDispensing) {
-                    follower.breakFollowing()  // Clear any previous turn/path state
-                    follower.setMaxPower(0.6)  // Reset max power
+                    follower.breakFollowing()
+                    follower.setMaxPower(0.6)
                     follower.followPath(pickupPosePoint5, false)
                     setPathState(6)
                 }
@@ -291,8 +289,8 @@ class NewBackRedAuto : OpMode() {
                         pathTimer.resetTimer()
                         timerState = true
                     }
-                    if (pathTimer.elapsedTimeSeconds > 0.3) {
-                        follower.setMaxPower(0.4)
+                    if (pathTimer.elapsedTimeSeconds > 0.01) {
+                        follower.setMaxPower(0.9)
                         follower.followPath(pickupPose1, true)
                         setPathState(7)
                     }
@@ -304,7 +302,7 @@ class NewBackRedAuto : OpMode() {
                         pathTimer.resetTimer()
                         timerState = true
                     }
-                    if (pathTimer.elapsedTimeSeconds > 0.2) {
+                    if (pathTimer.elapsedTimeSeconds > 0.01) {
                         follower.setMaxPower(0.18)
                         follower.followPath(pickupPose1Ball1, true)
                         setPathState(8)
@@ -317,7 +315,7 @@ class NewBackRedAuto : OpMode() {
                         pathTimer.resetTimer()
                         timerState = true
                     }
-                    if (pathTimer.elapsedTimeSeconds > 0.2) {
+                    if (pathTimer.elapsedTimeSeconds > 0.01) {
                         follower.setMaxPower(0.2)
                         follower.followPath(pickupPose1Ball2, true)
                         setPathState(9)
@@ -330,7 +328,7 @@ class NewBackRedAuto : OpMode() {
                         pathTimer.resetTimer()
                         timerState = true
                     }
-                    if (pathTimer.elapsedTimeSeconds > 0.2) {
+                    if (pathTimer.elapsedTimeSeconds > 0.01) {
                         follower.setMaxPower(0.22)
                         follower.followPath(pickupPose1Ball3, true)
                         setPathState(10)
@@ -339,7 +337,7 @@ class NewBackRedAuto : OpMode() {
             }
             10 -> {
                 if (notBusy) {
-                    follower.setMaxPower(0.6)
+                    follower.setMaxPower(1.0)
                     follower.followPath(returnPose, true)
                     setPathState(11)
                 }
@@ -350,13 +348,13 @@ class NewBackRedAuto : OpMode() {
                 }
             }
             12 -> {
-                if (pathTimer.elapsedTimeSeconds > 0.25) {
+                if (pathTimer.elapsedTimeSeconds > 0.01) {
                     setPathState(13)
                 }
             }
             13 -> {
                 val centered = centerDepo()
-                if (centered || pathTimer.elapsedTimeSeconds > 0.3) {
+                if (centered || pathTimer.elapsedTimeSeconds > 0.01) {
                     setPathState(14)
                 }
             }
@@ -372,18 +370,18 @@ class NewBackRedAuto : OpMode() {
                 }
             }
             15 -> {
-                if (notBusy || pathTimer.elapsedTimeSeconds > 1.0) {
-                    follower.setMaxPower(0.6)
+                if (notBusy || pathTimer.elapsedTimeSeconds > 0.08) {
+                    follower.setMaxPower(0.9)
                     follower.followPath(stripe2, true)
                     setPathState(16)
                 }
             }
             16 -> {
                 if (notBusy) {
-                    follower.setMaxPower(0.18)
+                    follower.setMaxPower(0.20)
                     slowDown = scope.launch {
                         while (isActive) {
-                            if (ord[0] != "N") follower.setMaxPower(0.16)
+                            if (ord[0] != "N") follower.setMaxPower(0.18)
                         }
                     }
                     follower.followPath(stripe2Grab, true)
@@ -613,6 +611,7 @@ class NewBackRedAuto : OpMode() {
         follower.activateAllPIDFs()
 
         buildPaths()
+        Drawing.init()
     }
 
     fun clip(v: Double, min: Double, max: Double): Double {
