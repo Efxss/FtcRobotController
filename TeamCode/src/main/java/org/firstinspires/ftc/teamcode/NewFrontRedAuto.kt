@@ -347,7 +347,7 @@ class NewFrontRedAuto : OpMode() {
                 }
             }
             20 -> {
-                follower.setMaxPower(1.0)
+                follower.setMaxPower(0.9)
                 if (notBusy) {
                     if (!timerState) {
                         pathTimer.resetTimer()
