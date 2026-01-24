@@ -61,14 +61,14 @@ class NewFrontRedAuto : OpMode() {
 
     // Poses
     private val startPose    = Pose(123.0, 123.0, Math.toRadians(36.0))
-    private val scorePose    = Pose(91.5, 91.5, Math.toRadians(43.0))
-    private val spike1pre    = Pose(98.0, 86.0, Math.toRadians(355.0))
-    private val spike1       = Pose(115.0, 86.0, Math.toRadians(355.0))
-    private val spike2pre    = Pose(98.0, 64.0, Math.toRadians(355.0))
-    private val spike2       = Pose(114.0, 64.0, Math.toRadians(355.0))
-    private val spike3pre    = Pose(97.0, 40.0, Math.toRadians(355.0))
-    private val spike3       = Pose(114.0, 40.0, Math.toRadians(355.0))
-    private val spike3fire   = Pose(87.0, 100.0, Math.toRadians(33.0))
+    private val scorePose    = Pose(91.5,  91.5,  Math.toRadians(43.0))
+    private val spike1pre    = Pose(98.0,  86.0,  Math.toRadians(355.0))
+    private val spike1       = Pose(115.0, 86.0,  Math.toRadians(355.0))
+    private val spike2pre    = Pose(98.0,  64.0,  Math.toRadians(355.0))
+    private val spike2       = Pose(114.0, 64.0,  Math.toRadians(355.0))
+    private val spike3pre    = Pose(97.0,  40.0,  Math.toRadians(355.0))
+    private val spike3       = Pose(114.0, 40.0,  Math.toRadians(355.0))
+    private val spike3fire   = Pose(87.0,  100.0, Math.toRadians(33.0))
 
     // Paths
     private lateinit var preLoadScore: PathChain
