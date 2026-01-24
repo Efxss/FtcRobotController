@@ -61,13 +61,14 @@ class NewFrontRedAuto : OpMode() {
 
     // Poses
     private val startPose    = Pose(123.0, 123.0, Math.toRadians(36.0))
-    private val scorePose    = Pose(91.5, 91.5, Math.toRadians(45.0))
+    private val scorePose    = Pose(91.5, 91.5, Math.toRadians(43.0))
     private val spike1pre    = Pose(98.0, 86.0, Math.toRadians(355.0))
     private val spike1       = Pose(115.0, 86.0, Math.toRadians(355.0))
     private val spike2pre    = Pose(98.0, 64.0, Math.toRadians(355.0))
-    private val spike2       = Pose(115.0, 64.0, Math.toRadians(355.0))
-    private val spike3pre    = Pose(98.0, 40.0, Math.toRadians(355.0))
-    private val spike3       = Pose(115.0, 40.0, Math.toRadians(355.0))
+    private val spike2       = Pose(114.0, 64.0, Math.toRadians(355.0))
+    private val spike3pre    = Pose(97.0, 40.0, Math.toRadians(355.0))
+    private val spike3       = Pose(114.0, 40.0, Math.toRadians(355.0))
+    private val spike3fire   = Pose(87.0, 100.0, Math.toRadians(33.0))
 
     // Paths
     private lateinit var preLoadScore: PathChain
@@ -123,7 +124,7 @@ class NewFrontRedAuto : OpMode() {
         const val BOWL_MOVE_DELAY = 250L
         const val CAM_OPEN_DELAY = 140L
         const val CAM_CLOSE_DELAY = 170L
-        const val DETECTION_COOLDOWN = 600L
+        const val DETECTION_COOLDOWN = 400L
         var nextDetectAllowedMs = 0L
     }
     override fun init() {
@@ -239,7 +240,7 @@ class NewFrontRedAuto : OpMode() {
                 }
             }
             7 -> {
-                follower.setMaxPower(0.25)
+                follower.setMaxPower(0.212)
                 if (notBusy) {
                     if (!timerState) {
                         pathTimer.resetTimer()
@@ -299,7 +300,7 @@ class NewFrontRedAuto : OpMode() {
                 }
             }
             14 -> {
-                follower.setMaxPower(0.25)
+                follower.setMaxPower(0.212)
                 if (notBusy) {
                     if (!timerState) {
                         pathTimer.resetTimer()
@@ -341,7 +342,7 @@ class NewFrontRedAuto : OpMode() {
             19 -> {
                 if (!isDispensing) {
                     follower.breakFollowing()
-                    follower.followPath(spike3Line, false)
+                    follower.followPath(spike3Line, true)
                     setPathState(20)
                 }
             }
@@ -360,7 +361,7 @@ class NewFrontRedAuto : OpMode() {
                 }
             }
             21 -> {
-                follower.setMaxPower(0.25)
+                follower.setMaxPower(0.212)
                 if (notBusy) {
                     if (!timerState) {
                         pathTimer.resetTimer()
@@ -483,7 +484,7 @@ class NewFrontRedAuto : OpMode() {
             return
         }
         val targetY = target.targetYPixels
-        val powerResult = 0.0002416 * targetY + 0.110
+        val powerResult = 0.0002416 * targetY + 0.115
         DepoCenter.OUTTAKE_SPEED = powerResult
         outTake1.power = DepoCenter.OUTTAKE_SPEED
         outTake2.power = DepoCenter.OUTTAKE_SPEED
@@ -668,8 +669,8 @@ class NewFrontRedAuto : OpMode() {
             .setLinearHeadingInterpolation(spike3pre.heading, spike3.heading)
             .build()
         spike3Score = follower.pathBuilder()
-            .addPath(BezierCurve(spike3, scorePose))
-            .setLinearHeadingInterpolation(spike3.heading, scorePose.heading)
+            .addPath(BezierCurve(spike3, spike3fire))
+            .setLinearHeadingInterpolation(spike3.heading, spike3fire.heading)
             .build()
     }
 
