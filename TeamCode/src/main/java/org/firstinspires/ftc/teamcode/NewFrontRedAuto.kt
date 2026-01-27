@@ -37,6 +37,7 @@ class NewFrontRedAuto : OpMode() {
     val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     var runDetections: Job? = null
     var outTakeCalc: Job? = null
+    var correction: Job? = null
     var slowDown: Job? = null
 
     @Volatile lateinit var follower: Follower
@@ -61,7 +62,7 @@ class NewFrontRedAuto : OpMode() {
 
     // Poses
     private val startPose    = Pose(123.0, 123.0, Math.toRadians(36.0))
-    private val scorePose    = Pose(91.5,  91.5,  Math.toRadians(43.0))
+    private val scorePose    = Pose(91.5,  91.5,  Math.toRadians(41.0))
     private val spike1pre    = Pose(98.0,  86.0,  Math.toRadians(355.0))
     private val spike1       = Pose(115.0, 86.0,  Math.toRadians(355.0))
     private val spike2pre    = Pose(98.0,  64.0,  Math.toRadians(355.0))
@@ -166,6 +167,9 @@ class NewFrontRedAuto : OpMode() {
         panels?.debug("ord[0]", ord[0])
         panels?.debug("ord[1]", ord[1])
         panels?.debug("ord[2]", ord[2])
+        panels?.debug("X", follower.pose.x)
+        panels?.debug("Y", follower.pose.y)
+        panels?.debug("H", follower.pose.heading)
         panels?.debug("follower speed", follower.velocity)
         panels?.debug("follower distance Remaining", follower.distanceRemaining)
         panels?.debug("follower distance Traveled On Path", follower.distanceTraveledOnPath)
@@ -178,6 +182,7 @@ class NewFrontRedAuto : OpMode() {
         runDetections?.cancel()
         outTakeCalc?.cancel()
         slowDown?.cancel()
+        correction?.cancel()
         limelight.stop()
     }
 
@@ -348,12 +353,26 @@ class NewFrontRedAuto : OpMode() {
             }
             20 -> {
                 follower.setMaxPower(0.9)
+                if (correction?.isActive != true) {
+                    correction = scope.launch {
+                        while (isActive) {
+                            if (follower.pose.y < 50.0) follower.breakFollowing()
+                            delay(15)
+                        }
+                    }
+                }
                 if (notBusy) {
+                    if (correction?.isActive == true) {
+                        correction?.cancel()
+                    }
+                    correction?.cancel()
                     if (!timerState) {
+                        correction?.cancel()
                         pathTimer.resetTimer()
                         timerState = true
                     }
                     if (pathTimer.elapsedTimeSeconds > 0.01) {
+                        correction?.cancel()
                         //slowDown = scope.launch { while (isActive) { if (ord[0] != "N") follower.setMaxPower(0.18) } }
                         follower.followPath(spike3Grab, true)
                         setPathState(21)
