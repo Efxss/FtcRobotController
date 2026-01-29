@@ -30,7 +30,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 @TeleOp(name = "Red TeleOP (NEW)", group = "Main Red")
-class NewRedTeleOP : OpMode() {
+class RedTeleOP : OpMode() {
     var panels: TelemetryManager? = null
     val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     var handleTelemetry: Job? = null
@@ -126,7 +126,7 @@ class NewRedTeleOP : OpMode() {
         const val BOWL_MOVE_DELAY = 250L
         const val CAM_OPEN_DELAY = 140L
         const val CAM_CLOSE_DELAY = 170L
-        const val DETECTION_COOLDOWN = 1200L
+        const val DETECTION_COOLDOWN = 400L
         const val OUTTAKE_DELAY = 800L
         var nextDetectAllowedMs = 0L
     }
