@@ -114,7 +114,6 @@ class NewFrontRedAuto : OpMode() {
     }
 
     object Timing {
-        const val DISPENSE_INITIAL_DELAY = 100L
         const val BOWL_MOVE_DELAY = 250L
         const val CAM_OPEN_DELAY = 140L
         const val CAM_CLOSE_DELAY = 170L
@@ -134,6 +133,7 @@ class NewFrontRedAuto : OpMode() {
     override fun start() {
         opmodeTimer.resetTimer()
         setPathState(0)
+        follower.startTeleOpDrive()
         outTakeCalc = scope.launch {
             while (isActive) {
                 outTakePower()
@@ -418,36 +418,26 @@ class NewFrontRedAuto : OpMode() {
         }
     }
 
-    private fun centerDepo(): Boolean {
-        follower.setMaxPower(0.8)
+    fun centerDepo(): Boolean {
+        follower.setMaxPower(0.25)
         val result: LLResult? = limelight.latestResult
         val fiducialResults = result?.fiducialResults
         val target = fiducialResults?.firstOrNull { it.fiducialId == AprilTagIds.RED_DEPO }
 
         if (target == null) {
+            follower.setTeleOpDrive(0.0, 0.0, 0.0, false)
             return false
         }
 
         val xErrPx: Double = target.targetXPixels - (DepoCenter.CAM_WIDTH_PX / 2.0)
 
-        // Already centered
         if (abs(xErrPx) <= DepoCenter.CENTER_DEADZONE) {
+            follower.setTeleOpDrive(0.0, 0.0, 0.0, false)
             return true
         }
 
-        // Convert pixel error to angle
-        val hFovDeg = 70.0  // Limelight 3A horizontal FOV
-        val hFovRad = Math.toRadians(hFovDeg)
-        val pixelsToRad = hFovRad / DepoCenter.CAM_WIDTH_PX
-        val angleError = xErrPx * pixelsToRad
-
-        // Calculate target heading
-        val currentHeading = follower.pose.heading
-        val targetHeading = currentHeading - angleError
-
-        // Use PedroPathing's turnTo
-        follower.turnTo(targetHeading)
-
+        val rotationPower = clip(xErrPx * DepoCenter.KP_ROTATE, -0.3, 0.3)
+        follower.setTeleOpDrive(0.0, 0.0, -rotationPower, false)
         return false
     }
 

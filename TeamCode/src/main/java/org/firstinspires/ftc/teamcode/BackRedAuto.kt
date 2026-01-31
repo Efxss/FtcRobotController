@@ -28,6 +28,8 @@ import kotlinx.coroutines.launch
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import org.firstinspires.ftc.teamcode.util.Drawing
 import kotlin.math.abs
+import kotlin.math.max
+import kotlin.math.min
 
 @Autonomous(name = "Back Red Auto", group = "Main Red")
 class BackRedAuto : OpMode() {
@@ -60,15 +62,15 @@ class BackRedAuto : OpMode() {
     @Volatile var finalShot = 0
 
     private val startPose    = Pose(72.0,  0.0,   Math.toRadians(90.0))
-    private val scorePose    = Pose(74.0,  4.0,   Math.toRadians(64.0))
-    private val spikeScore   = Pose(79.0,  7.0,   Math.toRadians(64.0))
-    private val spike1pre    = Pose(86.0,  24.0,  Math.toRadians(0.0))
-    private val spike1       = Pose(104.8, 24.0,  Math.toRadians(0.0))
-    private val spike2pre    = Pose(86.0,  46.0,  Math.toRadians(0.0))
-    private val spike2       = Pose(104.8, 48.0,  Math.toRadians(0.0))
-    private val spike3pre    = Pose(86.0,  72.0,  Math.toRadians(0.0))
-    private val spike3       = Pose(104.8, 72.0,  Math.toRadians(0.0))
-    private val strafeOut    = Pose(90.0,  4.0,   Math.toRadians(90.0))
+    private val scorePose    = Pose(74.0,  2.0,   Math.toRadians(64.0))
+    private val spikeScore   = Pose(79.0,  12.0,   Math.toRadians(64.0))
+    private val spike1pre    = Pose(86.0,  25.0,  Math.toRadians(0.0))
+    private val spike1       = Pose(106.8, 25.0,  Math.toRadians(0.0))
+    private val spike2pre    = Pose(86.0,  48.5,  Math.toRadians(0.0))
+    private val spike2       = Pose(106.8, 48.5,  Math.toRadians(0.0))
+    private val spike3pre    = Pose(86.0,  72.5,  Math.toRadians(0.0))
+    private val spike3       = Pose(106.8, 72.5,  Math.toRadians(0.0))
+    private val strafeOut    = Pose(100.0, 4.0,   Math.toRadians(90.0))
 
     private lateinit var preLoadScore: PathChain
     private lateinit var spike1Line:   PathChain
@@ -81,7 +83,7 @@ class BackRedAuto : OpMode() {
     private lateinit var spike3Grab:   PathChain
     private lateinit var spike3Score:  PathChain
     private lateinit var leavePoint:   PathChain
-    val pidP = 150.0
+    val pidP = 250.0
     val pidI = 0.0
     val pidD = 0.0
     val pidF = 13.5
@@ -113,7 +115,6 @@ class BackRedAuto : OpMode() {
     }
 
     object Timing {
-        const val DISPENSE_INITIAL_DELAY = 100L
         const val BOWL_MOVE_DELAY = 250L
         const val CAM_OPEN_DELAY = 140L
         const val CAM_CLOSE_DELAY = 170L
@@ -133,6 +134,7 @@ class BackRedAuto : OpMode() {
     override fun start() {
         opmodeTimer.resetTimer()
         setPathState(0)
+        follower.startTeleOpDrive()
         outTakeCalc = scope.launch {
             while (isActive) {
                 outTakePower()
@@ -206,7 +208,7 @@ class BackRedAuto : OpMode() {
             }
             3 -> {
                 val centered = centerDepo()
-                if (centered || pathTimer.elapsedTimeSeconds > 3.0) {
+                if (centered || pathTimer.elapsedTimeSeconds > 0.1) {
                     setPathState(4)
                 }
             }
@@ -241,7 +243,7 @@ class BackRedAuto : OpMode() {
                 }
             }
             7 -> {
-                follower.setMaxPower(0.212)
+                follower.setMaxPower(0.2199)
                 if (notBusy) {
                     if (!timerState) {
                         pathTimer.resetTimer()
@@ -254,14 +256,14 @@ class BackRedAuto : OpMode() {
                 }
             }
             8 -> {
-                if (correction?.isActive != true) {
+                /*if (correction?.isActive != true) {
                     correction = scope.launch {
                         while (isActive) {
-                            if (follower.pose.y < 16.0) follower.breakFollowing()
+                            if (follower.pose.y < 12.0) follower.breakFollowing()
                             delay(15)
                         }
                     }
-                }
+                }*/
                 follower.setMaxPower(1.0)
                 if (notBusy) {
                     if (correction?.isActive == true) {
@@ -278,7 +280,7 @@ class BackRedAuto : OpMode() {
             }
             10 -> {
                 val centered = centerDepo()
-                if (centered || pathTimer.elapsedTimeSeconds > 3.0) {
+                if (centered || pathTimer.elapsedTimeSeconds > 0.1) {
                     setPathState(11)
                 }
             }
@@ -313,7 +315,7 @@ class BackRedAuto : OpMode() {
                 }
             }
             14 -> {
-                follower.setMaxPower(0.212)
+                follower.setMaxPower(0.2199)
                 if (notBusy) {
                     if (!timerState) {
                         pathTimer.resetTimer()
@@ -326,14 +328,14 @@ class BackRedAuto : OpMode() {
                 }
             }
             15 -> {
-                if (correction?.isActive != true) {
+                /*if (correction?.isActive != true) {
                     correction = scope.launch {
                         while (isActive) {
                             if (follower.pose.y < 16.0) follower.breakFollowing()
                             delay(15)
                         }
                     }
-                }
+                }*/
                 follower.setMaxPower(1.0)
                 if (notBusy) {
                     if (correction?.isActive == true) {
@@ -350,7 +352,7 @@ class BackRedAuto : OpMode() {
             }
             17 -> {
                 val centered = centerDepo()
-                if (centered || pathTimer.elapsedTimeSeconds > 3.0) {
+                if (centered || pathTimer.elapsedTimeSeconds > 0.1) {
                     setPathState(18)
                 }
             }
@@ -373,14 +375,14 @@ class BackRedAuto : OpMode() {
             }
             20 -> {
                 follower.setMaxPower(0.9)
-                if (correction?.isActive != true) {
+                /*if (correction?.isActive != true) {
                     correction = scope.launch {
                         while (isActive) {
                             if (follower.pose.y > 62.0) follower.breakFollowing()
                             delay(15)
                         }
                     }
-                }
+                }*/
                 if (notBusy) {
                     if (correction?.isActive == true) {
                         correction?.cancel()
@@ -393,34 +395,33 @@ class BackRedAuto : OpMode() {
                     }
                     if (pathTimer.elapsedTimeSeconds > 0.01) {
                         correction?.cancel()
-                        follower.followPath(spike3Grab, true)
+                        follower.followPath(spike3Grab, false)
                         setPathState(21)
                     }
                 }
             }
             21 -> {
-                follower.setMaxPower(0.212)
+                follower.setMaxPower(0.2199)
                 if (notBusy) {
                     if (!timerState) {
                         pathTimer.resetTimer()
                         timerState = true
                     }
                     if (pathTimer.elapsedTimeSeconds > 0.01) {
-                        //slowDown = scope.launch { while (isActive) { if (ord[0] != "N") follower.setMaxPower(0.18) } }
-                        follower.followPath(spike3Score, true)
+                        follower.followPath(spike3Score, false)
                         setPathState(22)
                     }
                 }
             }
             22 -> {
-                if (correction?.isActive != true) {
+                /*if (correction?.isActive != true) {
                     correction = scope.launch {
                         while (isActive) {
                             if (follower.pose.y < 16.0) follower.breakFollowing()
                             delay(15)
                         }
                     }
-                }
+                }*/
                 follower.setMaxPower(1.0)
                 if (notBusy) {
                     if (correction?.isActive == true) {
@@ -432,7 +433,7 @@ class BackRedAuto : OpMode() {
             23 -> {
                 correction?.cancel()
                 val centered = centerDepo()
-                if (centered || pathTimer.elapsedTimeSeconds > 3.0) {
+                if (centered || pathTimer.elapsedTimeSeconds > 0.1) {
                     setPathState(24)
                 }
             }
@@ -459,36 +460,26 @@ class BackRedAuto : OpMode() {
         }
     }
 
-    private fun centerDepo(): Boolean {
-        follower.setMaxPower(0.8)
+    fun centerDepo(): Boolean {
+        follower.setMaxPower(0.55)
         val result: LLResult? = limelight.latestResult
         val fiducialResults = result?.fiducialResults
         val target = fiducialResults?.firstOrNull { it.fiducialId == AprilTagIds.RED_DEPO }
 
         if (target == null) {
+            follower.setTeleOpDrive(0.0, 0.0, 0.0, false)
             return false
         }
 
         val xErrPx: Double = target.targetXPixels - (DepoCenter.CAM_WIDTH_PX / 2.0)
 
-        // Already centered
         if (abs(xErrPx) <= DepoCenter.CENTER_DEADZONE) {
+            follower.setTeleOpDrive(0.0, 0.0, 0.0, false)
             return true
         }
 
-        // Convert pixel error to angle
-        val hFovDeg = 54.5  // Limelight 3A horizontal FOV
-        val hFovRad = Math.toRadians(hFovDeg)
-        val pixelsToRad = hFovRad / DepoCenter.CAM_WIDTH_PX
-        val angleError = xErrPx * pixelsToRad
-
-        // Calculate target heading
-        val currentHeading = follower.pose.heading
-        val targetHeading = currentHeading - angleError
-
-        // Use PedroPathing's turnTo
-        follower.turnTo(targetHeading)
-
+        val rotationPower = clip(xErrPx * DepoCenter.KP_ROTATE, -0.3, 0.3)
+        follower.setTeleOpDrive(0.0, 0.0, -rotationPower, false)
         return false
     }
 
@@ -553,9 +544,9 @@ class BackRedAuto : OpMode() {
         val isFull = ord.none { it == "N" }  // True if all 3 slots filled
 
         if (isFull || isDispensing) {
-            intakeServo1.power = -ServoPositions.INTAKE_ON  // Reverse/outtake
+            intakeServo1.power = -ServoPositions.INTAKE_ON
         } else {
-            intakeServo1.power = ServoPositions.INTAKE_ON   // Intake
+            intakeServo1.power = ServoPositions.INTAKE_ON
         }
     }
 
@@ -563,28 +554,22 @@ class BackRedAuto : OpMode() {
         if (isDispensing) return
         val r = colorSensor.red();val g = colorSensor.green();val b = colorSensor.blue()
 
-        // "Clear" => re-arm immediately (even during cooldown)
         if (g <= 80 && b <= 110) {
             isSeen = false
             return
         }
 
-        // If we're still in cooldown, don't trigger a new advance yet
         val now = System.currentTimeMillis()
         if (now < Timing.nextDetectAllowedMs) return
 
-        // Ball present and we're armed
         if (!isSeen) {
             val slot = nextSlot()
             if (slot != -1) {
-                // (Optional) choose G vs P here; your current logic makes g>=110 also count as P first.
                 ord[slot] = if (g >= 110) "G" else "P"
 
-                // keep the short settle delay if you need it
                 delay(200)
                 advanceBowl(slot)
 
-                // start cooldown WITHOUT blocking the loop
                 Timing.nextDetectAllowedMs = now + Timing.DETECTION_COOLDOWN
             }
             isSeen = true
@@ -730,5 +715,8 @@ class BackRedAuto : OpMode() {
         pathState = pState
         pathTimer.resetTimer()
         timerState = false
+    }
+    fun clip(v: Double, min: Double, max: Double): Double {
+        return max(min, min(max, v))
     }
 }
