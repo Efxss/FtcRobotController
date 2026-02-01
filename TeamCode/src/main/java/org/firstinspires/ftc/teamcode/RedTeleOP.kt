@@ -336,8 +336,6 @@ class RedTeleOP : OpMode() {
         ord = arrayOf("N", "N", "N")
     }
     suspend fun executeDispenseSequence(positions: List<Double>) {
-        delay(Timing.DISPENSE_INITIAL_DELAY)
-
         positions.forEach { position ->
             bowlServo.position = position
             delay(Timing.BOWL_MOVE_DELAY)

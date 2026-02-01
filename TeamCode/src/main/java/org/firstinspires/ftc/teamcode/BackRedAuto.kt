@@ -60,10 +60,13 @@ class BackRedAuto : OpMode() {
     var isSeen = false
     @Volatile var isDispensing = false
     @Volatile var finalShot = 0
+    @Volatile var cycleCount = 4
 
     private val startPose    = Pose(72.0,  0.0,   Math.toRadians(90.0))
-    private val scorePose    = Pose(74.0,  2.0,   Math.toRadians(64.0))
-    private val spikeScore   = Pose(79.0,  12.0,   Math.toRadians(64.0))
+    private val scorePose    = Pose(74.0,  2.0,   Math.toRadians(60.0))
+    private val spikeScore   = Pose(79.0,  12.0,  Math.toRadians(64.0))
+    private val spikeScore2  = Pose(79.0,  12.0,  Math.toRadians(65.0))
+    private val spikeScore3  = Pose(79.0,  12.0,  Math.toRadians(69.0))
     private val spike1pre    = Pose(86.0,  25.0,  Math.toRadians(0.0))
     private val spike1       = Pose(106.8, 25.0,  Math.toRadians(0.0))
     private val spike2pre    = Pose(86.0,  48.5,  Math.toRadians(0.0))
@@ -83,7 +86,7 @@ class BackRedAuto : OpMode() {
     private lateinit var spike3Grab:   PathChain
     private lateinit var spike3Score:  PathChain
     private lateinit var leavePoint:   PathChain
-    val pidP = 250.0
+    val pidP = 150.0
     val pidI = 0.0
     val pidD = 0.0
     val pidF = 13.5
@@ -155,7 +158,7 @@ class BackRedAuto : OpMode() {
         autonomousPathUpdate()
         handleIntake()
         Drawing.drawDebug(follower)
-        if (finalShot == 4) {
+        if (finalShot == cycleCount) {
             outTake1.power = 0.0
             outTake2.power = 0.0
             outTakeCalc?.cancel()
@@ -167,7 +170,7 @@ class BackRedAuto : OpMode() {
         panels?.debug("ord[2]", ord[2])
         panels?.debug("X", follower.pose.x)
         panels?.debug("Y", follower.pose.y)
-        panels?.debug("H", follower.pose.heading)
+        panels?.debug("H", Math.toDegrees(follower.pose.heading))
         panels?.debug("follower speed", follower.velocity)
         panels?.debug("follower distance Remaining", follower.distanceRemaining)
         panels?.debug("follower distance Traveled On Path", follower.distanceTraveledOnPath)
@@ -208,7 +211,7 @@ class BackRedAuto : OpMode() {
             }
             3 -> {
                 val centered = centerDepo()
-                if (centered || pathTimer.elapsedTimeSeconds > 0.1) {
+                if (/* centered || */ pathTimer.elapsedTimeSeconds > 0.1) {
                     setPathState(4)
                 }
             }
@@ -280,7 +283,7 @@ class BackRedAuto : OpMode() {
             }
             10 -> {
                 val centered = centerDepo()
-                if (centered || pathTimer.elapsedTimeSeconds > 0.1) {
+                if (/* centered || */ pathTimer.elapsedTimeSeconds > 0.1) {
                     setPathState(11)
                 }
             }
@@ -352,7 +355,7 @@ class BackRedAuto : OpMode() {
             }
             17 -> {
                 val centered = centerDepo()
-                if (centered || pathTimer.elapsedTimeSeconds > 0.1) {
+                if (/* centered || */ pathTimer.elapsedTimeSeconds > 0.1) {
                     setPathState(18)
                 }
             }
@@ -433,7 +436,7 @@ class BackRedAuto : OpMode() {
             23 -> {
                 correction?.cancel()
                 val centered = centerDepo()
-                if (centered || pathTimer.elapsedTimeSeconds > 0.1) {
+                if (/* centered || */ pathTimer.elapsedTimeSeconds > 0.1) {
                     setPathState(24)
                 }
             }
@@ -461,7 +464,7 @@ class BackRedAuto : OpMode() {
     }
 
     fun centerDepo(): Boolean {
-        follower.setMaxPower(0.55)
+        follower.setMaxPower(0.15)
         val result: LLResult? = limelight.latestResult
         val fiducialResults = result?.fiducialResults
         val target = fiducialResults?.firstOrNull { it.fiducialId == AprilTagIds.RED_DEPO }
@@ -482,7 +485,7 @@ class BackRedAuto : OpMode() {
         follower.setTeleOpDrive(0.0, 0.0, -rotationPower, false)
         return false
     }
-
+    
     suspend fun executeDispensing() {
         // Fixed dispense order: slot 1, slot 0, slot 2 (FIRE_P2, FIRE_P1, FIRE_P3)
         val dispenseSequence = mutableListOf<Double>()
@@ -689,24 +692,24 @@ class BackRedAuto : OpMode() {
             .setLinearHeadingInterpolation(spike2pre.heading, spike2.heading)
             .build()
         spike2Score = follower.pathBuilder()
-            .addPath(BezierCurve(spike2, spikeScore))
-            .setLinearHeadingInterpolation(spike2.heading, spikeScore.heading)
+            .addPath(BezierCurve(spike2, spikeScore2))
+            .setLinearHeadingInterpolation(spike2.heading, spikeScore2.heading)
             .build()
         spike3Line = follower.pathBuilder()
-            .addPath(BezierCurve(spikeScore, spike3pre))
-            .setLinearHeadingInterpolation(spikeScore.heading, spike3pre.heading)
+            .addPath(BezierCurve(spikeScore2, spike3pre))
+            .setLinearHeadingInterpolation(spikeScore2.heading, spike3pre.heading)
             .build()
         spike3Grab = follower.pathBuilder()
             .addPath(BezierCurve(spike3pre, spike3))
             .setLinearHeadingInterpolation(spike3pre.heading, spike3.heading)
             .build()
         spike3Score = follower.pathBuilder()
-            .addPath(BezierCurve(spike3, spikeScore))
-            .setLinearHeadingInterpolation(spike3.heading, spikeScore.heading)
+            .addPath(BezierCurve(spike3, spikeScore3))
+            .setLinearHeadingInterpolation(spike3.heading, spikeScore3.heading)
             .build()
         leavePoint = follower.pathBuilder()
-            .addPath(BezierCurve(spikeScore, strafeOut))
-            .setLinearHeadingInterpolation(spikeScore.heading, strafeOut.heading)
+            .addPath(BezierCurve(spikeScore3, spike2pre))
+            .setLinearHeadingInterpolation(spikeScore3.heading, spike2pre.heading)
             .build()
     }
     
