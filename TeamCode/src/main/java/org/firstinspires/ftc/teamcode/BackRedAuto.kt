@@ -112,7 +112,7 @@ class BackRedAuto : OpMode() {
 
     object DepoCenter {
         const val CAM_WIDTH_PX = 1280
-        const val CENTER_DEADZONE = 15
+        const val CENTER_DEADZONE = 13
         const val KP_ROTATE = 0.003
         var OUTTAKE_SPEED = 0.20
     }
