@@ -69,7 +69,8 @@ class NewFrontRedAuto : OpMode() {
     private val spike2       = Pose(114.0, 64.0,  Math.toRadians(355.0))
     private val spike3pre    = Pose(97.0,  40.0,  Math.toRadians(355.0))
     private val spike3       = Pose(114.0, 40.0,  Math.toRadians(355.0))
-    private val spike3fire   = Pose(89.0,  100.0, Math.toRadians(33.0))
+    private val spike3fire   = Pose(88.0,  103.0, Math.toRadians(33.0))
+    private val strafeOut    = Pose(92.0, 113.0,   Math.toRadians(33.0))
 
     private lateinit var preLoadScore: PathChain
     private lateinit var spike1Line:   PathChain
@@ -81,6 +82,7 @@ class NewFrontRedAuto : OpMode() {
     private lateinit var spike3Line:   PathChain
     private lateinit var spike3Grab:   PathChain
     private lateinit var spike3Score:  PathChain
+    private lateinit var leavePoint:   PathChain
 
     val pidP = 150.0
     val pidI = 0.0
@@ -96,7 +98,7 @@ class NewFrontRedAuto : OpMode() {
         const val FIRE_P1 = 0.128
         const val FIRE_P2 = 0.195
         const val FIRE_P3 = 0.058
-        const val CAM_OPEN = 0.44
+        const val CAM_OPEN = 0.45
         const val CAM_CLOSED = 0.255
         const val INTAKE_ON = 1.0
         const val INTAKE_OFF = 0.0
@@ -143,7 +145,7 @@ class NewFrontRedAuto : OpMode() {
         runDetections = scope.launch {
             while (isActive) {
                 handleDetections()
-                delay(25)
+                delay(3)
             }
         }
         resetRuntime()
@@ -413,6 +415,13 @@ class NewFrontRedAuto : OpMode() {
                 }
             }
             25 -> {
+                if (!isDispensing) {
+                    follower.breakFollowing()
+                    follower.followPath(leavePoint, true)
+                    setPathState(26)
+                }
+            }
+            26 -> {
 
             }
         }
@@ -671,6 +680,10 @@ class NewFrontRedAuto : OpMode() {
         spike3Score = follower.pathBuilder()
             .addPath(BezierCurve(spike3, spike3fire))
             .setLinearHeadingInterpolation(spike3.heading, spike3fire.heading)
+            .build()
+        leavePoint = follower.pathBuilder()
+            .addPath(BezierCurve(spike3fire, strafeOut))
+            .setLinearHeadingInterpolation(spike3fire.heading, strafeOut.heading)
             .build()
     }
 

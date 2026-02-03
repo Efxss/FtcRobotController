@@ -160,7 +160,7 @@ class RedTeleOP : OpMode() {
         runDetections = scope.launch {
             while (isActive) {
                 handleDetections()
-                delay(25)
+                delay(3)
             }
         }
         firing = scope.launch {

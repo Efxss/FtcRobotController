@@ -31,8 +31,8 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
-@Autonomous(name = "Back Red Auto 12", group = "Main Red")
-class BackRedAuto : OpMode() {
+@Autonomous(name = "Back Red Auto 12 front", group = "Main Red")
+class BackRedAutoFront : OpMode() {
     var panels: TelemetryManager? = null
     val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     var runDetections: Job? = null
@@ -69,10 +69,11 @@ class BackRedAuto : OpMode() {
     private val spikeScore3  = Pose(79.0,  14.0,  Math.toRadians(69.0))
     private val spike1pre    = Pose(85.9,  24.0,  Math.toRadians(0.0))
     private val spike1       = Pose(106.4, 24.0,  Math.toRadians(0.0))
-    private val spike2pre    = Pose(88.0,  46.5,  Math.toRadians(0.0))
-    private val spike2       = Pose(106.4, 46.5,  Math.toRadians(0.0))
-    private val spike3pre    = Pose(88.0,  70.5,  Math.toRadians(0.0))
-    private val spike3       = Pose(106.4, 70.5,  Math.toRadians(0.0))
+    private val spike2pre    = Pose(88.0,  48.5,  Math.toRadians(0.0))
+    private val spike2       = Pose(106.4, 48.5,  Math.toRadians(0.0))
+    private val spike3pre    = Pose(88.0,  72.5,  Math.toRadians(0.0))
+    private val spike3       = Pose(106.4, 72.5,  Math.toRadians(0.0))
+    private val spike3fire   = Pose(79.0,  88.0, Math.toRadians(33.0))
     private val strafeOut    = Pose(100.0, 4.0,   Math.toRadians(90.0))
 
     private lateinit var preLoadScore: PathChain
@@ -152,7 +153,7 @@ class BackRedAuto : OpMode() {
         }
         resetRuntime()
     }
-    
+
     override fun loop() {
         follower.update()
         autonomousPathUpdate()
@@ -450,7 +451,7 @@ class BackRedAuto : OpMode() {
                     scope.launch {
                         executeDispensing()
                         isDispensing = false
-                        setPathState(25)
+                        //setPathState(25)
                     }
                 }
             }
@@ -489,7 +490,7 @@ class BackRedAuto : OpMode() {
         follower.setTeleOpDrive(0.0, 0.0, -rotationPower, false)
         return false
     }
-    
+
     suspend fun executeDispensing() {
         // Fixed dispense order: slot 1, slot 0, slot 2 (FIRE_P2, FIRE_P1, FIRE_P3)
         val dispenseSequence = mutableListOf<Double>()
@@ -541,7 +542,7 @@ class BackRedAuto : OpMode() {
         }
         val targetY = target.targetYPixels
         //val powerResult = if (runtime >= 25.0) 0.0002416 * targetY + 0.120 else 0.0002416 * targetY + 0.115
-        var powerResult = 0.0002416*targetY+0.105
+        var powerResult = if (runtime >= 25.0) 0.0002416 * targetY + 0.120 else 0.0002416 * targetY + 0.105
         DepoCenter.OUTTAKE_SPEED = powerResult
         DepoCenter.OUTTAKE_SPEED = powerResult
         outTake1.power = DepoCenter.OUTTAKE_SPEED
@@ -601,7 +602,7 @@ class BackRedAuto : OpMode() {
             else -> bowlServo.position
         }
     }
-    
+
     fun initializeHardware() {
         outTake1 = hardwareMap.get(DcMotorEx::class.java, "outTake1")
         outTake2 = hardwareMap.get(DcMotorEx::class.java, "outTake2")
@@ -709,15 +710,15 @@ class BackRedAuto : OpMode() {
             .setLinearHeadingInterpolation(spike3pre.heading, spike3.heading)
             .build()
         spike3Score = follower.pathBuilder()
-            .addPath(BezierCurve(spike3, spikeScore3))
-            .setLinearHeadingInterpolation(spike3.heading, spikeScore3.heading)
+            .addPath(BezierCurve(spike3, spike3fire))
+            .setLinearHeadingInterpolation(spike3.heading, spike3fire.heading)
             .build()
         leavePoint = follower.pathBuilder()
             .addPath(BezierCurve(spikeScore3, spike2pre))
             .setLinearHeadingInterpolation(spikeScore3.heading, spike2pre.heading)
             .build()
     }
-    
+
     @JvmName("SetPathStateFunction")
     private fun setPathState(pState: Int) {
         pathState = pState
