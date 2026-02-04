@@ -1,18 +1,18 @@
 package org.firstinspires.ftc.teamcode.testing
 
-import com.bylazar.configurables.annotations.Configurable
 import com.bylazar.telemetry.PanelsTelemetry
 import com.bylazar.telemetry.TelemetryManager
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import kotlin.math.max
 import kotlin.math.min
 
-@Configurable
-@TeleOp(name = "OutTake Test", group = "Test")
+@Disabled
+//@Configurable
+//@TeleOp(name = "OutTake Test", group = "Test")
 class OutTakeTest : OpMode() {
     var panels: TelemetryManager? = null
     private lateinit var outTake1: DcMotorEx

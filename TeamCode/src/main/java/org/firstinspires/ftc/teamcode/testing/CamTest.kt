@@ -1,14 +1,14 @@
 package org.firstinspires.ftc.teamcode.testing
 
-import com.bylazar.configurables.annotations.Configurable
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.Servo
 
-@TeleOp(name = "Cam Test", group = "Test")
-@Configurable
+@Disabled
+//@TeleOp(name = "Cam Test", group = "Test")
+//@Configurable
 class CamTest : OpMode() {
     private lateinit var outTake1:  DcMotorEx
     private lateinit var outTake2:  DcMotorEx

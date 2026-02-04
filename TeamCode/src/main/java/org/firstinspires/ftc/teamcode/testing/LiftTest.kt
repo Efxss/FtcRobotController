@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.testing
 
-import com.bylazar.configurables.annotations.Configurable
 import com.bylazar.telemetry.PanelsTelemetry
 import com.bylazar.telemetry.TelemetryManager
 import com.qualcomm.robotcore.eventloop.opmode.Disabled
@@ -18,7 +17,7 @@ TENSION MAX: 11900 <-- ONLY FOR TUNING!
  */
 
 
-@Configurable
+//@Configurable
 object RobotConstants {
     @JvmField var targetPos:    Int = 20
     @JvmField var threshold:    Int = 1

@@ -6,12 +6,13 @@ import com.pedropathing.follower.Follower
 import com.pedropathing.geometry.Pose
 import com.pedropathing.util.Timer
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import org.firstinspires.ftc.teamcode.util.Drawing
 
-@TeleOp(name = "Heading (Test)", group = "Test")
+@Disabled
+//@TeleOp(name = "Heading (Test)", group = "Test")
 class HeadingTest : OpMode() {
     var panels: TelemetryManager? = null
     @Volatile lateinit var follower: Follower
