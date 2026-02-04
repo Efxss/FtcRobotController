@@ -31,8 +31,8 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
-@Autonomous(name = "Back Red Auto (12 ball)", group = "Main Red")
-class BackRedAuto : OpMode() {
+@Autonomous(name = "Back Red Auto (9 ball gate)", group = "Main Red")
+class BackRedAutoShortGate : OpMode() {
     var panels: TelemetryManager? = null
     val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     var runDetections: Job? = null
@@ -74,6 +74,7 @@ class BackRedAuto : OpMode() {
     private val spike3pre    = Pose(88.0,  70.5,  Math.toRadians(0.0))
     private val spike3       = Pose(106.4, 70.5,  Math.toRadians(0.0))
     private val strafeOut    = Pose(100.0, 4.0,   Math.toRadians(90.0))
+    private val gatePos      = Pose(118.0, 67.0,  Math.toDegrees(180.0))
 
     private lateinit var preLoadScore: PathChain
     private lateinit var spike1Line:   PathChain
@@ -152,7 +153,7 @@ class BackRedAuto : OpMode() {
         }
         resetRuntime()
     }
-    
+
     override fun loop() {
         follower.update()
         autonomousPathUpdate()
@@ -375,8 +376,9 @@ class BackRedAuto : OpMode() {
             19 -> {
                 if (!isDispensing) {
                     follower.breakFollowing()
-                    follower.followPath(spike3Line, true)
-                    setPathState(20)
+                    follower.followPath(leavePoint, true)
+                    follower.setMaxPower(0.9)
+                    //setPathState(20)
                 }
             }
             20 -> {
@@ -489,7 +491,7 @@ class BackRedAuto : OpMode() {
         follower.setTeleOpDrive(0.0, 0.0, -rotationPower, false)
         return false
     }
-    
+
     suspend fun executeDispensing() {
         // Fixed dispense order: slot 1, slot 0, slot 2 (FIRE_P2, FIRE_P1, FIRE_P3)
         val dispenseSequence = mutableListOf<Double>()
@@ -601,7 +603,7 @@ class BackRedAuto : OpMode() {
             else -> bowlServo.position
         }
     }
-    
+
     fun initializeHardware() {
         outTake1 = hardwareMap.get(DcMotorEx::class.java, "outTake1")
         outTake2 = hardwareMap.get(DcMotorEx::class.java, "outTake2")
@@ -713,11 +715,11 @@ class BackRedAuto : OpMode() {
             .setLinearHeadingInterpolation(spike3.heading, spikeScore3.heading)
             .build()
         leavePoint = follower.pathBuilder()
-            .addPath(BezierCurve(spikeScore3, spike2pre))
-            .setLinearHeadingInterpolation(spikeScore3.heading, spike2pre.heading)
+            .addPath(BezierCurve(spikeScore2, gatePos))
+            .setLinearHeadingInterpolation(spikeScore2.heading, gatePos.heading)
             .build()
     }
-    
+
     @JvmName("SetPathStateFunction")
     private fun setPathState(pState: Int) {
         pathState = pState

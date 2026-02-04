@@ -30,7 +30,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 @TeleOp(name = "Blue TeleOP (NEW)", group = "Main Blue")
-class NewBlueTeleOP : OpMode() {
+class BlueTeleOP : OpMode() {
     var panels: TelemetryManager? = null
     val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     var handleTelemetry: Job? = null
@@ -42,7 +42,7 @@ class NewBlueTeleOP : OpMode() {
     var patDect: Job?         = null
     var actLift: Job?         = null
     var firing: Job?          = null
-    val startPose = Pose(72.0, 72.0, Math.toRadians(0.0))
+    val startPose = Pose(72.0, 8.375, Math.toRadians(0.0))
     lateinit var follower: Follower
     lateinit var pathTimer: Timer
     lateinit var actionTimer: Timer
@@ -115,7 +115,7 @@ class NewBlueTeleOP : OpMode() {
         var OUTTAKE_SPEED = 0.20
     }
     object EndGame {
-        const val LIFTMAX = 11400
+        const val LIFTMAX = 1140
         const val SLOWMODE = 1000
         const val NORMALSPEED = 1.0
         const val SLOWSPEED = 0.2
@@ -126,7 +126,7 @@ class NewBlueTeleOP : OpMode() {
         const val BOWL_MOVE_DELAY = 250L
         const val CAM_OPEN_DELAY = 140L
         const val CAM_CLOSE_DELAY = 170L
-        const val DETECTION_COOLDOWN = 1200L
+        const val DETECTION_COOLDOWN = 400L
         const val OUTTAKE_DELAY = 800L
         var nextDetectAllowedMs = 0L
     }
@@ -160,7 +160,7 @@ class NewBlueTeleOP : OpMode() {
         runDetections = scope.launch {
             while (isActive) {
                 handleDetections()
-                delay(25)
+                delay(3)
             }
         }
         firing = scope.launch {
@@ -335,10 +335,7 @@ class NewBlueTeleOP : OpMode() {
         dispensingState = 0
         ord = arrayOf("N", "N", "N")
     }
-    suspend fun executeDispenseSequence(positions: List<Double>) {
-        delay(Timing.DISPENSE_INITIAL_DELAY)
-
-        positions.forEach { position ->
+    suspend fun executeDispenseSequence(positions: List<Double>) {positions.forEach { position ->
             bowlServo.position = position
             delay(Timing.BOWL_MOVE_DELAY)
 

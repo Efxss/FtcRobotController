@@ -31,8 +31,8 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
-@Autonomous(name = "Front Red Auto", group = "Main Red")
-class NewFrontRedAuto : OpMode() {
+@Autonomous(name = "Front Red Auto (12 ball)", group = "Main Red")
+class FrontRedAuto : OpMode() {
     var panels: TelemetryManager? = null
     val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     var runDetections: Job? = null
@@ -70,7 +70,7 @@ class NewFrontRedAuto : OpMode() {
     private val spike3pre    = Pose(97.0,  40.0,  Math.toRadians(355.0))
     private val spike3       = Pose(114.0, 40.0,  Math.toRadians(355.0))
     private val spike3fire   = Pose(88.0,  103.0, Math.toRadians(33.0))
-    private val strafeOut    = Pose(92.0, 113.0,   Math.toRadians(33.0))
+    private val strafeOut    = Pose(92.0,  113.0, Math.toRadians(33.0))
 
     private lateinit var preLoadScore: PathChain
     private lateinit var spike1Line:   PathChain

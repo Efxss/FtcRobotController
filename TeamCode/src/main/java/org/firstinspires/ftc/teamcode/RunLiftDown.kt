@@ -30,6 +30,8 @@ class RunLiftDown : OpMode() {
         down()
         sleep(2000)
         stop()
+        sleep(500)
+        terminateOpModeNow()
     }
 
     override fun stop() {
@@ -51,13 +53,13 @@ class RunLiftDown : OpMode() {
     }
     fun down() {
         listOf(liftLeft, liftRight).forEach { motor ->
-            motor.targetPosition = -11000
+            motor.targetPosition = -1000
         }
-        if (liftLeft.currentPosition > -11000 || liftRight.currentPosition > -11000) {
+        if (liftLeft.currentPosition > -1000 || liftRight.currentPosition > -1000) {
             listOf(liftLeft, liftRight).forEach { motor ->
                 motor.power = -0.6
             }
-        } else if (liftLeft.currentPosition < -11000 || liftRight.currentPosition < -11000) {
+        } else if (liftLeft.currentPosition < -1000 || liftRight.currentPosition < -1000) {
             listOf(liftLeft, liftRight).forEach { motor ->
                 motor.power = 0.0
             }

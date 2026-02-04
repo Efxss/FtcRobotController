@@ -31,7 +31,7 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
-@Autonomous(name = "Back Red Auto 12 front", group = "Main Red")
+@Autonomous(name = "Back Red Auto (12 front)", group = "Main Red")
 class BackRedAutoFront : OpMode() {
     var panels: TelemetryManager? = null
     val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
