@@ -11,6 +11,7 @@ import java.lang.Thread.sleep
 class RunLiftDown : OpMode() {
     private lateinit var liftLeft:  DcMotorEx
     private lateinit var liftRight: DcMotorEx
+    val position = -1000
     override fun init() {
         liftLeft = hardwareMap.get(DcMotorEx::class.java, "liftLeft")
         liftRight = hardwareMap.get(DcMotorEx::class.java, "liftRight")
@@ -53,13 +54,13 @@ class RunLiftDown : OpMode() {
     }
     fun down() {
         listOf(liftLeft, liftRight).forEach { motor ->
-            motor.targetPosition = -1000
+            motor.targetPosition = position
         }
-        if (liftLeft.currentPosition > -1000 || liftRight.currentPosition > -1000) {
+        if (liftLeft.currentPosition > position || liftRight.currentPosition > position) {
             listOf(liftLeft, liftRight).forEach { motor ->
                 motor.power = -0.6
             }
-        } else if (liftLeft.currentPosition < -1000 || liftRight.currentPosition < -1000) {
+        } else if (liftLeft.currentPosition < position || liftRight.currentPosition < position) {
             listOf(liftLeft, liftRight).forEach { motor ->
                 motor.power = 0.0
             }
