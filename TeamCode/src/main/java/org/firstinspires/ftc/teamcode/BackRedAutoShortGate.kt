@@ -30,6 +30,7 @@ import org.firstinspires.ftc.teamcode.util.Drawing
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.sign
 
 @Autonomous(name = "Back Red Auto (9 ball gate)", group = "Main Red")
 class BackRedAutoShortGate : OpMode() {
@@ -60,12 +61,12 @@ class BackRedAutoShortGate : OpMode() {
     var isSeen = false
     @Volatile var isDispensing = false
     @Volatile var finalShot = 0
-    @Volatile var cycleCount = 4
+    @Volatile var cycleCount = 3
 
     private val startPose    = Pose(72.0,  0.0,   Math.toRadians(90.0))
     private val scorePose    = Pose(74.0,  2.0,   Math.toRadians(60.0))
-    private val spikeScore   = Pose(79.0,  12.0,  Math.toRadians(64.0))
-    private val spikeScore2  = Pose(79.0,  13.0,  Math.toRadians(65.0))
+    private val spikeScore   = Pose(79.0,  8.0,   Math.toRadians(64.0))
+    private val spikeScore2  = Pose(79.0,  8.0,   Math.toRadians(65.0))
     private val spikeScore3  = Pose(79.0,  14.0,  Math.toRadians(69.0))
     private val spike1pre    = Pose(85.9,  24.0,  Math.toRadians(0.0))
     private val spike1       = Pose(106.4, 24.0,  Math.toRadians(0.0))
@@ -74,7 +75,7 @@ class BackRedAutoShortGate : OpMode() {
     private val spike3pre    = Pose(88.0,  70.5,  Math.toRadians(0.0))
     private val spike3       = Pose(106.4, 70.5,  Math.toRadians(0.0))
     private val strafeOut    = Pose(100.0, 4.0,   Math.toRadians(90.0))
-    private val gatePos      = Pose(118.0, 67.0,  Math.toDegrees(180.0))
+    private val gatePos      = Pose(91.0,  50.0,  Math.toDegrees(0.0))
 
     private lateinit var preLoadScore: PathChain
     private lateinit var spike1Line:   PathChain
@@ -200,7 +201,7 @@ class BackRedAutoShortGate : OpMode() {
                 }
             }
             1 -> {
-                follower.setMaxPower(0.9)
+                follower.setMaxPower(0.7)
                 if (notBusy) {
                     setPathState(2)
                 }
@@ -235,7 +236,7 @@ class BackRedAutoShortGate : OpMode() {
                 }
             }
             6 -> {
-                follower.setMaxPower(0.9)
+                follower.setMaxPower(0.7)
                 if (notBusy) {
                     if (!timerState) {
                         pathTimer.resetTimer()
@@ -248,7 +249,7 @@ class BackRedAutoShortGate : OpMode() {
                 }
             }
             7 -> {
-                follower.setMaxPower(0.2199)
+                follower.setMaxPower(0.205)
                 if (notBusy) {
                     if (!timerState) {
                         pathTimer.resetTimer()
@@ -269,7 +270,7 @@ class BackRedAutoShortGate : OpMode() {
                         }
                     }
                 }*/
-                follower.setMaxPower(0.9)
+                follower.setMaxPower(0.7)
                 if (notBusy) {
                     if (correction?.isActive == true) {
                         correction?.cancel()
@@ -308,7 +309,7 @@ class BackRedAutoShortGate : OpMode() {
                 }
             }
             13 -> {
-                follower.setMaxPower(0.9)
+                follower.setMaxPower(0.7)
                 if (notBusy) {
                     if (!timerState) {
                         pathTimer.resetTimer()
@@ -321,7 +322,7 @@ class BackRedAutoShortGate : OpMode() {
                 }
             }
             14 -> {
-                follower.setMaxPower(0.2199)
+                follower.setMaxPower(0.205)
                 if (notBusy) {
                     if (!timerState) {
                         pathTimer.resetTimer()
@@ -342,7 +343,7 @@ class BackRedAutoShortGate : OpMode() {
                         }
                     }
                 }*/
-                follower.setMaxPower(0.9)
+                follower.setMaxPower(0.7)
                 if (notBusy) {
                     if (correction?.isActive == true) {
                         correction?.cancel()
@@ -377,94 +378,42 @@ class BackRedAutoShortGate : OpMode() {
                 if (!isDispensing) {
                     follower.breakFollowing()
                     follower.followPath(leavePoint, true)
-                    follower.setMaxPower(0.9)
-                    //setPathState(20)
+                    setPathState(20)
                 }
             }
             20 -> {
-                follower.setMaxPower(0.9)
-                /*if (correction?.isActive != true) {
-                    correction = scope.launch {
-                        while (isActive) {
-                            if (follower.pose.y > 62.0) follower.breakFollowing()
-                            delay(15)
-                        }
-                    }
-                }*/
+                follower.setMaxPower(1.0)
                 if (notBusy) {
-                    if (correction?.isActive == true) {
-                        correction?.cancel()
-                    }
-                    correction?.cancel()
                     if (!timerState) {
-                        correction?.cancel()
                         pathTimer.resetTimer()
                         timerState = true
                     }
                     if (pathTimer.elapsedTimeSeconds > 0.01) {
-                        correction?.cancel()
-                        follower.followPath(spike3Grab, false)
+                        correction = scope.launch {
+                            follower.startTeleOpDrive()
+                            val targetHeading = Math.PI
+                            while (isActive) {
+                                val currentHeading = follower.pose.heading
+                                var headingError = targetHeading - currentHeading
+                                while (headingError > Math.PI) headingError -= 2 * Math.PI
+                                while (headingError < -Math.PI) headingError += 2 * Math.PI
+                                if (abs(Math.toDegrees(headingError)) > 2.0) {
+                                    val turnPower = 0.2 * sign(headingError)
+                                    follower.setTeleOpDrive(0.0, 0.0, turnPower, false)
+                                } else {
+                                    follower.breakFollowing()
+                                    follower.setTeleOpDrive(0.0, 0.0, 0.0, false)
+                                    break
+                                }
+                                delay(10)
+                            }
+                        }
                         setPathState(21)
                     }
                 }
             }
             21 -> {
-                follower.setMaxPower(0.2199)
-                if (notBusy) {
-                    if (!timerState) {
-                        pathTimer.resetTimer()
-                        timerState = true
-                    }
-                    if (pathTimer.elapsedTimeSeconds > 0.01) {
-                        follower.followPath(spike3Score, false)
-                        setPathState(22)
-                    }
-                }
-            }
-            22 -> {
-                /*if (correction?.isActive != true) {
-                    correction = scope.launch {
-                        while (isActive) {
-                            if (follower.pose.y < 16.0) follower.breakFollowing()
-                            delay(15)
-                        }
-                    }
-                }*/
-                follower.setMaxPower(0.9)
-                if (notBusy) {
-                    if (correction?.isActive == true) {
-                        correction?.cancel()
-                    }
-                    setPathState(23)
-                }
-            }
-            23 -> {
-                correction?.cancel()
-                val centered = centerDepo()
-                if (/*centered ||*/ pathTimer.elapsedTimeSeconds > 0.0) {
-                    setPathState(24)
-                }
-            }
-            24 -> {
-                if (!isDispensing) {
-                    isDispensing = true
-                    follower.setTeleOpDrive(0.0, 0.0, 0.0, true)
-                    scope.launch {
-                        executeDispensing()
-                        isDispensing = false
-                        setPathState(25)
-                    }
-                }
-            }
-            25 -> {
-                if (!isDispensing) {
-                    follower.breakFollowing()
-                    follower.followPath(leavePoint, false)
-                    setPathState(26)
-                }
-            }
-            26 -> {
-                follower.setMaxPower(0.9)
+                follower.setMaxPower(1.0)
             }
         }
     }

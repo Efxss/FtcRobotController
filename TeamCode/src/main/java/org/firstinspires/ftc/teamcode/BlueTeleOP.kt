@@ -29,7 +29,7 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
-@TeleOp(name = "Blue TeleOP (NEW)", group = "Main Blue")
+@TeleOp(name = "Blue TeleOP", group = "Main Blue")
 class BlueTeleOP : OpMode() {
     var panels: TelemetryManager? = null
     val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
@@ -69,6 +69,7 @@ class BlueTeleOP : OpMode() {
     var endgameTogglePressed = false
     var slowModeTogglePressed = false
     var dPadDownPressed = false
+    var squarePressed = false
     var isSlowMode = false
     var depoCentered = false
     var lastTriggerPressed = false
@@ -198,6 +199,10 @@ class BlueTeleOP : OpMode() {
         panels?.debug("Run Time", runtime)
         panels?.update(telemetry)
 
+        if (gamepad1.square && !squarePressed) {
+            ord = arrayOf("P", "P", "P")
+        }
+        squarePressed = gamepad1.square
         if (gamepad1.dpad_down && !dPadDownPressed) {
             bowlServo.position -= 0.1
         } else if (!gamepad1.dpad_down && dPadDownPressed) {
@@ -246,7 +251,7 @@ class BlueTeleOP : OpMode() {
         }
     }
     suspend fun centerDepo() {
-        follower.setMaxPower(0.15)
+        follower.setMaxPower(0.35)
         val result: LLResult? = limelight.latestResult
         val fiducialResults = result?.fiducialResults
         val target = fiducialResults?.firstOrNull { it.fiducialId == AprilTagIds.BLUE_DEPO }
@@ -276,7 +281,7 @@ class BlueTeleOP : OpMode() {
         follower.setTeleOpDrive(0.0, 0.0, -rotationPower, false)
     }
     suspend fun reCenterDepo() {
-        follower.setMaxPower(0.15)
+        follower.setMaxPower(0.35)
         val result: LLResult? = limelight.latestResult
         val fiducialResults = result?.fiducialResults
         val target = fiducialResults?.firstOrNull { it.fiducialId == AprilTagIds.BLUE_DEPO }
@@ -297,9 +302,6 @@ class BlueTeleOP : OpMode() {
         follower.setTeleOpDrive(0.0, 0.0, -rotationPower, false)
     }
     suspend fun executeDispensing() {
-        delay(100)
-
-        // Build dispense sequence only for filled slots
         val dispenseSequence = mutableListOf<Double>()
 
         // Map each slot to its firing position
@@ -335,7 +337,8 @@ class BlueTeleOP : OpMode() {
         dispensingState = 0
         ord = arrayOf("N", "N", "N")
     }
-    suspend fun executeDispenseSequence(positions: List<Double>) {positions.forEach { position ->
+    suspend fun executeDispenseSequence(positions: List<Double>) {
+        positions.forEach { position ->
             bowlServo.position = position
             delay(Timing.BOWL_MOVE_DELAY)
 
@@ -433,18 +436,15 @@ class BlueTeleOP : OpMode() {
     }
     fun resetServos() {
         camServo.position = ServoPositions.CAM_CLOSED
-        bowlServo.position = ServoPositions.FIRE_P2
+        bowlServo.position = ServoPositions.LOAD_P1
     }
     fun initializePedroPathing() {
         panels = PanelsTelemetry.telemetry
-
         pathTimer = Timer()
         actionTimer = Timer()
         opmodeTimer = Timer()
         opmodeTimer.resetTimer()
-
-        ord = arrayOf("P", "G", "P")
-
+        ord = arrayOf("N", "N", "N")
         follower = Constants.createFollower(hardwareMap)
         follower.setStartingPose(startPose)
         follower.activateAllPIDFs()
@@ -491,8 +491,6 @@ class BlueTeleOP : OpMode() {
                 // (Optional) choose G vs P here; your current logic makes g>=110 also count as P first.
                 ord[slot] = if (g >= 110) "G" else "P"
 
-                // keep the short settle delay if you need it
-                delay(200)
                 advanceBowl(slot)
 
                 // start cooldown WITHOUT blocking the loop
