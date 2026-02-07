@@ -550,13 +550,14 @@ class BackRedAutoFront : OpMode() {
     }
 
     fun handleIntake() {
-        val isFull = ord.none { it == "N" }  // True if all 3 slots filled
+        /*val isFull = ord.none { it == "N" }  // True if all 3 slots filled
 
         if (isFull || isDispensing) {
-            intakeServo1.power = -ServoPositions.INTAKE_ON
+            intakeServo1.power = -ServoPositions.INTAKE_ON  // Reverse/outtake
         } else {
-            intakeServo1.power = ServoPositions.INTAKE_ON
-        }
+            intakeServo1.power = ServoPositions.INTAKE_ON   // Intake
+        }*/
+        intakeServo1.power = ServoPositions.INTAKE_ON
     }
 
     suspend fun handleDetections() {

@@ -31,8 +31,8 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
-@Autonomous(name = "Front Red Auto (12 ball)", group = "Main Red")
-class FrontRedAuto : OpMode() {
+@Autonomous(name = "Front Blue Auto (12 ball)", group = "Main Blue")
+class FrontBlueAuto : OpMode() {
     var panels: TelemetryManager? = null
     val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     var runDetections: Job? = null
@@ -61,16 +61,17 @@ class FrontRedAuto : OpMode() {
     @Volatile var isDispensing = false
     @Volatile var finalShot = 0
 
-    private val startPose    = Pose(123.0, 123.0, Math.toRadians(36.0))
-    private val scorePose    = Pose(91.5,  91.5,  Math.toRadians(41.0))
-    private val spike1pre    = Pose(98.0,  86.0,  Math.toRadians(355.0))
-    private val spike1       = Pose(115.0, 86.0,  Math.toRadians(355.0))
-    private val spike2pre    = Pose(98.0,  64.0,  Math.toRadians(355.0))
-    private val spike2       = Pose(114.0, 64.0,  Math.toRadians(355.0))
-    private val spike3pre    = Pose(97.0,  40.0,  Math.toRadians(355.0))
-    private val spike3       = Pose(114.0, 40.0,  Math.toRadians(355.0))
-    private val spike3fire   = Pose(88.0,  103.0, Math.toRadians(33.0))
-    private val strafeOut    = Pose(92.0,  113.0, Math.toRadians(33.0))
+    private val startPose    = Pose(21.0,  123.0,  Math.toRadians(141.0))
+    private val preScorePose = Pose(48.5,  91.5,   Math.toRadians(135.0))
+    private val scorePose    = Pose(51.0,  89.0,   Math.toRadians(135.0))
+    private val spike1pre    = Pose(44.0,  86.0,   Math.toRadians(180.0))
+    private val spike1       = Pose(24.0,  86.0,   Math.toRadians(180.0))
+    private val spike2pre    = Pose(42.0,  64.0,   Math.toRadians(180.0))
+    private val spike2       = Pose(24.0,  64.0,   Math.toRadians(180.0))
+    private val spike3pre    = Pose(41.0,  40.0,   Math.toRadians(180.0))
+    private val spike3       = Pose(24.0,  40.0,   Math.toRadians(180.0))
+    private val spike3fire   = Pose(53.0,  100.0,  Math.toRadians(144.0))
+    private val strafeOut    = Pose(52.0,  113.0,  Math.toRadians(144.0))
 
     private lateinit var preLoadScore: PathChain
     private lateinit var spike1Line:   PathChain
@@ -105,7 +106,7 @@ class FrontRedAuto : OpMode() {
     }
 
     object AprilTagIds {
-        const val RED_DEPO = 24
+        const val BLUE_DEPO = 20
     }
 
     object DepoCenter {
@@ -161,17 +162,18 @@ class FrontRedAuto : OpMode() {
             outTake2.power = 0.0
             outTakeCalc?.cancel()
         }
-        panels?.debug("final shot", finalShot)
+        //panels?.debug("final shot", finalShot)
         panels?.debug("Path State", pathState)
-        panels?.debug("ord[0]", ord[0])
+        /*panels?.debug("ord[0]", ord[0])
         panels?.debug("ord[1]", ord[1])
-        panels?.debug("ord[2]", ord[2])
+        panels?.debug("ord[2]", ord[2])*/
         panels?.debug("X", follower.pose.x)
         panels?.debug("Y", follower.pose.y)
         panels?.debug("H", follower.pose.heading)
-        panels?.debug("follower speed", follower.velocity)
+        panels?.debug("NotBusy", !follower.isBusy)
+        /*panels?.debug("follower speed", follower.velocity)
         panels?.debug("follower distance Remaining", follower.distanceRemaining)
-        panels?.debug("follower distance Traveled On Path", follower.distanceTraveledOnPath)
+        panels?.debug("follower distance Traveled On Path", follower.distanceTraveledOnPath)*/
         panels?.debug("Timer", pathTimer.elapsedTimeSeconds)
         panels?.debug("RunTime", runtime)
         panels?.update(telemetry)
@@ -186,7 +188,7 @@ class FrontRedAuto : OpMode() {
     }
 
     fun autonomousPathUpdate() {
-        val notBusy = !follower.isBusy
+        var notBusy = !follower.isBusy
         when (pathState) {
             0 -> {
                 if (notBusy && !timerState) {
@@ -422,7 +424,7 @@ class FrontRedAuto : OpMode() {
                 }
             }
             26 -> {
-
+                follower.setMaxPower(1.0)
             }
         }
     }
@@ -431,7 +433,7 @@ class FrontRedAuto : OpMode() {
         follower.setMaxPower(0.25)
         val result: LLResult? = limelight.latestResult
         val fiducialResults = result?.fiducialResults
-        val target = fiducialResults?.firstOrNull { it.fiducialId == AprilTagIds.RED_DEPO }
+        val target = fiducialResults?.firstOrNull { it.fiducialId == AprilTagIds.BLUE_DEPO }
 
         if (target == null) {
             follower.setTeleOpDrive(0.0, 0.0, 0.0, false)
@@ -495,7 +497,7 @@ class FrontRedAuto : OpMode() {
             return
         }
         val fiducialResults = result.fiducialResults
-        val target = fiducialResults.firstOrNull { it.fiducialId == AprilTagIds.RED_DEPO }
+        val target = fiducialResults.firstOrNull { it.fiducialId == AprilTagIds.BLUE_DEPO }
         if (target == null) {
             return
         }
@@ -638,8 +640,8 @@ class FrontRedAuto : OpMode() {
 
     fun buildPaths() {
         preLoadScore = follower.pathBuilder()
-            .addPath(BezierCurve(startPose, scorePose))
-            .setLinearHeadingInterpolation(startPose.heading, scorePose.heading)
+            .addPath(BezierCurve(startPose, preScorePose))
+            .setLinearHeadingInterpolation(startPose.heading, preScorePose.heading)
             .build()
 
         spike1Line = follower.pathBuilder()
