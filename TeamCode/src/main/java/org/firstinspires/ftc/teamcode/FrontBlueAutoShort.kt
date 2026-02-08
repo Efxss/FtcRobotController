@@ -30,10 +30,9 @@ import org.firstinspires.ftc.teamcode.util.Drawing
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
-import kotlin.math.sign
 
-@Autonomous(name = "Front Red Auto (9 ball gate)", group = "Main Red")
-class FrontRedAutoShortGate : OpMode() {
+@Autonomous(name = "Front Blue Auto (9 ball)", group = "Main Auto")
+class FrontBlueAutoShort : OpMode() {
     var panels: TelemetryManager? = null
     val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     var runDetections: Job? = null
@@ -61,19 +60,19 @@ class FrontRedAutoShortGate : OpMode() {
     var isSeen = false
     @Volatile var isDispensing = false
     @Volatile var finalShot = 0
-    @Volatile var cycleCount = 3
 
-    private val startPose    = Pose(123.0, 123.0, Math.toRadians(36.0))
-    private val scorePose    = Pose(91.5,  91.5,  Math.toRadians(41.0))
-    private val spike1pre    = Pose(98.0,  86.0,  Math.toRadians(355.0))
-    private val spike1       = Pose(115.0, 86.0,  Math.toRadians(355.0))
-    private val spike2pre    = Pose(95.0,  64.0,  Math.toRadians(355.0))
-    private val spike2       = Pose(114.0, 64.0,  Math.toRadians(355.0))
-    private val spike3pre    = Pose(97.0,  40.0,  Math.toRadians(355.0))
-    private val spike3       = Pose(114.0, 40.0,  Math.toRadians(355.0))
-    private val spike3fire   = Pose(88.0,  103.0, Math.toRadians(33.0))
-    private val strafeOut    = Pose(92.0,  113.0, Math.toRadians(33.0))
-    private val gatePos      = Pose(106.0, 78.0,  Math.toDegrees(0.0))
+    private val startPose    = Pose(21.0,  123.0,  Math.toRadians(141.0))
+    private val preScorePose = Pose(48.5,  91.5,   Math.toRadians(135.0))
+    private val scorePose    = Pose(51.0,  89.0,   Math.toRadians(135.0))
+    private val spike1pre    = Pose(44.0,  86.0,   Math.toRadians(180.0))
+    private val spike1       = Pose(24.0,  86.0,   Math.toRadians(180.0))
+    private val spike2pre    = Pose(42.0,  64.0,   Math.toRadians(180.0))
+    private val spike2       = Pose(24.0,  64.0,   Math.toRadians(180.0))
+    private val spike3pre    = Pose(41.0,  40.0,   Math.toRadians(180.0))
+    private val spike3       = Pose(24.0,  40.0,   Math.toRadians(180.0))
+    private val spike3fire   = Pose(53.0,  100.0,  Math.toRadians(144.0))
+    private val strafeOut    = Pose(52.0,  113.0,  Math.toRadians(144.0))
+    private val gatePos      = Pose(27.0,  75.0,   Math.toDegrees(0.0))
 
     private lateinit var preLoadScore: PathChain
     private lateinit var spike1Line:   PathChain
@@ -159,7 +158,7 @@ class FrontRedAutoShortGate : OpMode() {
         autonomousPathUpdate()
         handleIntake()
         Drawing.drawDebug(follower)
-        if (finalShot == cycleCount) {
+        if (finalShot == 4) {
             outTake1.power = 0.0
             outTake2.power = 0.0
             outTakeCalc?.cancel()
@@ -171,7 +170,7 @@ class FrontRedAutoShortGate : OpMode() {
         panels?.debug("ord[2]", ord[2])
         panels?.debug("X", follower.pose.x)
         panels?.debug("Y", follower.pose.y)
-        panels?.debug("H", Math.toDegrees(follower.pose.heading))
+        panels?.debug("H", follower.pose.heading)
         panels?.debug("follower speed", follower.velocity)
         panels?.debug("follower distance Remaining", follower.distanceRemaining)
         panels?.debug("follower distance Traveled On Path", follower.distanceTraveledOnPath)
@@ -350,42 +349,83 @@ class FrontRedAutoShortGate : OpMode() {
                 if (!isDispensing) {
                     follower.breakFollowing()
                     follower.followPath(leavePoint, true)
-                    setPathState(20)
+                    follower.setMaxPower(0.9)
+                    //setPathState(20)
                 }
             }
             20 -> {
-                follower.setMaxPower(1.0)
+                follower.setMaxPower(0.9)
+                if (correction?.isActive != true) {
+                    correction = scope.launch {
+                        while (isActive) {
+                            if (follower.pose.y < 50.0) follower.breakFollowing()
+                            delay(15)
+                        }
+                    }
+                }
+                if (notBusy) {
+                    if (correction?.isActive == true) {
+                        correction?.cancel()
+                    }
+                    correction?.cancel()
+                    if (!timerState) {
+                        correction?.cancel()
+                        pathTimer.resetTimer()
+                        timerState = true
+                    }
+                    if (pathTimer.elapsedTimeSeconds > 0.01) {
+                        correction?.cancel()
+                        //slowDown = scope.launch { while (isActive) { if (ord[0] != "N") follower.setMaxPower(0.18) } }
+                        follower.followPath(spike3Grab, true)
+                        setPathState(21)
+                    }
+                }
+            }
+            21 -> {
+                follower.setMaxPower(0.212)
                 if (notBusy) {
                     if (!timerState) {
                         pathTimer.resetTimer()
                         timerState = true
                     }
                     if (pathTimer.elapsedTimeSeconds > 0.01) {
-                        correction = scope.launch {
-                            follower.startTeleOpDrive()
-                            val targetHeading = Math.PI
-                            while (isActive) {
-                                val currentHeading = follower.pose.heading
-                                var headingError = targetHeading - currentHeading
-                                while (headingError > Math.PI) headingError -= 2 * Math.PI
-                                while (headingError < -Math.PI) headingError += 2 * Math.PI
-                                if (abs(Math.toDegrees(headingError)) > 2.0) {
-                                    val turnPower = 0.2 * sign(headingError)
-                                    follower.setTeleOpDrive(0.0, 0.0, turnPower, false)
-                                } else {
-                                    follower.breakFollowing()
-                                    follower.setTeleOpDrive(0.0, 0.0, 0.0, false)
-                                    break
-                                }
-                                delay(10)
-                            }
-                        }
-                        setPathState(21)
+                        //slowDown = scope.launch { while (isActive) { if (ord[0] != "N") follower.setMaxPower(0.18) } }
+                        follower.followPath(spike3Score, true)
+                        setPathState(22)
                     }
                 }
             }
-            21 -> {
+            22 -> {
                 follower.setMaxPower(1.0)
+                if (notBusy) {
+                    setPathState(23)
+                }
+            }
+            23 -> {
+                val centered = centerDepo()
+                if (centered || pathTimer.elapsedTimeSeconds > 0.08) {
+                    setPathState(24)
+                }
+            }
+            24 -> {
+                if (!isDispensing) {
+                    isDispensing = true
+                    scope.launch {
+                        executeDispensing()
+                        isDispensing = false
+                        setPathState(25)
+                    }
+                }
+            }
+            25 -> {
+                if (!isDispensing) {
+                    follower.breakFollowing()
+                    follower.followPath(leavePoint, true)
+                    setPathState(26)
+                }
+            }
+            26 -> {
+
             }
         }
     }
@@ -645,8 +685,8 @@ class FrontRedAutoShortGate : OpMode() {
             .setLinearHeadingInterpolation(spike3.heading, spike3fire.heading)
             .build()
         leavePoint = follower.pathBuilder()
-            .addPath(BezierCurve(scorePose, gatePos))
-            .setLinearHeadingInterpolation(scorePose.heading, gatePos.heading)
+            .addPath(BezierCurve(scorePose, spike3fire))
+            .setLinearHeadingInterpolation(scorePose.heading, spike3fire.heading)
             .build()
     }
 
