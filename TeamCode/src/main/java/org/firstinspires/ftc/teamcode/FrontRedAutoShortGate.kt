@@ -485,7 +485,7 @@ class FrontRedAutoShortGate : OpMode() {
         val r = colorSensor.red();val g = colorSensor.green();val b = colorSensor.blue()
 
         // "Clear" => re-arm immediately (even during cooldown)
-        if (g <= 80 && b <= 110) {
+        if (g <= 80 && r <= 110) {
             isSeen = false
             return
         }

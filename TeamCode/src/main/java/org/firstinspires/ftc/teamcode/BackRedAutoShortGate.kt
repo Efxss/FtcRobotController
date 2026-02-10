@@ -513,7 +513,7 @@ class BackRedAutoShortGate : OpMode() {
         if (isDispensing) return
         val r = colorSensor.red();val g = colorSensor.green();val b = colorSensor.blue()
 
-        if (g <= 80 && b <= 110) {
+        if (g <= 80 && r <= 110) {
             isSeen = false
             return
         }
