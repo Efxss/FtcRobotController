@@ -68,7 +68,8 @@ class BlueTeleOP : OpMode() {
     var rightBumperPressed = false
     var endgameTogglePressed = false
     var slowModeTogglePressed = false
-    var dPadDownPressed = false
+    var dPadRightPressed = false
+    var dPadLeftPressed = false
     var squarePressed = false
     var isSlowMode = false
     var depoCentered = false
@@ -203,12 +204,19 @@ class BlueTeleOP : OpMode() {
             ord = arrayOf("P", "P", "P")
         }
         squarePressed = gamepad1.square
-        if (gamepad1.dpad_down && !dPadDownPressed) {
+
+        if (gamepad1.dpad_left && !dPadLeftPressed) {
             bowlServo.position -= 0.1
-        } else if (!gamepad1.dpad_down && dPadDownPressed) {
+        } else if (!gamepad1.dpad_down && dPadLeftPressed) {
             bowlServo.position += 0.1
         }
-        dPadDownPressed = gamepad1.dpad_down
+        dPadLeftPressed = gamepad1.dpad_left
+        if (gamepad1.dpad_right && !dPadRightPressed) {
+            bowlServo.position += 0.1
+        } else if (!gamepad1.dpad_right && dPadRightPressed) {
+            bowlServo.position -= 0.1
+        }
+        dPadRightPressed = gamepad1.dpad_right
 
         if (gamepad1.dpad_up && gamepad1.triangle) {
             if (liftLeft.currentPosition < EndGame.SLOWMODE || liftRight.currentPosition < EndGame.SLOWMODE) {
