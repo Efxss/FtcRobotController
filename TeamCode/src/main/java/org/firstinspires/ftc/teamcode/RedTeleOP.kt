@@ -489,7 +489,9 @@ class RedTeleOP : OpMode() {
             val slot = nextSlot()
             if (slot != -1) {
                 // (Optional) choose G vs P here; your current logic makes g>=110 also count as P first.
-                ord[slot] = if (g >= 110) "G" else "P"
+                val newOrd = ord.copyOf()
+                newOrd[slot] = if (g >= 110) "G" else "P"
+                ord = newOrd
 
                 advanceBowl(slot)
 
