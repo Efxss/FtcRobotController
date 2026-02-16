@@ -574,7 +574,9 @@ class BackRedAutoFront : OpMode() {
         if (!isSeen) {
             val slot = nextSlot()
             if (slot != -1) {
-                ord[slot] = if (g >= 110) "G" else "P"
+                val newOrd = ord.copyOf()
+                newOrd[slot] = if (g >= 110) "G" else "P"
+                ord = newOrd
 
                 delay(200)
                 advanceBowl(slot)
