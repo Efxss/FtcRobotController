@@ -516,7 +516,8 @@ class RedTeleOP : OpMode() {
             else -> -1 // Array is full
         }
     }
-    fun advanceBowl(slot: Int) {
+    suspend fun advanceBowl(slot: Int) {
+        delay(50)
         bowlServo.position = when (slot) {
             0 -> ServoPositions.LOAD_P2
             1 -> ServoPositions.LOAD_P3
