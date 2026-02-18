@@ -189,11 +189,12 @@ class BlueTeleOP : OpMode() {
             true
         )
 
-        panels?.debug("OutTake 1 Power", outTake1.power)
+        /*panels?.debug("OutTake 1 Power", outTake1.power)
         panels?.debug("OutTake 2 Power", outTake2.power)
         panels?.debug("OutTake 1 velocity", outTake1.velocity)
         panels?.debug("OutTake 2 velocity", outTake2.velocity)
-        panels?.debug("OUTTAKE_SPEED", DepoCenter.OUTTAKE_SPEED)
+        panels?.debug("OUTTAKE_SPEED", DepoCenter.OUTTAKE_SPEED)*/
+        panels?.debug("bowl pos", bowlServo.position)
         panels?.debug("ord[0]", ord[0])
         panels?.debug("ord[1]", ord[1])
         panels?.debug("ord[2]", ord[2])
@@ -202,12 +203,13 @@ class BlueTeleOP : OpMode() {
 
         if (gamepad1.square && !squarePressed) {
             ord = arrayOf("P", "P", "P")
+            bowlServo.position = ServoPositions.FIRE_P2
         }
         squarePressed = gamepad1.square
 
         if (gamepad1.dpad_left && !dPadLeftPressed) {
             bowlServo.position -= 0.1
-        } else if (!gamepad1.dpad_down && dPadLeftPressed) {
+        } else if (!gamepad1.dpad_left && dPadLeftPressed) {
             bowlServo.position += 0.1
         }
         dPadLeftPressed = gamepad1.dpad_left
@@ -242,6 +244,7 @@ class BlueTeleOP : OpMode() {
         outTakeCalc?.cancel()
         runIntake?.cancel()
         runDetections?.cancel()
+        firing?.cancel()
     }
 
     suspend fun handleFiring() {
@@ -519,6 +522,7 @@ class BlueTeleOP : OpMode() {
     }
     suspend fun advanceBowl(slot: Int) {
         delay(50)
+        if (isDispensing) return
         bowlServo.position = when (slot) {
             0 -> ServoPositions.LOAD_P2
             1 -> ServoPositions.LOAD_P3
