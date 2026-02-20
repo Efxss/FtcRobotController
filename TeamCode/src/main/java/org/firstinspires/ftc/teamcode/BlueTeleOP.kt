@@ -52,6 +52,7 @@ class BlueTeleOP : OpMode() {
     lateinit var liftLeft:  DcMotorEx
     lateinit var liftRight: DcMotorEx
     lateinit var intakeServo1: CRServo
+    lateinit var intakeServo2: CRServo
     lateinit var bowlServo: Servo
     lateinit var camServo: Servo
     lateinit var limelight: Limelight3A
@@ -380,9 +381,11 @@ class BlueTeleOP : OpMode() {
         val isFull: Boolean = if (gamepad1.circle) { true } else { ord.none { it == "N" } }
         if (isFull) {
             intakeServo1.power = ServoPositions.INTAKE_REVERSE
+            intakeServo2.power = ServoPositions.INTAKE_REVERSE
             bothLEDon()
         } else {
             intakeServo1.power = ServoPositions.INTAKE_ON
+            intakeServo2.power = ServoPositions.INTAKE_ON
             bothLEDoff()
         }
     }
@@ -392,6 +395,7 @@ class BlueTeleOP : OpMode() {
         liftLeft = hardwareMap.get(DcMotorEx::class.java, "liftLeft")
         liftRight = hardwareMap.get(DcMotorEx::class.java, "liftRight")
         intakeServo1 = hardwareMap.get(CRServo::class.java, "intakeServo1")
+        intakeServo2 = hardwareMap.get(CRServo::class.java, "intakeServo2")
         bowlServo = hardwareMap.get(Servo::class.java, "bowlServo")
         camServo = hardwareMap.get(Servo::class.java, "camServo")
         limelight = hardwareMap.get(Limelight3A::class.java, "limelight")
@@ -426,7 +430,7 @@ class BlueTeleOP : OpMode() {
         }
     }
     fun setupMotorDirections() {
-        listOf(outTake2, liftLeft)
+        listOf(outTake2, liftLeft, intakeServo2)
             .forEach { it.direction = DcMotorSimple.Direction.REVERSE }
     }
     fun setupPIDFCoefficients() {

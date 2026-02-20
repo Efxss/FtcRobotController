@@ -49,6 +49,7 @@ class FrontRedAutoShortGate : OpMode() {
     lateinit var outTake1: DcMotorEx
     lateinit var outTake2: DcMotorEx
     lateinit var intakeServo1: CRServo
+    lateinit var intakeServo2: CRServo
     lateinit var bowlServo: Servo
     lateinit var camServo: Servo
     lateinit var limelight: Limelight3A
@@ -475,8 +476,10 @@ class FrontRedAutoShortGate : OpMode() {
 
         if (isDispensing) {
             intakeServo1.power = -ServoPositions.INTAKE_ON  // Reverse/outtake
+            intakeServo2.power = -ServoPositions.INTAKE_ON  // Reverse/outtake
         } else {
             intakeServo1.power = ServoPositions.INTAKE_ON   // Intake
+            intakeServo2.power = ServoPositions.INTAKE_ON   // Intake
         }
     }
 
@@ -536,6 +539,7 @@ class FrontRedAutoShortGate : OpMode() {
         outTake1 = hardwareMap.get(DcMotorEx::class.java, "outTake1")
         outTake2 = hardwareMap.get(DcMotorEx::class.java, "outTake2")
         intakeServo1 = hardwareMap.get(CRServo::class.java, "intakeServo1")
+        intakeServo2 = hardwareMap.get(CRServo::class.java, "intakeServo2")
         bowlServo = hardwareMap.get(Servo::class.java, "bowlServo")
         camServo = hardwareMap.get(Servo::class.java, "camServo")
         limelight = hardwareMap.get(Limelight3A::class.java, "limelight")
@@ -562,6 +566,7 @@ class FrontRedAutoShortGate : OpMode() {
 
     fun setupMotorDirections() {
         outTake2.direction = DcMotorSimple.Direction.REVERSE
+        intakeServo2.direction = DcMotorSimple.Direction.REVERSE
     }
 
     fun setupPIDFCoefficients() {
