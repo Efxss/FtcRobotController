@@ -118,7 +118,7 @@ class RedTeleOP : OpMode() {
         var OUTTAKE_SPEED = 0.20
     }
     object EndGame {
-        const val LIFTMAX = 3500 // Full is 11400
+        const val LIFTMAX = 11400 // Full is 11400 doing 3500
         const val SLOWMODE = 1000
         const val NORMALSPEED = 1.0
         const val SLOWSPEED = 0.2
