@@ -182,7 +182,7 @@ class RedTeleOP : OpMode() {
 
         Drawing.drawDebug(follower)
 
-        follower.setMaxPower(if (isSlowMode) 0.3 else 0.8)
+        follower.setMaxPower(if (isSlowMode) 0.5 else 1.0)
         follower.setTeleOpDrive(
             forward,
             strafe,
@@ -263,7 +263,7 @@ class RedTeleOP : OpMode() {
         }
     }
     suspend fun centerDepo() {
-        follower.setMaxPower(0.18)
+        follower.setMaxPower(0.2)
         val result: LLResult? = limelight.latestResult
         val fiducialResults = result?.fiducialResults
         val target = fiducialResults?.firstOrNull { it.fiducialId == AprilTagIds.RED_DEPO }
@@ -293,7 +293,7 @@ class RedTeleOP : OpMode() {
         follower.setTeleOpDrive(0.0, 0.0, -rotationPower, false)
     }
     suspend fun reCenterDepo() {
-        follower.setMaxPower(0.18)
+        follower.setMaxPower(0.2)
         val result: LLResult? = limelight.latestResult
         val fiducialResults = result?.fiducialResults
         val target = fiducialResults?.firstOrNull { it.fiducialId == AprilTagIds.RED_DEPO }
