@@ -372,7 +372,7 @@ class RedTeleOP : OpMode() {
             return
         }
         val targetY = target.targetYPixels
-        var powerResult = 0.0002416*targetY+0.105
+        var powerResult = if (targetY > 720) 0.0002416*targetY+0.115 else 0.0002416*targetY+0.105
         DepoCenter.OUTTAKE_SPEED = powerResult
         outTake1.power = DepoCenter.OUTTAKE_SPEED
         outTake2.power = DepoCenter.OUTTAKE_SPEED
