@@ -374,8 +374,10 @@ class RedTeleOP : OpMode() {
         val targetY = target.targetYPixels
         var powerResult = if (targetY > 720) 0.0002416*targetY+0.115 else 0.0002416*targetY+0.105
         DepoCenter.OUTTAKE_SPEED = powerResult
-        outTake1.power = DepoCenter.OUTTAKE_SPEED
-        outTake2.power = DepoCenter.OUTTAKE_SPEED
+        setMotorVelocityFromPseudoPower(outTake1, DepoCenter.OUTTAKE_SPEED)
+        setMotorVelocityFromPseudoPower(outTake2, DepoCenter.OUTTAKE_SPEED)
+        //outTake1.power = DepoCenter.OUTTAKE_SPEED
+        //outTake2.power = DepoCenter.OUTTAKE_SPEED
     }
     fun handleIntake() {
         val isFull: Boolean = if (gamepad1.circle) { true } else { ord.none { it == "N" } }
