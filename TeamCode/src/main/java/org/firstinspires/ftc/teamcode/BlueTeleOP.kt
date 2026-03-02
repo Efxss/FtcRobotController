@@ -263,7 +263,7 @@ class BlueTeleOP : OpMode() {
         }
     }
     suspend fun centerDepo() {
-        follower.setMaxPower(0.3)
+        follower.setMaxPower(0.25)
         val result: LLResult? = limelight.latestResult
         val fiducialResults = result?.fiducialResults
         val target = fiducialResults?.firstOrNull { it.fiducialId == AprilTagIds.BLUE_DEPO }
@@ -293,7 +293,7 @@ class BlueTeleOP : OpMode() {
         follower.setTeleOpDrive(0.0, 0.0, -rotationPower, false)
     }
     suspend fun reCenterDepo() {
-        follower.setMaxPower(0.3)
+        follower.setMaxPower(0.25)
         val result: LLResult? = limelight.latestResult
         val fiducialResults = result?.fiducialResults
         val target = fiducialResults?.firstOrNull { it.fiducialId == AprilTagIds.BLUE_DEPO }
