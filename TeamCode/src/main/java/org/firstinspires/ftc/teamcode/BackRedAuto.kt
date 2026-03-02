@@ -92,7 +92,7 @@ class BackRedAuto : OpMode() {
     val pidD = 0.0
     val pidF = 13.5
     var velocityModeInitialized = false
-    var velocityPowerScale = 1.0
+    var velocityPowerScale = 0.85
 
     object ServoPositions {
         const val LOAD_P1 = 0.021
@@ -545,8 +545,10 @@ class BackRedAuto : OpMode() {
         var powerResult = 0.0002416*targetY+0.105
         DepoCenter.OUTTAKE_SPEED = powerResult
         DepoCenter.OUTTAKE_SPEED = powerResult
-        outTake1.power = DepoCenter.OUTTAKE_SPEED
-        outTake2.power = DepoCenter.OUTTAKE_SPEED
+        setMotorVelocityFromPseudoPower(outTake1, DepoCenter.OUTTAKE_SPEED)
+        setMotorVelocityFromPseudoPower(outTake2, DepoCenter.OUTTAKE_SPEED)
+        //outTake1.power = DepoCenter.OUTTAKE_SPEED
+        //outTake2.power = DepoCenter.OUTTAKE_SPEED
     }
 
     fun handleIntake() {
@@ -730,6 +732,24 @@ class BackRedAuto : OpMode() {
         pathState = pState
         pathTimer.resetTimer()
         timerState = false
+    }
+    fun ensureVelocityMode() {
+        if (!velocityModeInitialized) {
+            outTake1.mode = DcMotor.RunMode.RUN_USING_ENCODER
+            outTake2.mode = DcMotor.RunMode.RUN_USING_ENCODER
+            velocityModeInitialized = true
+        }
+    }
+    fun setMotorVelocityFromPseudoPower(motor: DcMotorEx, power: Double) {
+        ensureVelocityMode()
+        motor.velocity = powerToTicksPerSecond(motor, power)
+    }
+    fun powerToTicksPerSecond(motor: DcMotorEx, power: Double): Double {
+        val clipped = max(-1.0, min(1.0, power))
+        val maxRpm = motor.motorType.maxRPM
+        val tpr = motor.motorType.ticksPerRev
+        val maxTicksPerSec = (maxRpm * tpr) / 60.0
+        return clipped * velocityPowerScale * maxTicksPerSec
     }
     fun clip(v: Double, min: Double, max: Double): Double {
         return max(min, min(max, v))

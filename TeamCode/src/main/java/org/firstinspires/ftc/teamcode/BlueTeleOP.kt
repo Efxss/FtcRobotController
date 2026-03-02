@@ -80,7 +80,7 @@ class BlueTeleOP : OpMode() {
     val pidD = 0.0
     val pidF = 13.5
     var velocityModeInitialized = false
-    var velocityPowerScale = 1.0
+    var velocityPowerScale = 0.85
     var intake = 0
     var isSeen = false
     object ServoPositions {
@@ -182,7 +182,7 @@ class BlueTeleOP : OpMode() {
 
         Drawing.drawDebug(follower)
 
-        follower.setMaxPower(if (isSlowMode) 0.5 else 1.0)
+        follower.setMaxPower(if (isSlowMode) 0.4 else 0.9)
         follower.setTeleOpDrive(
             forward,
             strafe,
@@ -263,7 +263,7 @@ class BlueTeleOP : OpMode() {
         }
     }
     suspend fun centerDepo() {
-        follower.setMaxPower(0.2)
+        follower.setMaxPower(0.3)
         val result: LLResult? = limelight.latestResult
         val fiducialResults = result?.fiducialResults
         val target = fiducialResults?.firstOrNull { it.fiducialId == AprilTagIds.BLUE_DEPO }
@@ -293,7 +293,7 @@ class BlueTeleOP : OpMode() {
         follower.setTeleOpDrive(0.0, 0.0, -rotationPower, false)
     }
     suspend fun reCenterDepo() {
-        follower.setMaxPower(0.2)
+        follower.setMaxPower(0.3)
         val result: LLResult? = limelight.latestResult
         val fiducialResults = result?.fiducialResults
         val target = fiducialResults?.firstOrNull { it.fiducialId == AprilTagIds.BLUE_DEPO }
