@@ -11,7 +11,7 @@ import java.lang.Thread.sleep
 class RunLiftDown : OpMode() {
     private lateinit var liftLeft:  DcMotorEx
     private lateinit var liftRight: DcMotorEx
-    val position = -3000 // Full is 11000
+    val position = -10400 // Full is 11000
     override fun init() {
         liftLeft = hardwareMap.get(DcMotorEx::class.java, "liftLeft")
         liftRight = hardwareMap.get(DcMotorEx::class.java, "liftRight")
@@ -21,7 +21,6 @@ class RunLiftDown : OpMode() {
             motor.targetPosition = 125
             motor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
             motor.mode = DcMotor.RunMode.RUN_TO_POSITION
-            motor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         }
     }
 
