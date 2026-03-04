@@ -113,8 +113,8 @@ class RedTeleOP : OpMode() {
         const val ROTATE_POWER = 0.2
         const val CAM_WIDTH_PX = 1280
         const val CAM_HEIGHT_PX = 960
-        const val CENTER_DEADZONE = 13
         const val KP_ROTATE = 0.003
+        var CENTER_DEADZONE = 13
         var OUTTAKE_SPEED = 0.20
     }
     object EndGame {
@@ -263,7 +263,7 @@ class RedTeleOP : OpMode() {
         }
     }
     suspend fun centerDepo() {
-        follower.setMaxPower(0.25)
+        follower.setMaxPower(0.27)
         val result: LLResult? = limelight.latestResult
         val fiducialResults = result?.fiducialResults
         val target = fiducialResults?.firstOrNull { it.fiducialId == AprilTagIds.RED_DEPO }
@@ -373,6 +373,7 @@ class RedTeleOP : OpMode() {
         }
         val targetY = target.targetYPixels
         var powerResult = if (targetY > 720) 0.0002416*targetY+0.115 else 0.0002416*targetY+0.105
+        if (targetY > 720) DepoCenter.CENTER_DEADZONE = 10 else DepoCenter.CENTER_DEADZONE = 13
         DepoCenter.OUTTAKE_SPEED = powerResult
         setMotorVelocityFromPseudoPower(outTake1, DepoCenter.OUTTAKE_SPEED)
         setMotorVelocityFromPseudoPower(outTake2, DepoCenter.OUTTAKE_SPEED)
