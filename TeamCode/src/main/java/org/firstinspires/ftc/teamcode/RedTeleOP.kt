@@ -110,9 +110,10 @@ class RedTeleOP : OpMode() {
     }
     object DepoCenter {
         const val DESIRED_TAG_WIDTH_PX = 80
-        const val ROTATE_POWER = 0.2
-        const val CAM_WIDTH_PX = 1280
         const val CAM_HEIGHT_PX = 960
+        const val X_OFFSET_PX = 120.0
+        const val CAM_WIDTH_PX = 1280
+        const val ROTATE_POWER = 0.2
         const val KP_ROTATE = 0.003
         var CENTER_DEADZONE = 13
         var OUTTAKE_SPEED = 0.20
@@ -273,7 +274,8 @@ class RedTeleOP : OpMode() {
             return
         }
 
-        val xErrPx: Double = target.targetXPixels - (DepoCenter.CAM_WIDTH_PX / 2.0)
+        val desiredCenterPx = (DepoCenter.CAM_WIDTH_PX / 2.0) - DepoCenter.X_OFFSET_PX
+        val xErrPx = target.targetXPixels - desiredCenterPx
 
         if (abs(xErrPx) <= DepoCenter.CENTER_DEADZONE) {
             follower.setTeleOpDrive(0.0, 0.0, 0.0, false)
@@ -303,7 +305,8 @@ class RedTeleOP : OpMode() {
             return
         }
 
-        val xErrPx: Double = target.targetXPixels - (DepoCenter.CAM_WIDTH_PX / 2.0)
+        val desiredCenterPx = (DepoCenter.CAM_WIDTH_PX / 2.0) - DepoCenter.X_OFFSET_PX
+        val xErrPx = target.targetXPixels - desiredCenterPx
 
         if (abs(xErrPx) <= DepoCenter.CENTER_DEADZONE) {
             follower.setTeleOpDrive(0.0, 0.0, 0.0, false)
@@ -373,7 +376,7 @@ class RedTeleOP : OpMode() {
         }
         val targetY = target.targetYPixels
         var powerResult = if (targetY > 720) 0.0002416*targetY+0.115 else 0.0002416*targetY+0.105
-        if (targetY > 720) DepoCenter.CENTER_DEADZONE = 10 else DepoCenter.CENTER_DEADZONE = 13
+        if (targetY > 720) DepoCenter.CENTER_DEADZONE = 5 else DepoCenter.CENTER_DEADZONE = 13
         DepoCenter.OUTTAKE_SPEED = powerResult
         setMotorVelocityFromPseudoPower(outTake1, DepoCenter.OUTTAKE_SPEED)
         setMotorVelocityFromPseudoPower(outTake2, DepoCenter.OUTTAKE_SPEED)
