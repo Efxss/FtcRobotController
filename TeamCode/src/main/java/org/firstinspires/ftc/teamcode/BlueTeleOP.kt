@@ -373,7 +373,7 @@ class BlueTeleOP : OpMode() {
         }
         val targetY = target.targetYPixels
         var powerResult = if (targetY > 720) 0.0002416*targetY+0.115 else 0.0002416*targetY+0.105
-        if (targetY > 720) DepoCenter.CENTER_DEADZONE = 10 else DepoCenter.CENTER_DEADZONE = 13
+        if (targetY > 720) DepoCenter.CENTER_DEADZONE = 5 else DepoCenter.CENTER_DEADZONE = 13
         DepoCenter.OUTTAKE_SPEED = powerResult
         setMotorVelocityFromPseudoPower(outTake1, DepoCenter.OUTTAKE_SPEED)
         setMotorVelocityFromPseudoPower(outTake2, DepoCenter.OUTTAKE_SPEED)
