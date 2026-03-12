@@ -176,13 +176,13 @@ class BlueTeleOP : OpMode() {
 
     override fun loop() {
         follower.update()
-        var rotate = if(gamepad1.left_bumper) 0.5 else if (gamepad1.right_bumper) -0.5 else 0.0
+        var rotate = if(gamepad1.left_bumper) 1.0 else if (gamepad1.right_bumper) -1.0 else 0.0
         var forward = -gamepad1.left_stick_y.toDouble()
         var strafe = gamepad1.right_stick_x.toDouble()
 
         Drawing.drawDebug(follower)
 
-        follower.setMaxPower(if (isSlowMode) 0.4 else 0.9)
+        follower.setMaxPower(if (isSlowMode) if (runtime >= 100) 0.2 else 0.4 else 0.9)
         follower.setTeleOpDrive(
             forward,
             strafe,
