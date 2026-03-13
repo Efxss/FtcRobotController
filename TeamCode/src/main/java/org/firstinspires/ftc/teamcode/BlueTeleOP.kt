@@ -182,7 +182,7 @@ class BlueTeleOP : OpMode() {
 
         Drawing.drawDebug(follower)
 
-        follower.setMaxPower(if (isSlowMode) if (runtime >= 100) 0.2 else 0.4 else 0.9)
+        follower.setMaxPower(if (isSlowMode) if (runtime >= 100) 0.2 else 0.4 else 1.0)
         follower.setTeleOpDrive(
             forward,
             strafe,
