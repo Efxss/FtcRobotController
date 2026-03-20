@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode
 import com.bylazar.telemetry.PanelsTelemetry
 import com.bylazar.telemetry.TelemetryManager
 import com.pedropathing.follower.Follower
-import com.pedropathing.geometry.BezierCurve
+import com.pedropathing.geometry.BezierLine
 import com.pedropathing.geometry.Pose
 import com.pedropathing.paths.PathChain
 import com.pedropathing.util.Timer
@@ -137,7 +137,7 @@ class FrontBlueAuto : OpMode() {
     override fun start() {
         opmodeTimer.resetTimer()
         setPathState(0)
-        follower.startTeleOpDrive()
+        //follower.startTeleOpDrive()
         outTakeCalc = scope.launch {
             while (isActive) {
                 outTakePower()
@@ -211,7 +211,8 @@ class FrontBlueAuto : OpMode() {
                 }
             }
             3 -> {
-                val centered = centerDepo()
+                //val centered = centerDepo()
+val centered = true
                 if (centered || pathTimer.elapsedTimeSeconds > 0.08) {
                     setPathState(4)
                 }
@@ -228,7 +229,7 @@ class FrontBlueAuto : OpMode() {
             }
             5 -> {
                 if (!isDispensing) {
-                    follower.breakFollowing()
+                    //follower.breakFollowing()
                     follower.followPath(spike1Line, false)
                     setPathState(6)
                 }
@@ -271,7 +272,8 @@ class FrontBlueAuto : OpMode() {
                 }
             }
             10 -> {
-                val centered = centerDepo()
+                //val centered = centerDepo()
+val centered = true
                 if (centered || pathTimer.elapsedTimeSeconds > 0.01) {
                     setPathState(11)
                 }
@@ -288,7 +290,7 @@ class FrontBlueAuto : OpMode() {
             }
             12 -> {
                 if (!isDispensing) {
-                    follower.breakFollowing()
+                    //follower.breakFollowing()
                     follower.followPath(spike2Line, false)
                     setPathState(13)
                 }
@@ -331,7 +333,8 @@ class FrontBlueAuto : OpMode() {
                 }
             }
             17 -> {
-                val centered = centerDepo()
+                //val centered = centerDepo()
+val centered = true
                 if (centered || pathTimer.elapsedTimeSeconds > 0.08) {
                     setPathState(18)
                 }
@@ -348,21 +351,21 @@ class FrontBlueAuto : OpMode() {
             }
             19 -> {
                 if (!isDispensing) {
-                    follower.breakFollowing()
+                    //follower.breakFollowing()
                     follower.followPath(spike3Line, true)
                     setPathState(20)
                 }
             }
             20 -> {
                 follower.setMaxPower(0.9)
-                if (correction?.isActive != true) {
+                /*if (correction?.isActive != true) {
                     correction = scope.launch {
                         while (isActive) {
-                            if (follower.pose.y < 50.0) follower.breakFollowing()
+                            if (follower.pose.y < 50.0) //follower.breakFollowing()
                             delay(15)
                         }
                     }
-                }
+                }*/
                 if (notBusy) {
                     if (correction?.isActive == true) {
                         correction?.cancel()
@@ -402,7 +405,8 @@ class FrontBlueAuto : OpMode() {
                 }
             }
             23 -> {
-                val centered = centerDepo()
+                //val centered = centerDepo()
+val centered = true
                 if (centered || pathTimer.elapsedTimeSeconds > 0.08) {
                     setPathState(24)
                 }
@@ -419,7 +423,7 @@ class FrontBlueAuto : OpMode() {
             }
             25 -> {
                 if (!isDispensing) {
-                    follower.breakFollowing()
+                    //follower.breakFollowing()
                     follower.followPath(leavePoint, true)
                     setPathState(26)
                 }
@@ -648,52 +652,52 @@ class FrontBlueAuto : OpMode() {
 
     fun buildPaths() {
         preLoadScore = follower.pathBuilder()
-            .addPath(BezierCurve(startPose, preScorePose))
+            .addPath(BezierLine(startPose, preScorePose))
             .setLinearHeadingInterpolation(startPose.heading, preScorePose.heading)
             .build()
 
         spike1Line = follower.pathBuilder()
-            .addPath(BezierCurve(scorePose, spike1pre))
+            .addPath(BezierLine(scorePose, spike1pre))
             .setLinearHeadingInterpolation(scorePose.heading, spike1pre.heading)
             .build()
 
         spike1Grab = follower.pathBuilder()
-            .addPath(BezierCurve(spike1pre, spike1))
+            .addPath(BezierLine(spike1pre, spike1))
             .setLinearHeadingInterpolation(spike1pre.heading, spike1.heading)
             .build()
 
         spike1Score = follower.pathBuilder()
-            .addPath(BezierCurve(spike1, scorePose))
+            .addPath(BezierLine(spike1, scorePose))
             .setLinearHeadingInterpolation(spike1.heading, scorePose.heading)
             .build()
 
         spike2Line = follower.pathBuilder()
-            .addPath(BezierCurve(scorePose, spike2pre))
+            .addPath(BezierLine(scorePose, spike2pre))
             .setLinearHeadingInterpolation(scorePose.heading, spike2pre.heading)
             .build()
 
         spike2Grab = follower.pathBuilder()
-            .addPath(BezierCurve(spike2pre, spike2))
+            .addPath(BezierLine(spike2pre, spike2))
             .setLinearHeadingInterpolation(spike2pre.heading, spike2.heading)
             .build()
         spike2Score = follower.pathBuilder()
-            .addPath(BezierCurve(spike2, scorePose))
+            .addPath(BezierLine(spike2, scorePose))
             .setLinearHeadingInterpolation(spike2.heading, scorePose.heading)
             .build()
         spike3Line = follower.pathBuilder()
-            .addPath(BezierCurve(scorePose, spike3pre))
+            .addPath(BezierLine(scorePose, spike3pre))
             .setLinearHeadingInterpolation(scorePose.heading, spike3pre.heading)
             .build()
         spike3Grab = follower.pathBuilder()
-            .addPath(BezierCurve(spike3pre, spike3))
+            .addPath(BezierLine(spike3pre, spike3))
             .setLinearHeadingInterpolation(spike3pre.heading, spike3.heading)
             .build()
         spike3Score = follower.pathBuilder()
-            .addPath(BezierCurve(spike3, spike3fire))
+            .addPath(BezierLine(spike3, spike3fire))
             .setLinearHeadingInterpolation(spike3.heading, spike3fire.heading)
             .build()
         leavePoint = follower.pathBuilder()
-            .addPath(BezierCurve(spike3fire, strafeOut))
+            .addPath(BezierLine(spike3fire, strafeOut))
             .setLinearHeadingInterpolation(spike3fire.heading, strafeOut.heading)
             .build()
     }
