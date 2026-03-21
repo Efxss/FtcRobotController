@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.pedroPathing;
 
 import com.pedropathing.control.FilteredPIDFCoefficients;
 import com.pedropathing.control.PIDFCoefficients;
+import com.pedropathing.control.PredictiveBrakingCoefficients;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.follower.FollowerConstants;
 import com.pedropathing.ftc.FollowerBuilder;
@@ -15,37 +16,20 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-public class Constants {
+public class ConstantsPredictiveBraking {
     public static FollowerConstants followerConstants = new FollowerConstants()
             .mass(12.67)
-            .forwardZeroPowerAcceleration(-34.918377572914916)
-            .lateralZeroPowerAcceleration(-75.76916150636166)
-
-            .translationalPIDFCoefficients(new PIDFCoefficients(
-                    0.12, 0.0, 0.013, 0.01
-            ))
-            .secondaryTranslationalPIDFCoefficients(new PIDFCoefficients(
-                    0.2, 0.0, 0.0228, 0.032
-            ))
             .headingPIDFCoefficients(new PIDFCoefficients(
                     1.0, 0.0, 0.05, 0.025
             ))
-            .secondaryHeadingPIDFCoefficients(new PIDFCoefficients(
-                    0.9, 0.0, 0.06, 0.035
-            ))
-            .drivePIDFCoefficients(new FilteredPIDFCoefficients(
-                    0.12, 0.0, 0.013, 0.1 ,0.01
-            ))
-            .secondaryDrivePIDFCoefficients(new FilteredPIDFCoefficients(
-                    0.2, 0.0, 0.0228, 0.1 ,0.032
-            ))
-            .drivePIDFSwitch(18)
-            .translationalPIDFSwitch(15)
+            //.predictiveBrakingCoefficients(new PredictiveBrakingCoefficients(0.1, 0.09280967322988408, 0.0015851106397749431))
+            .predictiveBrakingCoefficients(new PredictiveBrakingCoefficients(0.1, 0.04, 0.0016))
             .headingPIDFSwitch(Math.toRadians(15))
+            .centripetalScaling(0);
 
-            .useSecondaryTranslationalPIDF(true)
-            .useSecondaryHeadingPIDF(true)
-            .useSecondaryDrivePIDF(true);
+    static {
+        followerConstants.usePredictiveBraking = true;
+    }
 
     public static PathConstraints pathConstraints = new PathConstraints(
             0.995,
@@ -53,9 +37,9 @@ public class Constants {
             0.1,
             0.009,
             50,
-            0.86,
+            1.25,
             10,
-            0.2
+            1.0
     );
 
     public static MecanumConstants driveConstants = new MecanumConstants()
@@ -70,7 +54,7 @@ public class Constants {
             .rightRearMotorDirection(DcMotorSimple.Direction.FORWARD)
             .xVelocity(49.852386234313485)
             .yVelocity(43.82936973271408);
-    
+
     public static OTOSConstants localizerConstants = new OTOSConstants()
             .hardwareMapName("otos")
             .linearUnit(DistanceUnit.INCH)

@@ -9,7 +9,6 @@ import com.pedropathing.paths.PathChain
 import com.pedropathing.util.Timer
 import com.qualcomm.hardware.limelightvision.LLResult
 import com.qualcomm.hardware.limelightvision.Limelight3A
-import com.qualcomm.hardware.sparkfun.SparkFunOTOS
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.CRServo
@@ -183,12 +182,14 @@ class FrontBlueAutoFix : OpMode() {
                 }
             }
             1 -> {
-                if (!isDispensing) {
-                    isDispensing = true
-                    scope.launch {
-                        executeDispensing()
-                        isDispensing = false
-                        setPathState(2)
+                if (notBusy) {
+                    if (!isDispensing) {
+                        isDispensing = true
+                        scope.launch {
+                            executeDispensing()
+                            isDispensing = false
+                            setPathState(2)
+                        }
                     }
                 }
             }
@@ -213,12 +214,14 @@ class FrontBlueAutoFix : OpMode() {
                 }
             }
             5 -> {
-                if (!isDispensing) {
-                    isDispensing = true
-                    scope.launch {
-                        executeDispensing()
-                        isDispensing = false
-                        setPathState(6)
+                if (notBusy) {
+                    if (!isDispensing) {
+                        isDispensing = true
+                        scope.launch {
+                            executeDispensing()
+                            isDispensing = false
+                            setPathState(6)
+                        }
                     }
                 }
             }
@@ -243,12 +246,14 @@ class FrontBlueAutoFix : OpMode() {
                 }
             }
             9 -> {
-                if (!isDispensing) {
-                    isDispensing = true
-                    scope.launch {
-                        executeDispensing()
-                        isDispensing = false
-                        setPathState(10)
+                if (notBusy) {
+                    if (!isDispensing) {
+                        isDispensing = true
+                        scope.launch {
+                            executeDispensing()
+                            isDispensing = false
+                            setPathState(10)
+                        }
                     }
                 }
             }
@@ -273,12 +278,14 @@ class FrontBlueAutoFix : OpMode() {
                 }
             }
             13 -> {
-                if (!isDispensing) {
-                    isDispensing = true
-                    scope.launch {
-                        executeDispensing()
-                        isDispensing = false
-                        setPathState(14)
+                if (notBusy) {
+                    if (!isDispensing) {
+                        isDispensing = true
+                        scope.launch {
+                            executeDispensing()
+                            isDispensing = false
+                            setPathState(14)
+                        }
                     }
                 }
             }
@@ -453,10 +460,6 @@ class FrontBlueAutoFix : OpMode() {
         actionTimer = Timer()
         opmodeTimer = Timer()
         opmodeTimer.resetTimer()
-
-        val otos = hardwareMap.get(SparkFunOTOS::class.java, "otos")
-        otos.calibrateImu()
-        otos.resetTracking()
 
         ord = arrayOf("P", "G", "P")
 
