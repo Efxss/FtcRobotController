@@ -86,7 +86,7 @@ object Drawing {
         follower.currentPath?.let { path ->
             drawPath(path, pathStyle)
 
-            // Draw closest point on path (target position)
+            // Draw the closest point on path (target position)
             val closestPoint = follower.getPointFromPath(path.closestPointTValue)
             val headingGoal = path.getHeadingGoal(path.closestPointTValue)
             drawRobot(Pose(closestPoint.x, closestPoint.y, headingGoal), pathStyle)

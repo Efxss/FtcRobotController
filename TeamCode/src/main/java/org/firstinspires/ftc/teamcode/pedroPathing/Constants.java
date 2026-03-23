@@ -8,7 +8,6 @@ import com.pedropathing.ftc.FollowerBuilder;
 import com.pedropathing.ftc.drivetrains.MecanumConstants;
 import com.pedropathing.ftc.localization.constants.OTOSConstants;
 import com.pedropathing.paths.PathConstraints;
-import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -39,9 +38,9 @@ public class Constants {
             .secondaryDrivePIDFCoefficients(new FilteredPIDFCoefficients(
                     0.2, 0.0, 0.0228, 0.1 ,0.032
             ))
-            .drivePIDFSwitch(18)
-            .translationalPIDFSwitch(15)
-            .headingPIDFSwitch(Math.toRadians(15))
+            .drivePIDFSwitch(8)
+            .translationalPIDFSwitch(5)
+            .headingPIDFSwitch(Math.toRadians(5))
 
             .useSecondaryTranslationalPIDF(true)
             .useSecondaryHeadingPIDF(true)
@@ -53,7 +52,7 @@ public class Constants {
             0.1,
             0.009,
             50,
-            0.86,
+            1.35,
             10,
             0.2
     );
