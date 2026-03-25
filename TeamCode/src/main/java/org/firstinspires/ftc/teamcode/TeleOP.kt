@@ -24,6 +24,7 @@ class TeleOP : OpMode() {
         panels?.apply {
             debug("Left Power", lDrive.power)
             debug("Right Power", rDrive.power)
+            update(telemetry)
         }
     }
 }
