@@ -15,9 +15,12 @@ class CenterUtil(
     private val deadzone: Int = 15,
     private val id: Int = 20
 ) {
+    private var rotationPower = 0.0f
     private val camWidthPx = 1280
     private val camHeightPx = 720
     private val kpRotate = 0.003
+    private var isCentering = false
+
 
     private val driveUtil = DriveUtil(
         hardwareMap,
@@ -43,12 +46,11 @@ class CenterUtil(
     fun centering(button: Boolean) {
         if (button) {
             centerDepo()
-        } else {
-            stopDrive()
         }
     }
 
     fun centerDepo() {
+        isCentering = true
         val detections = tagProcessor.detections
         val target = detections.firstOrNull { it.id == id }
 
@@ -64,17 +66,25 @@ class CenterUtil(
             return
         }
 
-        val rotationPower = clip(xErrPx * kpRotate, -rotatePower, rotatePower).toFloat()
-
-        driveUtil.tankDrive(rotationPower, -rotationPower)
+        rotationPower = clip(xErrPx * kpRotate, -rotatePower, rotatePower).toFloat()
+        driveUtil.tankDrive(-rotationPower, rotationPower)
     }
 
     private fun stopDrive() {
         driveUtil.tankDrive(0f, 0f)
+        isCentering = false
     }
 
-    private fun clip(v: Double, minValue: Double, maxValue: Double): Double {
+    private fun clip(v: Double, minValue: Double, maxValue: Double) : Double {
         return max(minValue, min(maxValue, v))
+    }
+
+    fun isCentering(): Boolean {
+        return isCentering
+    }
+
+    fun getPower(): Float {
+        return rotationPower
     }
 
     fun close() {
