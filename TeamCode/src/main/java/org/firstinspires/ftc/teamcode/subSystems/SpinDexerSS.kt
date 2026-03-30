@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.subSystems
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.Servo
 
-class SpinDexerSS(
+class SpinDexerSS (
     hardwareMap : HardwareMap
 ) {
     companion object {

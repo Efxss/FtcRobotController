@@ -6,7 +6,7 @@ import org.firstinspires.ftc.teamcode.subSystems.CamSS
 import org.firstinspires.ftc.teamcode.subSystems.SpinDexerSS
 import java.lang.Thread.sleep
 
-class FiringUtil(
+class FiringUtil (
     hardwareMap : HardwareMap
 ) {
     private val flyWheel : DcMotorEx = hardwareMap.get(DcMotorEx::class.java, "flyWheel")

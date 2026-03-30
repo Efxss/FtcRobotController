@@ -9,7 +9,7 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
-class CenterUtil(
+class CenterUtil (
     hardwareMap : HardwareMap,
     private val rotatePower : Double = 0.2,
     private val deadzone : Int = 15,

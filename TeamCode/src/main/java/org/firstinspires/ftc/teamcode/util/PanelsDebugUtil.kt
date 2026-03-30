@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.hardware.Gamepad
 import org.firstinspires.ftc.teamcode.subSystems.CamSS
 import org.firstinspires.ftc.teamcode.subSystems.SpinDexerSS
 
-class PanelsDebugUtil(
+class PanelsDebugUtil (
     private val panels : TelemetryManager?
 ) {
 

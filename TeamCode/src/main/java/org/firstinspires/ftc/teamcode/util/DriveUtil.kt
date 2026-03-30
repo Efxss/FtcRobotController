@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap
 import kotlin.math.max
 import kotlin.math.min
 
-class DriveUtil(
+class DriveUtil (
     hardwareMap : HardwareMap,
     private val drivePower : Double = 0.2,
     private val deadzone : Float = 0.2f

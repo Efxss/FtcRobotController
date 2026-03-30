@@ -4,11 +4,11 @@ import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.Servo
 import java.lang.Thread.sleep
 
-class CamSS(
+class CamSS (
     hardwareMap : HardwareMap
 ) {
     private val cam : Servo = hardwareMap.get(Servo::class.java, "Cam")
-    val firingPos : Double = 1.0
+    val firingPos : Double = 0.5
     val homePos : Double = 0.0
 
     fun home() {
