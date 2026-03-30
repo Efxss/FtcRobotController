@@ -19,6 +19,7 @@ class TeleOP : OpMode() {
         centerUtil = CenterUtil(hardwareMap, 0.25, 15, 17)
         spinDexer = SpinDexerSS(hardwareMap)
         firing = FiringUtil(hardwareMap)
+        spinDexer.loadOne(true)
         panels?.debug("Init Started")
         panels?.update(telemetry)
     }
@@ -31,9 +32,9 @@ class TeleOP : OpMode() {
             loadThree(gamepad1.circle)
         }
         firing.executeFiring(gamepad1.crossWasReleased())
-        panels?.debug("Bumper", gamepad1.right_bumper)
-        panels?.debug("Is Centering", centerUtil.isCentering())
-        panels?.debug("Power", centerUtil.getPower())
+        panels?.debug("Is Centering:", centerUtil.isCentering())
+        panels?.debug("Power:", centerUtil.getPower())
+        panels?.debug("SpinDexer Positon:", spinDexer.position())
         panels?.update(telemetry)
     }
 }

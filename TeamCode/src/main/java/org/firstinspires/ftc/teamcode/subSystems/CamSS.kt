@@ -7,19 +7,23 @@ import java.lang.Thread.sleep
 class CamSS(
     hardwareMap: HardwareMap
 ) {
-    private val cam: Servo = hardwareMap.get(Servo::class.java, "cam")
+    private val cam: Servo = hardwareMap.get(Servo::class.java, "Cam")
 
     fun home() {
-        cam.position = 0.255
+        cam.position = 0.0
     }
 
     fun fire() {
-        cam.position = 0.44
+        cam.position = 1.0
     }
 
     fun fireCam() {
         fire()
-        sleep(5)
+        sleep(1000)
         home()
+    }
+
+    fun position() : Double {
+        return cam.position
     }
 }

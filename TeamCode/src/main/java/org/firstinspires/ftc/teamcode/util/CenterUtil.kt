@@ -28,20 +28,14 @@ class CenterUtil(
         deadzone = 0.2f
     )
 
-    private val tagProcessor: AprilTagProcessor
-    private val visionPortal: VisionPortal
-
-    init {
-        tagProcessor = AprilTagProcessor.Builder()
-            .build()
-
-        visionPortal = VisionPortal.Builder()
-            .setCamera(hardwareMap.get(WebcamName::class.java, "Webcam 1"))
-            .setCameraResolution(Size(camWidthPx, camHeightPx))
-            .addProcessor(tagProcessor)
-            .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
-            .build()
-    }
+    private val tagProcessor: AprilTagProcessor = AprilTagProcessor.Builder()
+        .build()
+    private val visionPortal: VisionPortal = VisionPortal.Builder()
+        .setCamera(hardwareMap.get(WebcamName::class.java, "Webcam 1"))
+        .setCameraResolution(Size(camWidthPx, camHeightPx))
+        .addProcessor(tagProcessor)
+        .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
+        .build()
 
     fun centering(button: Boolean) {
         if (button) {
