@@ -8,13 +8,13 @@ import kotlin.math.max
 import kotlin.math.min
 
 class DriveUtil(
-    hardwareMap: HardwareMap,
-    private val drivePower: Double = 0.2,
-    private val deadzone: Float = 0.2f
+    hardwareMap : HardwareMap,
+    private val drivePower : Double = 0.2,
+    private val deadzone : Float = 0.2f
 ) {
 
-    private val lDrive: DcMotorEx = hardwareMap.get(DcMotorEx::class.java, "lDrive")
-    private val rDrive: DcMotorEx = hardwareMap.get(DcMotorEx::class.java, "rDrive")
+    private val lDrive : DcMotorEx = hardwareMap.get(DcMotorEx::class.java, "lDrive")
+    private val rDrive : DcMotorEx = hardwareMap.get(DcMotorEx::class.java, "rDrive")
 
     var velocityModeInitialized = false
     var velocityPowerScale = 1.0

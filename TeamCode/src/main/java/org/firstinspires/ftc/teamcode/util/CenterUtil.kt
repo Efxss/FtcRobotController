@@ -10,10 +10,10 @@ import kotlin.math.max
 import kotlin.math.min
 
 class CenterUtil(
-    hardwareMap: HardwareMap,
-    private val rotatePower: Double = 0.2,
-    private val deadzone: Int = 15,
-    private val id: Int = 20
+    hardwareMap : HardwareMap,
+    private val rotatePower : Double = 0.2,
+    private val deadzone : Int = 15,
+    private val id : Int = 20
 ) {
     private var rotationPower = 0.0f
     private val camWidthPx = 1280
