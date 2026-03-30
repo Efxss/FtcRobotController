@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.Servo
 
 class SpinDexerSS(
-    hardwareMap: HardwareMap
+    hardwareMap : HardwareMap
 ) {
     companion object {
         const val LOAD_ONE = 0.021
@@ -15,7 +15,7 @@ class SpinDexerSS(
         const val FIRE_THREE = 0.058
     }
 
-    private val spinDexer: Servo = hardwareMap.get(Servo::class.java, "SpinDexer")
+    private val spinDexer : Servo = hardwareMap.get(Servo::class.java, "SpinDexer")
 
     fun loadOne(button: Boolean) {
         if (button) spinDexer.position = LOAD_ONE
@@ -52,6 +52,10 @@ class SpinDexerSS(
             closeTo(spinDexerPos, FIRE_THREE) -> "Fire Three"
             else -> "Unknown"
         }
+    }
+
+    fun rawPosition() : Double {
+        return spinDexer.position
     }
 
     fun closeTo(a: Double, b: Double, epsilon: Double = 0.001): Boolean {
