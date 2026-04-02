@@ -25,8 +25,8 @@ class TeleOP : OpMode() {
 
         centerUtil = CenterUtil(hardwareMap, 0.25, 15, 17)
         spinDexer = SpinDexerSS(hardwareMap)
-        firing = FiringUtil(hardwareMap)
         cam = CamSS(hardwareMap)
+        firing = FiringUtil(hardwareMap, spinDexer, cam)
 
         spinDexer.loadOne(true)
 
@@ -43,7 +43,10 @@ class TeleOP : OpMode() {
             loadThree(gamepad1.circle)
         }
 
-        firing.executeFiring(gamepad1.crossWasReleased())
+        firing.apply {
+            startFiring(gamepad1.crossWasReleased())
+            update()
+        }
 
         debugUtil.showAllDebug(
             gamepad1 = gamepad1,

@@ -30,17 +30,10 @@ class DriveUtil (
         setPIDF()
     }
 
-    fun tankDrive(leftStick: Float, rightStick: Float) {
-        setMotorVelocityFromPseudoPower(lDrive, processInput(leftStick))
-        setMotorVelocityFromPseudoPower(rDrive, processInput(rightStick))
-    }
-
-    private fun processInput(input: Float): Double {
-        return when {
-            input > deadzone -> drivePower
-            input < -deadzone -> -drivePower
-            else -> 0.0
-        }
+    // DriveUtil.kt
+    fun setDrivePowers(leftPower: Double, rightPower: Double) {
+        setMotorVelocityFromPseudoPower(lDrive, leftPower)
+        setMotorVelocityFromPseudoPower(rDrive, rightPower)
     }
 
     fun setPIDF() {

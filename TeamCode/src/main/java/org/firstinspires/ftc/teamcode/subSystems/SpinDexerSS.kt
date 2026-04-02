@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.subSystems
 
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.Servo
+import org.firstinspires.ftc.teamcode.util.MathUtil
 
 class SpinDexerSS (
     hardwareMap : HardwareMap
@@ -44,21 +45,15 @@ class SpinDexerSS (
         val spinDexerPos = spinDexer.position
 
         return when {
-            closeTo(spinDexerPos, LOAD_ONE) -> "Load One"
-            closeTo(spinDexerPos, LOAD_TWO) -> "Load Two"
-            closeTo(spinDexerPos, LOAD_THREE) -> "Load Three"
-            closeTo(spinDexerPos, FIRE_ONE) -> "Fire One"
-            closeTo(spinDexerPos, FIRE_TWO) -> "Fire Two"
-            closeTo(spinDexerPos, FIRE_THREE) -> "Fire Three"
+            MathUtil.closeTo(spinDexerPos, LOAD_ONE) -> "Load One"
+            MathUtil.closeTo(spinDexerPos, LOAD_TWO) -> "Load Two"
+            MathUtil.closeTo(spinDexerPos, LOAD_THREE) -> "Load Three"
+            MathUtil.closeTo(spinDexerPos, FIRE_ONE) -> "Fire One"
+            MathUtil.closeTo(spinDexerPos, FIRE_TWO) -> "Fire Two"
+            MathUtil.closeTo(spinDexerPos, FIRE_THREE) -> "Fire Three"
             else -> "Unknown"
         }
     }
 
-    fun rawPosition() : Double {
-        return spinDexer.position
-    }
-
-    fun closeTo(a: Double, b: Double, epsilon: Double = 0.001): Boolean {
-        return kotlin.math.abs(a - b) < epsilon
-    }
+    fun rawPosition() : Double = spinDexer.position
 }

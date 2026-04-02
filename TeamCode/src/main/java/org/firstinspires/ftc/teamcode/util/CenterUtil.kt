@@ -38,9 +38,7 @@ class CenterUtil (
         .build()
 
     fun centering(button: Boolean) {
-        if (button) {
-            centerDepo()
-        }
+        if (button) centerDepo() else if (isCentering) stopDrive()
     }
 
     fun centerDepo() {
@@ -61,11 +59,11 @@ class CenterUtil (
         }
 
         rotationPower = clip(xErrPx * kpRotate, -rotatePower, rotatePower).toFloat()
-        driveUtil.tankDrive(-rotationPower, rotationPower)
+        driveUtil.setDrivePowers(-rotationPower.toDouble(), rotationPower.toDouble())
     }
 
     private fun stopDrive() {
-        driveUtil.tankDrive(0f, 0f)
+        driveUtil.setDrivePowers(0.0, 0.0)
         isCentering = false
     }
 
@@ -73,13 +71,9 @@ class CenterUtil (
         return max(minValue, min(maxValue, v))
     }
 
-    fun isCentering(): Boolean {
-        return isCentering
-    }
+    fun isCentering() : Boolean = isCentering
 
-    fun getPower(): Float {
-        return rotationPower
-    }
+    fun getPower() : Float  = rotationPower
 
     fun close() {
         visionPortal.close()
