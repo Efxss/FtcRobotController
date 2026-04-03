@@ -10,8 +10,7 @@ import kotlin.math.min
 /** A utility script made to use the drive system on the robot */
 class DriveUtil (
     hardwareMap : HardwareMap,
-    private val drivePower : Double = 0.2,
-    private val deadzone : Float = 0.2f
+    private val drivePower : Double = 0.2
 ) {
 
     private val lDrive : DcMotorEx = hardwareMap.get(DcMotorEx::class.java, "lDrive")
@@ -59,8 +58,5 @@ class DriveUtil (
         val tpr = motor.motorType.ticksPerRev
         val maxTicksPerSec = (maxRpm * tpr) / 60.0
         return clipped * velocityPowerScale * maxTicksPerSec
-    }
-    fun clip(v: Double, min: Double, max: Double): Double {
-        return max(min, min(max, v))
     }
 }

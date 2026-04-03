@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.util
 
 import com.qualcomm.robotcore.hardware.DcMotorEx
+import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.teamcode.subSystems.CamSS
@@ -9,11 +10,16 @@ import org.firstinspires.ftc.teamcode.subSystems.SpinDexerSS
 /** A utility script made for entering the firing sequence */
 class FiringUtil(
     hardwareMap: HardwareMap,
-    private val spinDexer: SpinDexerSS,
-    private val cam: CamSS
+    val spinDexer: SpinDexerSS,
+    val cam: CamSS,
+    val maxPower : Double
 ) {
     private val flyWheel: DcMotorEx = hardwareMap.get(DcMotorEx::class.java, "flyWheel")
     private val timer = ElapsedTime()
+
+    init {
+        flyWheel.direction = DcMotorSimple.Direction.REVERSE
+    }
 
     private enum class FiringState {
         IDLE, SPIN_UP, MOVE_DEXER, WAIT_DEXER, FIRE_CAM, WAIT_CAM_FIRE, CAM_HOME, WAIT_CAM_HOME, DONE
@@ -33,7 +39,7 @@ class FiringUtil(
             FiringState.IDLE -> { }
 
             FiringState.SPIN_UP -> {
-                flyWheel.power = 1.0
+                flyWheel.power = maxPower
                 currentStep = 0
                 state = FiringState.MOVE_DEXER
                 timer.reset()

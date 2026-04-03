@@ -6,8 +6,6 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName
 import org.firstinspires.ftc.vision.VisionPortal
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor
 import kotlin.math.abs
-import kotlin.math.max
-import kotlin.math.min
 
 /** A utility script made for entering the centering sequence */
 class CenterUtil (
@@ -25,8 +23,7 @@ class CenterUtil (
 
     private val driveUtil = DriveUtil(
         hardwareMap,
-        drivePower = rotatePower,
-        deadzone = 0.2f
+        drivePower = rotatePower
     )
 
     private val tagProcessor: AprilTagProcessor = AprilTagProcessor.Builder()
@@ -61,17 +58,13 @@ class CenterUtil (
             return
         }
 
-        rotationPower = clip(xErrPx * kpRotate, -rotatePower, rotatePower).toFloat()
+        rotationPower = MathUtil.clip(xErrPx * kpRotate, -rotatePower, rotatePower).toFloat()
         driveUtil.setDrivePowers(-rotationPower.toDouble(), rotationPower.toDouble())
     }
 
     private fun stopDrive() {
         driveUtil.setDrivePowers(0.0, 0.0)
         isCentering = false
-    }
-
-    private fun clip(v: Double, minValue: Double, maxValue: Double) : Double {
-        return max(minValue, min(maxValue, v))
     }
 
     /** This function will return true if the robot is centering else it will return false */

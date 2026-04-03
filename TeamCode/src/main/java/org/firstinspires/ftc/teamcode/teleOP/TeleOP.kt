@@ -26,7 +26,7 @@ class TeleOP : OpMode() {
         centerUtil = CenterUtil(hardwareMap, 0.25, 15, 17)
         cam = CamSS(hardwareMap, 0.5 , 0.0)
         spinDexer = SpinDexerSS(hardwareMap)
-        firing = FiringUtil(hardwareMap, spinDexer, cam)
+        firing = FiringUtil(hardwareMap, spinDexer, cam, 1.0)
 
         spinDexer.loadOne(true)
 
