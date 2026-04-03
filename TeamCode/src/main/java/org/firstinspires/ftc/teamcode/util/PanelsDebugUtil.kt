@@ -5,10 +5,12 @@ import com.qualcomm.robotcore.hardware.Gamepad
 import org.firstinspires.ftc.teamcode.subSystems.CamSS
 import org.firstinspires.ftc.teamcode.subSystems.SpinDexerSS
 
+/** A utility script to made display everything related to the robot in one file */
 class PanelsDebugUtil (
     private val panels : TelemetryManager?
 ) {
 
+    /** Calling this function will display all the telemetry related to the robot */
     fun showAllDebug(
         gamepad1 : Gamepad,
         centerUtil : CenterUtil,
@@ -46,10 +48,12 @@ class PanelsDebugUtil (
         }
     }
 
+    /** Calling this function will show an init message to confirm that init has not only started but this utility is working */
     fun showInit() {
         panels?.debug("Init Started")
     }
 
+    /** Call this function while passing the telemetry object from the SDK to display everything to panels and the DS */
     fun update(telemetry: org.firstinspires.ftc.robotcore.external.Telemetry) {
         panels?.update(telemetry)
     }
