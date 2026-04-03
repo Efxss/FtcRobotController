@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.Servo
 import org.firstinspires.ftc.teamcode.util.MathUtil
 
+/** A SubSystem made for controlling the Spindexer on the robot */
 class SpinDexerSS (
     hardwareMap : HardwareMap
 ) {
@@ -18,29 +19,37 @@ class SpinDexerSS (
 
     private val spinDexer : Servo = hardwareMap.get(Servo::class.java, "SpinDexer")
 
+    /** Calling this function rotate the Spindexer into load position one */
     fun loadOne(button: Boolean) {
         if (button) spinDexer.position = LOAD_ONE
     }
 
+    /** Calling this function rotate the Spindexer into load position two */
     fun loadTwo(button: Boolean) {
         if (button) spinDexer.position = LOAD_TWO
     }
 
+    /** Calling this function rotate the Spindexer into load position three */
     fun loadThree(button: Boolean) {
         if (button) spinDexer.position = LOAD_THREE
     }
+
+    /** Calling this function rotate the Spindexer into fire position one */
     fun fireOne() {
         spinDexer.position = FIRE_ONE
     }
 
+    /** Calling this function rotate the Spindexer into fire position two */
     fun fireTwo() {
         spinDexer.position = FIRE_TWO
     }
 
+    /** Calling this function rotate the Spindexer into fire position three */
     fun fireThree() {
         spinDexer.position = FIRE_THREE
     }
 
+    /** This function will return the position as a String if the position is within error of a known position */
     fun position(): String {
         val spinDexerPos = spinDexer.position
 
@@ -55,5 +64,6 @@ class SpinDexerSS (
         }
     }
 
+    /** This function will return the raw position of the Spindexer as a double */
     fun rawPosition() : Double = spinDexer.position
 }

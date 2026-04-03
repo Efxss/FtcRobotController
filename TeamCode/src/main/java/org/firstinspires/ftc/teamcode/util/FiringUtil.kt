@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.teamcode.subSystems.CamSS
 import org.firstinspires.ftc.teamcode.subSystems.SpinDexerSS
 
+/** A utility script made for entering the firing sequence */
 class FiringUtil(
     hardwareMap: HardwareMap,
     private val spinDexer: SpinDexerSS,
@@ -84,12 +85,16 @@ class FiringUtil(
         }
     }
 
+    /** Call this function to enter the firing sequence */
     fun startFiring(button: Boolean) {
         if (button && state == FiringState.IDLE) {
             state = FiringState.SPIN_UP
         }
     }
 
+    /** This function will return true if the robot is firing else it will return false */
     fun isFiring(): Boolean = state != FiringState.IDLE
+
+    /** This function will return the power of the flywheel */
     fun flyWheelPower(): Double = flyWheel.power
 }

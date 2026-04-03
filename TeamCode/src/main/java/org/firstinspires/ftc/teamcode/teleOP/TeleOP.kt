@@ -24,8 +24,8 @@ class TeleOP : OpMode() {
         debugUtil = PanelsDebugUtil(panels)
 
         centerUtil = CenterUtil(hardwareMap, 0.25, 15, 17)
+        cam = CamSS(hardwareMap, 0.5 , 0.0)
         spinDexer = SpinDexerSS(hardwareMap)
-        cam = CamSS(hardwareMap)
         firing = FiringUtil(hardwareMap, spinDexer, cam)
 
         spinDexer.loadOne(true)

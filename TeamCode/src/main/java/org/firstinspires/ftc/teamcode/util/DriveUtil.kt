@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap
 import kotlin.math.max
 import kotlin.math.min
 
+/** A utility script made to use the drive system on the robot */
 class DriveUtil (
     hardwareMap : HardwareMap,
     private val drivePower : Double = 0.2,
@@ -30,7 +31,7 @@ class DriveUtil (
         setPIDF()
     }
 
-    // DriveUtil.kt
+    /** A function to set powers to the motors based off of a double for left and right power */
     fun setDrivePowers(leftPower: Double, rightPower: Double) {
         setMotorVelocityFromPseudoPower(lDrive, leftPower)
         setMotorVelocityFromPseudoPower(rDrive, rightPower)

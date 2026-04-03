@@ -9,6 +9,7 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
+/** A utility script made for entering the centering sequence */
 class CenterUtil (
     hardwareMap : HardwareMap,
     private val rotatePower : Double = 0.2,
@@ -37,6 +38,8 @@ class CenterUtil (
         .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
         .build()
 
+
+    /** Call this function to enter the centering sequence */
     fun centering(button: Boolean) {
         if (button) centerDepo() else if (isCentering) stopDrive()
     }
@@ -71,10 +74,13 @@ class CenterUtil (
         return max(minValue, min(maxValue, v))
     }
 
+    /** This function will return true if the robot is centering else it will return false */
     fun isCentering() : Boolean = isCentering
 
-    fun getPower() : Float  = rotationPower
+    /** This function will return the power of the robot during centering */
+    fun getRotationPower() : Float  = rotationPower
 
+    /** Calling this function will close everything safely */
     fun close() {
         visionPortal.close()
     }
