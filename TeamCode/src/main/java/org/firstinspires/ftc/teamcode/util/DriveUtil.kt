@@ -19,10 +19,8 @@ class DriveUtil (
     var velocityModeInitialized = false
     var velocityPowerScale = 1.0
 
-    private val p = 11.0
-    private val i = 0.0
-    private val d = 0.15
-    private val f = 0.035
+    // Order is kP kI kD kF
+    val pidf = arrayOf(11.0, 0.0, 0.15, 0.035).toDoubleArray()
 
     init {
         rDrive.direction = DcMotorSimple.Direction.REVERSE
@@ -38,7 +36,7 @@ class DriveUtil (
 
     fun setPIDF() {
         listOf(lDrive, rDrive)
-            .forEach { it.setVelocityPIDFCoefficients(p, i, d, f) }
+            .forEach { it.setVelocityPIDFCoefficients(pidf[0], pidf[1], pidf[2], pidf[3]) }
     }
 
     fun ensureVelocityMode() {
