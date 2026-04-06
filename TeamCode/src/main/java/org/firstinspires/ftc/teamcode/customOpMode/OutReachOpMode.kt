@@ -18,6 +18,7 @@ abstract class OutReachOpMode : OpMode() {
     private lateinit var bulkRead : BulkReadUtil
 
     // Custom lifecycle hooks
+
     /**
      * Mandatory function that will run all code inside one time when pressing the initialization button
      */
