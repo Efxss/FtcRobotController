@@ -20,25 +20,25 @@ abstract class OutReachOpMode : OpMode() {
     // Custom lifecycle hooks
 
     /**
-     * Mandatory function that will run all code inside one time when pressing the initialization button
+     * Mandatory function that will run all code inside one time upon pressing the initialization button
      */
     abstract fun onInit()
     /**
-     * Mandatory function that will run all code inside continuously when pressing the start button
+     * Mandatory function that will run all code inside continuously upon pressing the start button
      */
     abstract fun onLoop()
 
     /**
-     * Optional function that will run all code inside continuously when pressing the initialization button
+     * Optional function that will run all code inside continuously upon pressing the initialization button
      */
     open fun onInitLoop() {}
 
     /**
-     * Optional function that will run all code inside one time when pressing the start button
+     * Optional function that will run all code inside one time upon pressing the start button
      */
     open fun onStart() {}
     /**
-     * Optional function that will run all code inside one time when pressing the stop button
+     * Optional function that will run all code inside one time upon pressing the stop button
      */
     open fun onStop() {}
 
