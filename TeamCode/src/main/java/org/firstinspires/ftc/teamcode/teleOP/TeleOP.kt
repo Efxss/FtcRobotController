@@ -2,44 +2,36 @@ package org.firstinspires.ftc.teamcode.teleOP
 
 import com.bylazar.telemetry.PanelsTelemetry
 import com.bylazar.telemetry.TelemetryManager
-import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
+import org.firstinspires.ftc.teamcode.customOpMode.OutReachOpMode
 import org.firstinspires.ftc.teamcode.subSystems.CamSS
 import org.firstinspires.ftc.teamcode.subSystems.SpinDexerSS
-import org.firstinspires.ftc.teamcode.util.BulkReadUtil
 import org.firstinspires.ftc.teamcode.util.CenterUtil
 import org.firstinspires.ftc.teamcode.util.FiringUtil
 import org.firstinspires.ftc.teamcode.util.PanelsDebugUtil
 
 @TeleOp(name = "TeleOP", group = "Main TeleOP")
-class TeleOP : OpMode() {
+class TeleOP : OutReachOpMode() {
     private var panels: TelemetryManager? = null
     private lateinit var debugUtil : PanelsDebugUtil
     private lateinit var centerUtil : CenterUtil
     private lateinit var spinDexer : SpinDexerSS
     private lateinit var firing : FiringUtil
-    private lateinit var bulkRead : BulkReadUtil
     private lateinit var cam : CamSS
 
-    override fun init() {
+    override fun onInit() {
         panels = PanelsTelemetry.telemetry
         debugUtil = PanelsDebugUtil(panels)
-        bulkRead = BulkReadUtil(hardwareMap)
 
         centerUtil = CenterUtil(hardwareMap, 0.25, 15, 17)
         cam = CamSS(hardwareMap, 0.5 , 0.0)
         spinDexer = SpinDexerSS(hardwareMap)
         firing = FiringUtil(hardwareMap, spinDexer, cam, 1.0)
 
-        spinDexer.loadOne(true)
-
-        debugUtil.showInit()
-        debugUtil.update(telemetry)
+        spinDexer.fireTwo()
     }
 
-    override fun loop() {
-        bulkRead.clearCache()
-
+    override fun onLoop() {
         centerUtil.centering(gamepad1.right_bumper)
 
         spinDexer.apply {
@@ -63,7 +55,7 @@ class TeleOP : OpMode() {
         debugUtil.update(telemetry)
     }
 
-    override fun stop() {
+    override fun onStop() {
         centerUtil.close()
     }
 }
