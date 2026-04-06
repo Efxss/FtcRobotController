@@ -74,7 +74,5 @@ class CenterUtil (
     fun getRotationPower() : Float  = rotationPower
 
     /** Calling this function will close everything safely */
-    fun close() {
-        visionPortal.close()
-    }
+    fun close() = visionPortal.close()
 }

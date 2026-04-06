@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import org.firstinspires.ftc.teamcode.subSystems.CamSS
 import org.firstinspires.ftc.teamcode.subSystems.SpinDexerSS
+import org.firstinspires.ftc.teamcode.util.BulkReadUtil
 import org.firstinspires.ftc.teamcode.util.CenterUtil
 import org.firstinspires.ftc.teamcode.util.FiringUtil
 import org.firstinspires.ftc.teamcode.util.PanelsDebugUtil
@@ -17,11 +18,13 @@ class TeleOP : OpMode() {
     private lateinit var centerUtil : CenterUtil
     private lateinit var spinDexer : SpinDexerSS
     private lateinit var firing : FiringUtil
+    private lateinit var bulkRead : BulkReadUtil
     private lateinit var cam : CamSS
 
     override fun init() {
         panels = PanelsTelemetry.telemetry
         debugUtil = PanelsDebugUtil(panels)
+        bulkRead = BulkReadUtil(hardwareMap)
 
         centerUtil = CenterUtil(hardwareMap, 0.25, 15, 17)
         cam = CamSS(hardwareMap, 0.5 , 0.0)
@@ -35,6 +38,8 @@ class TeleOP : OpMode() {
     }
 
     override fun loop() {
+        bulkRead.clearCache()
+
         centerUtil.centering(gamepad1.right_bumper)
 
         spinDexer.apply {
