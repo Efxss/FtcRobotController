@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode
 import com.bylazar.telemetry.PanelsTelemetry
 import com.bylazar.telemetry.TelemetryManager
 import com.pedropathing.follower.Follower
-import com.pedropathing.geometry.BezierCurve
+import com.pedropathing.geometry.BezierLine
 import com.pedropathing.geometry.Pose
 import com.pedropathing.paths.PathChain
 import com.pedropathing.util.Timer
@@ -648,52 +648,52 @@ class FrontRedAutoShort : OpMode() {
 
     fun buildPaths() {
         preLoadScore = follower.pathBuilder()
-            .addPath(BezierCurve(startPose, scorePose))
+            .addPath(BezierLine(startPose, scorePose))
             .setLinearHeadingInterpolation(startPose.heading, scorePose.heading)
             .build()
 
         spike1Line = follower.pathBuilder()
-            .addPath(BezierCurve(scorePose, spike1pre))
+            .addPath(BezierLine(scorePose, spike1pre))
             .setLinearHeadingInterpolation(scorePose.heading, spike1pre.heading)
             .build()
 
         spike1Grab = follower.pathBuilder()
-            .addPath(BezierCurve(spike1pre, spike1))
+            .addPath(BezierLine(spike1pre, spike1))
             .setLinearHeadingInterpolation(spike1pre.heading, spike1.heading)
             .build()
 
         spike1Score = follower.pathBuilder()
-            .addPath(BezierCurve(spike1, scorePose))
+            .addPath(BezierLine(spike1, scorePose))
             .setLinearHeadingInterpolation(spike1.heading, scorePose.heading)
             .build()
 
         spike2Line = follower.pathBuilder()
-            .addPath(BezierCurve(scorePose, spike2pre))
+            .addPath(BezierLine(scorePose, spike2pre))
             .setLinearHeadingInterpolation(scorePose.heading, spike2pre.heading)
             .build()
 
         spike2Grab = follower.pathBuilder()
-            .addPath(BezierCurve(spike2pre, spike2))
+            .addPath(BezierLine(spike2pre, spike2))
             .setLinearHeadingInterpolation(spike2pre.heading, spike2.heading)
             .build()
         spike2Score = follower.pathBuilder()
-            .addPath(BezierCurve(spike2, scorePose))
+            .addPath(BezierLine(spike2, scorePose))
             .setLinearHeadingInterpolation(spike2.heading, scorePose.heading)
             .build()
         spike3Line = follower.pathBuilder()
-            .addPath(BezierCurve(scorePose, spike3pre))
+            .addPath(BezierLine(scorePose, spike3pre))
             .setLinearHeadingInterpolation(scorePose.heading, spike3pre.heading)
             .build()
         spike3Grab = follower.pathBuilder()
-            .addPath(BezierCurve(spike3pre, spike3))
+            .addPath(BezierLine(spike3pre, spike3))
             .setLinearHeadingInterpolation(spike3pre.heading, spike3.heading)
             .build()
         spike3Score = follower.pathBuilder()
-            .addPath(BezierCurve(spike3, spike3fire))
+            .addPath(BezierLine(spike3, spike3fire))
             .setLinearHeadingInterpolation(spike3.heading, spike3fire.heading)
             .build()
         leavePoint = follower.pathBuilder()
-            .addPath(BezierCurve(scorePose, spike3fire))
+            .addPath(BezierLine(scorePose, spike3fire))
             .setLinearHeadingInterpolation(scorePose.heading, spike3fire.heading)
             .build()
     }
