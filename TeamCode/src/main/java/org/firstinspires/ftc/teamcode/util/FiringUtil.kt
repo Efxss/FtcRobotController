@@ -47,7 +47,7 @@ class FiringUtil(
 
             FiringState.MOVE_DEXER -> {
                 if (timer.milliseconds() >= 1500) {
-                    //steps[currentStep]()
+                    steps[currentStep]()
                     timer.reset()
                     state = FiringState.WAIT_DEXER
                 }

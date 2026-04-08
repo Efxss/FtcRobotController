@@ -43,7 +43,7 @@ class TeleOP : OutReachOpMode() {
             firing = firing,
             spinDexer = spinDexer,
             cam = cam,
-            hubUtil = getBulkRead()
+            hubUtil = getHubUtil()
         )
         getDebugUtil().update(telemetry)
     }

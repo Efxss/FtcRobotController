@@ -27,15 +27,15 @@ class HubUtil(hardwareMap : HardwareMap) {
     /** Calling this function will return the temperature of the hub in Celsius
      * @see [getTempFahrenheit]
      * @see [getTempKelvin] */
-    fun getTempCelsius() = hubs.forEach { it.getTemperature(TempUnit.CELSIUS) }
+    fun getTempCelsius() = hubs.map { it.getTemperature(TempUnit.CELSIUS) }
 
     /** Calling this function will return the temperature of the hub in Fahrenheit
      * @see [getTempCelsius]
      * @see [getTempKelvin] */
-    fun getTempFahrenheit() = hubs.forEach { it.getTemperature(TempUnit.FARENHEIT) }
+    fun getTempFahrenheit() = hubs.map { it.getTemperature(TempUnit.FARENHEIT) }
 
     /** Calling this function will return the temperature of the hub in Kelvins
      * @see [getTempCelsius]
      * @see [getTempFahrenheit] */
-    fun getTempKelvin() = hubs.forEach { it.getTemperature(TempUnit.KELVIN) }
+    fun getTempKelvin() = hubs.map { it.getTemperature(TempUnit.KELVIN) }
 }

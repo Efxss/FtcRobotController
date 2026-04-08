@@ -15,7 +15,7 @@ abstract class OutReachOpMode : OpMode() {
     // Shared resources
     private var panels: TelemetryManager? = null
     private lateinit var debugUtil : PanelsDebugUtil
-    private lateinit var bulkRead : HubUtil
+    private lateinit var hubUtil : HubUtil
 
     // Custom lifecycle hooks
 
@@ -50,7 +50,7 @@ abstract class OutReachOpMode : OpMode() {
         debugUtil = PanelsDebugUtil(panels)
 
         // init bulkRead
-        bulkRead = HubUtil(hardwareMap)
+        hubUtil = HubUtil(hardwareMap)
 
         // Show the init message and update panels to display it
         debugUtil.showInit()
@@ -60,7 +60,7 @@ abstract class OutReachOpMode : OpMode() {
 
     final override fun init_loop() {
         // Clear the bulk read cache
-        bulkRead.clearCache()
+        hubUtil.clearCache()
         onInitLoop()
     }
 
@@ -69,7 +69,7 @@ abstract class OutReachOpMode : OpMode() {
     }
 
     final override fun loop() {
-        bulkRead.clearCache()
+        hubUtil.clearCache()
         onLoop()
     }
 
@@ -81,16 +81,16 @@ abstract class OutReachOpMode : OpMode() {
 
     /** Calling this function will return the panels variable to be accessible in TeleOP
      * @see [getDebugUtil]
-     * @see [getBulkRead] */
+     * @see [getHubUtil] */
     protected fun getPanels() = panels
 
     /** Calling this function will return the debugUtil variable to be accessible in TeleOP
      * @see [getPanels]
-     * @see [getBulkRead] */
+     * @see [getHubUtil] */
     protected fun getDebugUtil() = debugUtil
 
     /** Calling this function will return the bulkRead variable to be accessible in TeleOP
      * @see [getDebugUtil]
      * @see [getPanels] */
-    protected fun getBulkRead() = bulkRead
+    protected fun getHubUtil() = hubUtil
 }
