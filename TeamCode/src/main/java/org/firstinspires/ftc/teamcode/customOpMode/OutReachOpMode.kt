@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.customOpMode
 import com.bylazar.telemetry.PanelsTelemetry
 import com.bylazar.telemetry.TelemetryManager
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
-import org.firstinspires.ftc.teamcode.util.BulkReadUtil
+import org.firstinspires.ftc.teamcode.util.HubUtil
 import org.firstinspires.ftc.teamcode.util.PanelsDebugUtil
 
 /**
@@ -15,7 +15,7 @@ abstract class OutReachOpMode : OpMode() {
     // Shared resources
     private var panels: TelemetryManager? = null
     private lateinit var debugUtil : PanelsDebugUtil
-    private lateinit var bulkRead : BulkReadUtil
+    private lateinit var bulkRead : HubUtil
 
     // Custom lifecycle hooks
 
@@ -29,7 +29,7 @@ abstract class OutReachOpMode : OpMode() {
     abstract fun onLoop()
 
     /**
-     * Optional function that will run all code inside continuously upon pressing the initialization button
+     * Optional function that will run all code inside continuously upon pressing the initialization button until start button is pressed
      */
     open fun onInitLoop() {}
 
@@ -50,7 +50,7 @@ abstract class OutReachOpMode : OpMode() {
         debugUtil = PanelsDebugUtil(panels)
 
         // init bulkRead
-        bulkRead = BulkReadUtil(hardwareMap)
+        bulkRead = HubUtil(hardwareMap)
 
         // Show the init message and update panels to display it
         debugUtil.showInit()
@@ -76,4 +76,21 @@ abstract class OutReachOpMode : OpMode() {
     final override fun stop() {
         onStop()
     }
+
+    // Custom functions
+
+    /** Calling this function will return the panels variable to be accessible in TeleOP
+     * @see [getDebugUtil]
+     * @see [getBulkRead] */
+    protected fun getPanels() = panels
+
+    /** Calling this function will return the debugUtil variable to be accessible in TeleOP
+     * @see [getPanels]
+     * @see [getBulkRead] */
+    protected fun getDebugUtil() = debugUtil
+
+    /** Calling this function will return the bulkRead variable to be accessible in TeleOP
+     * @see [getDebugUtil]
+     * @see [getPanels] */
+    protected fun getBulkRead() = bulkRead
 }

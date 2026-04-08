@@ -16,7 +16,8 @@ class PanelsDebugUtil (
         centerUtil : CenterUtil,
         firing : FiringUtil,
         spinDexer : SpinDexerSS,
-        cam : CamSS
+        cam : CamSS,
+        hubUtil: HubUtil
     ) {
         panels?.apply {
             debug("=== GAMEPAD ===")
@@ -25,6 +26,12 @@ class PanelsDebugUtil (
             debug("Triangle:", gamepad1.triangle)
             debug("Circle:", gamepad1.circle)
             debug("Cross released:", gamepad1.crossWasReleased())
+            debug("")
+
+            debug("=== HUB ===")
+            debug("Temperature Fahrenheit", hubUtil.getTempFahrenheit())
+            debug("Temperature Celsius", hubUtil.getTempCelsius())
+            debug("Temperature Kelvin", hubUtil.getTempKelvin())
             debug("")
 
             debug("=== STATE ===")
