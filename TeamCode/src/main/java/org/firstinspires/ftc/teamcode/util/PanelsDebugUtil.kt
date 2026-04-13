@@ -41,6 +41,7 @@ class PanelsDebugUtil (
 
             debug("=== POWER ===")
             debug("Center Power:", centerUtil.getRotationPower())
+            debug("Fly Wheel Velocity:", firing.flyWheelVelocity())
             debug("Fly Wheel Power:", firing.flyWheelPower())
             debug("")
 

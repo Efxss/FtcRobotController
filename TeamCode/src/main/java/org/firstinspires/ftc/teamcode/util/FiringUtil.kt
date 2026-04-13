@@ -1,24 +1,29 @@
 package org.firstinspires.ftc.teamcode.util
 
+import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.HardwareMap
+import com.qualcomm.robotcore.hardware.PIDFCoefficients
 import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.teamcode.subSystems.CamSS
 import org.firstinspires.ftc.teamcode.subSystems.SpinDexerSS
 
 /** A utility script made for entering the firing sequence */
 class FiringUtil(
-    hardwareMap: HardwareMap,
-    val spinDexer: SpinDexerSS,
-    val cam: CamSS,
-    val maxPower : Double
+    hardwareMap : HardwareMap,
+    val spinDexer : SpinDexerSS,
+    val cam : CamSS,
+    val maxPower : Double,
+    val velocityPowerScale : Double,
+    val pidf : PIDFCoefficients
 ) {
     private val flyWheel: DcMotorEx = hardwareMap.get(DcMotorEx::class.java, "flyWheel")
     private val timer = ElapsedTime()
 
     init {
-        flyWheel.direction = DcMotorSimple.Direction.REVERSE
+        flyWheel.direction = DcMotorSimple.Direction.FORWARD
+        flyWheel.mode = DcMotor.RunMode.RUN_USING_ENCODER
     }
 
     private enum class FiringState {
@@ -39,7 +44,7 @@ class FiringUtil(
             FiringState.IDLE -> { }
 
             FiringState.SPIN_UP -> {
-                flyWheel.power = maxPower
+                MathUtil.setMotorVelocityFromPseudoPower(flyWheel, maxPower, velocityPowerScale, pidf)
                 currentStep = 0
                 state = FiringState.MOVE_DEXER
                 timer.reset()
@@ -55,7 +60,7 @@ class FiringUtil(
 
             FiringState.WAIT_DEXER -> {
                 if (timer.milliseconds() >= 1500) {
-                    cam.fire()
+                    //cam.fire()
                     timer.reset()
                     state = FiringState.FIRE_CAM
                 }
@@ -63,7 +68,7 @@ class FiringUtil(
 
             FiringState.FIRE_CAM -> {
                 if (timer.milliseconds() >= 1000) {
-                    cam.home()
+                    //cam.home()
                     timer.reset()
                     state = FiringState.WAIT_CAM_HOME
                 }
@@ -103,4 +108,7 @@ class FiringUtil(
 
     /** This function will return the power of the flywheel */
     fun flyWheelPower(): Double = flyWheel.power
+
+    /** This function will return the velocity of the flywheel */
+    fun flyWheelVelocity(): Double = flyWheel.velocity
 }

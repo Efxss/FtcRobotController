@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.util.PanelsDebugUtil
 abstract class OutReachOpMode : OpMode() {
 
     // Shared resources
-    private var panels: TelemetryManager? = null
+    private var panels : TelemetryManager? = null
     private lateinit var debugUtil : PanelsDebugUtil
     private lateinit var hubUtil : HubUtil
 

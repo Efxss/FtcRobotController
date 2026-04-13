@@ -13,7 +13,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.TempUnit
  * Uses MANUAL mode so exactly one bulk read occurs per loop cycle.
  * Call [clearCache] at the top of every loop() iteration.
  */
-class HubUtil(hardwareMap : HardwareMap) {
+class HubUtil (
+    hardwareMap : HardwareMap
+) {
 
     private val hubs : List<LynxModule> = hardwareMap.getAll(LynxModule::class.java)
 
