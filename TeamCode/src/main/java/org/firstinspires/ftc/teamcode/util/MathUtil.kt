@@ -33,11 +33,9 @@ object MathUtil {
     }
 
     fun applyPIDF(pidf : PIDFCoefficients, motor : DcMotorEx) {
-        fun applyPIDF(pidf: PIDFCoefficients, motor: DcMotorEx) {
-            if (!isPIDFAply) {
-                motor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf)
-                isPIDFAply = true
-            }
+        if (!isPIDFAply) {
+            motor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf)
+            isPIDFAply = true
         }
     }
 
