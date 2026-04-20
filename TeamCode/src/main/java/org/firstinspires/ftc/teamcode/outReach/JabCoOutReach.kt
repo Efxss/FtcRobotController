@@ -6,10 +6,10 @@ import com.pedropathing.follower.Follower
 import com.pedropathing.geometry.Pose
 import com.pedropathing.util.Timer
 import com.qualcomm.hardware.limelightvision.Limelight3A
+import com.qualcomm.hardware.rev.RevColorSensorV3
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.CRServo
-import com.qualcomm.robotcore.hardware.ColorSensor
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.DcMotorSimple
@@ -46,7 +46,7 @@ class JabCoOutReach: OpMode() {
     lateinit var bowlServo:Servo
     lateinit var camServo:Servo
     lateinit var limelight:Limelight3A
-    lateinit var colorSensor:ColorSensor
+    lateinit var colorSensor:RevColorSensorV3
     lateinit var statusLEDR:DigitalChannel
     lateinit var statusLEDG:DigitalChannel
     @Volatile var ord=arrayOf("N", "N", "N")
@@ -133,21 +133,39 @@ class JabCoOutReach: OpMode() {
     }
     override fun loop() {
         panels?.apply {
+            debug("===ColorSensor===")
             debug("ClrSnsrR",colorSensor.red())
             debug("ClrSnsrG",colorSensor.green())
             debug("ClrSnsrB",colorSensor.blue())
+            debug("")
             debug("ClrSnsrA",colorSensor.alpha())
             debug("ClrSnsrAr",colorSensor.argb())
-            debug("Ord1", ord[0])
-            debug("Ord2", ord[1])
-            debug("Ord3", ord[2])
-            debug("eOrd1", eord[0])
-            debug("eOrd2", eord[1])
-            debug("eOrd3", eord[2])
-            debug("itkeP1", intakeServo1.power)
-            debug("itkeP2", intakeServo2.power)
-            debug("FirePlan", buildFirePlan()?.joinToString(",") ?: "N/A")
-            debug("Dispensing", isDispensing)
+            debug("")
+            debug("ClrSnsrGn",colorSensor.gain)
+            debug("ClrSnsrOpt",colorSensor.rawOptical())
+            debug("ClrSnsrLght",colorSensor.lightDetected)
+            debug("ClrSnsrInf",colorSensor.connectionInfo)
+            debug("")
+            debug("===GamePad===")
+            debug("gmepdT", gamepad1.triangleWasReleased())
+            debug("gmepdC", gamepad1.crossWasReleased())
+            debug("")
+            debug("===Order===")
+            debug("Ord1",ord[0])
+            debug("Ord2",ord[1])
+            debug("Ord3",ord[2])
+            debug("")
+            debug("eOrd1",eord[0])
+            debug("eOrd2",eord[1])
+            debug("eOrd3",eord[2])
+            debug("")
+            debug("===Power===")
+            debug("itkeP1",intakeServo1.power)
+            debug("itkeP2",intakeServo2.power)
+            debug("")
+            debug("===Firing===")
+            debug("FirePlan",buildFirePlan()?.joinToString(",") ?: "N/A")
+            debug("Dispensing",isDispensing)
         }
         panels?.update(telemetry)
     }
@@ -195,6 +213,8 @@ class JabCoOutReach: OpMode() {
         } finally {
             isDispensing = false
             bowlServo.position = ServoPositions.LOAD_P1
+            outTake1.power = 0.0
+            outTake2.power = 0.0
         }
     }
     private suspend fun fireFromSlot(slot: Int) {
@@ -213,8 +233,6 @@ class JabCoOutReach: OpMode() {
         delay(Timing.CAM_OPEN_DELAY)
         camServo.position = ServoPositions.CAM_CLOSED
         delay(Timing.CAM_CLOSE_DELAY)
-        outTake1.power = 0.0
-        outTake2.power = 0.0
     }
     suspend fun handleDetections() {
         if (isDispensing) return
@@ -229,7 +247,7 @@ class JabCoOutReach: OpMode() {
             val slot = nextSlot()
             if (slot != -1) {
                 val newOrd = ord.copyOf()
-                newOrd[slot] = if (g >= 350) "G" else "P"
+                newOrd[slot] = if (r >= 50) "P" else "G"
                 ord = newOrd
                 advanceBowl(slot)
                 Timing.nextDetectAllowedMs = now + Timing.DETECTION_COOLDOWN
@@ -289,11 +307,12 @@ class JabCoOutReach: OpMode() {
         bowlServo = hardwareMap.get(Servo::class.java, "bowlServo")
         camServo = hardwareMap.get(Servo::class.java, "camServo")
         limelight = hardwareMap.get(Limelight3A::class.java, "limelight")
-        colorSensor = hardwareMap.get(ColorSensor::class.java, "ColorSensor")
+        colorSensor = hardwareMap.get(RevColorSensorV3::class.java, "ColorSensor")
         statusLEDR = hardwareMap.get(DigitalChannel::class.java, "statusLEDR")
         statusLEDG = hardwareMap.get(DigitalChannel::class.java, "statusLEDG")
         statusLEDR.mode = DigitalChannel.Mode.OUTPUT
         statusLEDG.mode = DigitalChannel.Mode.OUTPUT
+        colorSensor.gain = 10f
         setupMotorDirections()
         setupPIDFCoefficients()
         resetEncoders()
