@@ -60,7 +60,7 @@ class FiringUtil(
 
             FiringState.WAIT_DEXER -> {
                 if (timer.milliseconds() >= 1500) {
-                    //cam.fire()
+                    cam.fire()
                     timer.reset()
                     state = FiringState.FIRE_CAM
                 }
@@ -68,7 +68,7 @@ class FiringUtil(
 
             FiringState.FIRE_CAM -> {
                 if (timer.milliseconds() >= 1000) {
-                    //cam.home()
+                    cam.home()
                     timer.reset()
                     state = FiringState.WAIT_CAM_HOME
                 }

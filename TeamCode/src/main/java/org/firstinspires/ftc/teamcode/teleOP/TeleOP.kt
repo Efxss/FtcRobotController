@@ -21,7 +21,7 @@ class TeleOP : OutReachOpMode() {
         cam = CamSS(hardwareMap, 0.5 , 0.0)
         spinDexer = SpinDexerSS(hardwareMap)
         firing = FiringUtil(hardwareMap, spinDexer, cam, 0.6, 0.85, pidf)
-
+        cam.home()
         spinDexer.loadOne(true)
     }
 
