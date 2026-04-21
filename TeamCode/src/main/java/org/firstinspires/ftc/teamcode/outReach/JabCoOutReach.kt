@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.outReach
 
+import com.bylazar.configurables.annotations.Configurable
 import com.bylazar.telemetry.PanelsTelemetry
 import com.bylazar.telemetry.TelemetryManager
 import com.pedropathing.follower.Follower
@@ -24,8 +25,12 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 
+@Configurable
 @TeleOp(name="JabCo OutReach",group="OutReach")
 class JabCoOutReach: OpMode() {
+    companion object {
+        var OUTTAKE_SPEED = 0.20
+    }
     var panels:TelemetryManager?=null
     val scope=CoroutineScope(Dispatchers.Default + SupervisorJob())
     var runDetections:Job?= null
@@ -90,7 +95,6 @@ class JabCoOutReach: OpMode() {
         const val CAM_HEIGHT_PX = 960
         const val KP_ROTATE = 0.003
         var CENTER_DEADZONE = 13
-        var OUTTAKE_SPEED = 0.20
     }
     object Timing {
         const val DISPENSE_INITIAL_DELAY = 100L
@@ -192,7 +196,11 @@ class JabCoOutReach: OpMode() {
                     break
                 }
             }
-            if (!found) return null
+            if (!found) {
+                panels?.debug("PlanFail", "No $neededColor available. ord=${ord.joinToString()}")
+                panels?.update(telemetry)
+                return null
+            }
         }
         return plan
     }
@@ -215,6 +223,8 @@ class JabCoOutReach: OpMode() {
             bowlServo.position = ServoPositions.LOAD_P1
             outTake1.power = 0.0
             outTake2.power = 0.0
+            eord.fill("N")
+            ord.fill("N")
         }
     }
     private suspend fun fireFromSlot(slot: Int) {
@@ -226,8 +236,8 @@ class JabCoOutReach: OpMode() {
         }
         bowlServo.position = firePosition
         delay(Timing.BOWL_MOVE_DELAY)
-        outTake1.power = DepoCenter.OUTTAKE_SPEED
-        outTake2.power = DepoCenter.OUTTAKE_SPEED
+        outTake1.power = OUTTAKE_SPEED
+        outTake2.power = OUTTAKE_SPEED
         delay(Timing.OUTTAKE_DELAY)
         camServo.position = ServoPositions.CAM_OPEN
         delay(Timing.CAM_OPEN_DELAY)
