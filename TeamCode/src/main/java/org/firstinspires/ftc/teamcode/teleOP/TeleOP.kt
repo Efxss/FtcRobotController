@@ -14,13 +14,13 @@ class TeleOP : OutReachOpMode() {
     private lateinit var spinDexer : SpinDexerSS
     private lateinit var firing : FiringUtil
     private lateinit var cam : CamSS
-    private val pidf = PIDFCoefficients(150.0, 0.0, 0.0, 13.5)
+    private val pidf = PIDFCoefficients(25.0, 0.0, 0.0, 13.5)
 
     override fun onInit() {
         centerUtil = CenterUtil(hardwareMap, 0.25, 15, 17)
-        cam = CamSS(hardwareMap, 0.5 , 0.0)
+        cam = CamSS(hardwareMap, 0.55 , 0.0)
         spinDexer = SpinDexerSS(hardwareMap)
-        firing = FiringUtil(hardwareMap, spinDexer, cam, 0.6, 0.85, pidf)
+        firing = FiringUtil(hardwareMap, spinDexer, cam, 1.0, 0.85, pidf)
         cam.home()
         spinDexer.loadOne(true)
     }

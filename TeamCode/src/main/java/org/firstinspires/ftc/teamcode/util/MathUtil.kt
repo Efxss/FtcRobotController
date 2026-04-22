@@ -33,10 +33,8 @@ object MathUtil {
     }
 
     fun applyPIDF(pidf : PIDFCoefficients, motor : DcMotorEx) {
-        if (!isPIDFAply) {
-            motor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf)
-            isPIDFAply = true
-        }
+        motor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf)
+        isPIDFAply = true
     }
 
     fun clip(v : Double, minValue : Double, maxValue : Double) : Double {

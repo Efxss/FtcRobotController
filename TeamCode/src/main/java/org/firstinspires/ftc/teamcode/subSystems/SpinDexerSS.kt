@@ -12,9 +12,9 @@ class SpinDexerSS (
         const val LOAD_ONE = 0.021
         const val LOAD_TWO = 0.092
         const val LOAD_THREE = 0.164
-        const val FIRE_ONE = 0.128
-        const val FIRE_TWO = 0.195
-        const val FIRE_THREE = 0.058
+        const val FIRE_ONE = 0.133
+        const val FIRE_TWO = 0.200
+        const val FIRE_THREE = 0.063
     }
 
     private val spinDexer : Servo = hardwareMap.get(Servo::class.java, "SpinDexer")
