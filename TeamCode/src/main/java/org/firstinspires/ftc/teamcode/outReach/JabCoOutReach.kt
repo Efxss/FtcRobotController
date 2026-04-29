@@ -116,7 +116,6 @@ class JabCoOutReach: OpMode(){
         initializePedroPathing()
         hubUtil = HubUtil(hardwareMap)
     }
-
     override fun init_loop(){
         hubUtil.clearCache()
     }
@@ -185,7 +184,6 @@ class JabCoOutReach: OpMode(){
         }
         panels?.update(telemetry)
     }
-
     override fun stop(){
         runDetections?.cancel()
         rItke?.cancel()
