@@ -31,8 +31,8 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import org.firstinspires.ftc.teamcode.util.HubUtil
 
 @Configurable
-@TeleOp(name="JabCo OutReach",group="OutReach")
-class JabCoOutReach: OpMode(){
+@TeleOp(name="JabCo OutReach Manual",group="OutReach")
+class JabCoOutReachManual: OpMode(){
     companion object{
         var OUTTAKE_SPEED=0.20
     }
@@ -63,6 +63,10 @@ class JabCoOutReach: OpMode(){
     @Volatile var ord=arrayOf("N", "N", "N")
     @Volatile var eord=arrayOf("N", "N", "N")
     @Volatile var intakeActive=false
+    @Volatile var triangleEdge = false
+    @Volatile var crossEdge = false
+    @Volatile var squareEdge = false
+    @Volatile var circleEdge = false
     var pathState:Int=0
     var dispensingState=0
     var isCentering=false
@@ -140,13 +144,19 @@ class JabCoOutReach: OpMode(){
         }
         rDispense=scope.launch{
             while (isActive){
-                if (gamepad1.triangleWasReleased() && !isDispensing) dispenseAll()
-                delay(10)
+                if (triangleEdge && !isDispensing) {
+                    triangleEdge = false
+                    dispenseAll()
+                }
             }
         }
     }
     override fun loop(){
         hubUtil.clearCache()
+        if (gamepad1.triangleWasReleased()) triangleEdge = true
+        if (gamepad1.crossWasReleased()) crossEdge = true
+        if (gamepad1.squareWasReleased()) squareEdge = true
+        if (gamepad1.circleWasReleased()) circleEdge = true
         panels?.apply{
             debug("===ColorSensor===")
             debug("ClrSnsrR",colorSensor.red())
@@ -162,8 +172,12 @@ class JabCoOutReach: OpMode(){
             debug("ClrSnsrInf",colorSensor.connectionInfo)
             debug("")
             debug("===GamePad===")
-            debug("gmepdT", gamepad1.triangleWasReleased())
-            debug("gmepdC", gamepad1.crossWasReleased())
+            debug("gmepdT", triangleEdge)
+            debug("gmepdC", crossEdge)
+            debug("")
+            debug("===Positions===")
+            debug("SpinDexerPositionRaw", bowlServo.position)
+            debug("SpinDexerPositionInt", spinDexerPosition())
             debug("")
             debug("===Order===")
             debug("Ord1",ord[0])
@@ -256,28 +270,34 @@ class JabCoOutReach: OpMode(){
     }
     suspend fun handleDetections(){
         if (isDispensing) return
-        val r=colorSensor.red();val g=colorSensor.green();val b=colorSensor.blue()
-        if (g <= 280 && r <= 180){
-            isSeen=false
-            return
-        }
-        val now=System.currentTimeMillis()
+        val now = System.currentTimeMillis()
         if (now < Timing.nextDetectAllowedMs) return
-        if (!isSeen){
-            val slot=nextSlot()
-            if (slot != -1){
-                val newOrd=ord.copyOf()
-                newOrd[slot]=if (r >= 140) "P" else "G"
-                ord=newOrd
-                advanceBowl(slot)
-                Timing.nextDetectAllowedMs=now + Timing.DETECTION_COOLDOWN
-            }
-            isSeen=true
+        val color = when {
+            squareEdge -> { squareEdge = false; "P" }
+            circleEdge -> { circleEdge = false; "G" }
+            else -> return
+        }
+        val slot = nextSlot()
+        if (slot != -1){
+            val newOrd = ord.copyOf()
+            newOrd[slot] = color
+            ord = newOrd
+            advanceBowl(slot)
+            Timing.nextDetectAllowedMs = now + Timing.DETECTION_COOLDOWN
+        }
+    }
+    fun spinDexerPosition(): Int {
+        val spinDexerPos = bowlServo.position
+        return when {
+            MathUtil.closeTo(spinDexerPos, ServoPositions.LOAD_P1) -> 0
+            MathUtil.closeTo(spinDexerPos, ServoPositions.LOAD_P2) -> 1
+            MathUtil.closeTo(spinDexerPos, ServoPositions.LOAD_P3) -> 2
+            else -> 0
         }
     }
     suspend fun runItke(){
-        if (gamepad1.crossWasReleased()) intakeActive=true
-        if (ord[2] != "N") intakeActive=false
+        if (crossEdge) { crossEdge = false; intakeActive = true }
+        if (ord[2] != "N") intakeActive = false
         if (intakeActive){
             intakeServo1.power=ServoPositions.INTAKE_ON
             intakeServo2.power=ServoPositions.INTAKE_ON
