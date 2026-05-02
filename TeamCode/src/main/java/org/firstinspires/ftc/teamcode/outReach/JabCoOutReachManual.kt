@@ -108,11 +108,11 @@ class JabCoOutReachManual: OpMode(){
     }
     object Timing{
         const val DISPENSE_INITIAL_DELAY=100L
-        const val BOWL_MOVE_DELAY=2500L
-        const val CAM_OPEN_DELAY=1400L
-        const val CAM_CLOSE_DELAY=1700L
+        const val BOWL_MOVE_DELAY=2300L
+        const val CAM_OPEN_DELAY=1200L
+        const val CAM_CLOSE_DELAY=1500L
         const val DETECTION_COOLDOWN=400L
-        const val OUTTAKE_DELAY=800L
+        const val OUTTAKE_DELAY=400L
         var nextDetectAllowedMs=0L
     }
     override fun init(){
