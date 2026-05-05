@@ -9,7 +9,6 @@ import kotlin.math.min
 
 /** An object made to hold different math related functions for ease of use */
 object MathUtil {
-    var isPIDFAply = false
     /** A function made to take 2 doubles and check if there are in a margin of error and return true or false */
     fun closeTo(a : Double, b : Double, epsilon : Double = 0.001) : Boolean {
         return abs(a - b) < epsilon
@@ -34,7 +33,6 @@ object MathUtil {
 
     fun applyPIDF(pidf : PIDFCoefficients, motor : DcMotorEx) {
         motor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf)
-        isPIDFAply = true
     }
 
     fun clip(v : Double, minValue : Double, maxValue : Double) : Double {

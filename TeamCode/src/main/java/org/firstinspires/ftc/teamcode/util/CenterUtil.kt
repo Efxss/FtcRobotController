@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.util
 
 import android.util.Size
 import com.qualcomm.robotcore.hardware.HardwareMap
+import com.qualcomm.robotcore.hardware.PIDFCoefficients
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName
 import org.firstinspires.ftc.vision.VisionPortal
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor
@@ -12,7 +13,9 @@ class CenterUtil (
     hardwareMap : HardwareMap,
     private val rotatePower : Double = 0.2,
     private val deadzone : Int = 15,
-    private val id : Int = 20
+    private val id : Int = 20,
+    private val velocityPowerScale : Double,
+    private val pidf : PIDFCoefficients
 ) {
     private var rotationPower = 0.0f
     private val camWidthPx = 1280
@@ -21,10 +24,7 @@ class CenterUtil (
     private var isCentering = false
 
 
-    private val driveUtil = DriveUtil(
-        hardwareMap,
-        drivePower = rotatePower
-    )
+    private val driveUtil = DriveUtil(hardwareMap, rotatePower, velocityPowerScale, pidf)
 
     private val tagProcessor: AprilTagProcessor = AprilTagProcessor.Builder()
         .build()
