@@ -2,6 +2,7 @@ repositories {
     mavenCentral()
     google() // Needed for androidx
     maven {url = 'https://mymaven.bylazar.com/releases' }
+    maven {url = 'https://repo.dairy.foundation/releases' }
 }
 
 dependencies {
@@ -14,5 +15,10 @@ dependencies {
     implementation 'org.firstinspires.ftc:FtcCommon:11.1.0'
     implementation 'org.firstinspires.ftc:Vision:11.1.0'
     implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'com.bylazar:fullpanels:1.0.12'
+    //implementation 'com.bylazar:fullpanels:1.0.12'
+    implementation 'com.pedropathing:ftc:2.1.1'
+    implementation 'com.pedropathing:ivy:1.0.0'
+    implementation 'com.pedropathing:telemetry:1.0.0'
+    implementation 'dev.frozenmilk.sinister:Sloth:0.2.4'
+    implementation 'com.bylazar.sloth:fullpanels:0.2.4+1.0.12'
 }

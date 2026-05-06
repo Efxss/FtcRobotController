@@ -4,7 +4,6 @@ import com.bylazar.telemetry.PanelsTelemetry
 import com.bylazar.telemetry.TelemetryManager
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import org.firstinspires.ftc.teamcode.util.HubUtil
-import org.firstinspires.ftc.teamcode.util.PanelsDebugUtil
 
 /**
  * Custom-made OpMode to copy and make a real OpMode
