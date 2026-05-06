@@ -7,14 +7,13 @@ import org.firstinspires.ftc.teamcode.util.HubUtil
 import org.firstinspires.ftc.teamcode.util.PanelsDebugUtil
 
 /**
- * Custom-made OpMode for the DECODE post season OutReach robot
+ * Custom-made OpMode to copy and make a real OpMode
  * @author Jonny Todd - 29403 PiBytes
  */
-abstract class OutReachOpMode : OpMode() {
+abstract class ExampleOpMode : OpMode() {
 
     // Shared resources
     private var panels : TelemetryManager? = null
-    private lateinit var debugUtil : PanelsDebugUtil
     private lateinit var hubUtil : HubUtil
 
     // Custom lifecycle hooks
@@ -47,14 +46,10 @@ abstract class OutReachOpMode : OpMode() {
 
         // declare panels and init the debug util
         panels = PanelsTelemetry.telemetry
-        debugUtil = PanelsDebugUtil(panels)
 
         // init bulkRead
         hubUtil = HubUtil(hardwareMap)
-
-        // Show the init message and update panels to display it
-        debugUtil.showInit()
-        debugUtil.update(telemetry)
+        
         onInit()
     }
 
@@ -83,11 +78,6 @@ abstract class OutReachOpMode : OpMode() {
      * @see [getDebugUtil]
      * @see [getHubUtil] */
     protected fun getPanels() = panels
-
-    /** Calling this function will return the debugUtil variable to be accessible in TeleOP
-     * @see [getPanels]
-     * @see [getHubUtil] */
-    protected fun getDebugUtil() = debugUtil
 
     /** Calling this function will return the bulkRead variable to be accessible in TeleOP
      * @see [getDebugUtil]
