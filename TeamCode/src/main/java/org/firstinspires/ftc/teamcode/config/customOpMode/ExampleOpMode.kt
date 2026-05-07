@@ -1,9 +1,9 @@
-package org.firstinspires.ftc.teamcode.customOpMode
+package org.firstinspires.ftc.teamcode.config.customOpMode
 
 import com.bylazar.telemetry.PanelsTelemetry
 import com.bylazar.telemetry.TelemetryManager
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
-import org.firstinspires.ftc.teamcode.util.HubUtil
+import org.firstinspires.ftc.teamcode.config.util.HubUtil
 
 /**
  * Custom-made OpMode to copy and make a real OpMode
