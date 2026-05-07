@@ -18,6 +18,11 @@ class Teleop : ExampleOpMode() {
         initializePedroPathing()
     }
 
+    override fun onStart() {
+        opmodeTimer.resetTimer()
+        follower.startTeleopDrive()
+    }
+
     override fun onLoop() {
         follower.update()
         var rotate = if(gamepad1.left_bumper) 1.0 else if (gamepad1.right_bumper) -1.0 else 0.0
@@ -30,6 +35,7 @@ class Teleop : ExampleOpMode() {
             true
         )
     }
+    
     fun initializePedroPathing() {
         pathTimer = Timer()
         actionTimer = Timer()
