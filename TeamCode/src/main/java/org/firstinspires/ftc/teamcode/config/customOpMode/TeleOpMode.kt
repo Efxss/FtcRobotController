@@ -2,17 +2,20 @@ package org.firstinspires.ftc.teamcode.config.customOpMode
 
 import com.bylazar.telemetry.PanelsTelemetry
 import com.bylazar.telemetry.TelemetryManager
+import com.pedropathing.follower.Follower
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
+import org.firstinspires.ftc.teamcode.config.util.DrawingUtil
 import org.firstinspires.ftc.teamcode.config.util.HubUtil
 
 /**
  * Custom-made OpMode to copy and make a real OpMode
  * @author Jonny Todd - 29403 PiBytes
  */
-abstract class ExampleOpMode : OpMode() {
+abstract class TeleOpMode : OpMode() {
 
     // Shared resources
     private var panels : TelemetryManager? = null
+    private lateinit var follower: Follower
     private lateinit var hubUtil : HubUtil
 
     // Custom lifecycle hooks
@@ -43,16 +46,21 @@ abstract class ExampleOpMode : OpMode() {
     final override fun init() {
         // Any other shared init (hardware caching, subsystems, etc.)
 
-        // declare panels and init the debug util
+        // Declare panels and init it
         panels = PanelsTelemetry.telemetry
 
-        // init bulkRead
+        // Init the drawing util for panels and PedroPathing
+        DrawingUtil.init()
+
+        // Init bulkRead
         hubUtil = HubUtil(hardwareMap)
-        
+
         onInit()
     }
 
     final override fun init_loop() {
+        // Draw on panels
+        DrawingUtil.drawOnlyCurrent(follower)
         // Clear the bulk read cache
         hubUtil.clearCache()
         onInitLoop()
@@ -63,6 +71,9 @@ abstract class ExampleOpMode : OpMode() {
     }
 
     final override fun loop() {
+        // Draw on panels
+        DrawingUtil.drawDebug(follower)
+        // Clear the bulk read cache
         hubUtil.clearCache()
         onLoop()
     }
@@ -74,12 +85,10 @@ abstract class ExampleOpMode : OpMode() {
     // Custom functions
 
     /** Calling this function will return the panels variable to be accessible in TeleOP
-     * @see [getDebugUtil]
      * @see [getHubUtil] */
     protected fun getPanels() = panels
 
     /** Calling this function will return the bulkRead variable to be accessible in TeleOP
-     * @see [getDebugUtil]
      * @see [getPanels] */
     protected fun getHubUtil() = hubUtil
 }

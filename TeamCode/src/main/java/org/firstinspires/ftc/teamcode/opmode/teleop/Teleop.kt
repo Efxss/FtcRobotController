@@ -4,12 +4,12 @@ import com.pedropathing.follower.Follower
 import com.pedropathing.geometry.Pose
 import com.pedropathing.util.Timer
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
-import org.firstinspires.ftc.teamcode.config.customOpMode.ExampleOpMode
+import org.firstinspires.ftc.teamcode.config.customOpMode.TeleOpMode
 import org.firstinspires.ftc.teamcode.config.pedroPathing.Constants
+import org.firstinspires.ftc.teamcode.config.util.VariableState
 
 @TeleOp
-class Teleop : ExampleOpMode() {
-    val startPose = Pose(72.0, 8.375, Math.toRadians(0.0))
+class Teleop : TeleOpMode() {
     lateinit var follower: Follower
     lateinit var pathTimer: Timer
     lateinit var actionTimer: Timer
@@ -35,8 +35,9 @@ class Teleop : ExampleOpMode() {
             true
         )
     }
-    
+
     fun initializePedroPathing() {
+        val startPose = VariableState.endOfAutoPose ?: Pose()
         pathTimer = Timer()
         actionTimer = Timer()
         opmodeTimer = Timer()
