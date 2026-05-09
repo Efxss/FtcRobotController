@@ -7,7 +7,8 @@ class PanelsDebugUtil(
     private val panels : TelemetryManager?
 ) {
     fun showAllDebug(
-        follower: Follower
+        follower: Follower,
+        hubUtil: HubUtil
     ) {
         panels?.apply {
             debug("=== PedroPathing ===")
@@ -15,6 +16,11 @@ class PanelsDebugUtil(
             debug("Follow Pose X", follower.pose.y)
             debug("Follow Heading", follower.pose.heading)
             debug("Follow IsBusy", follower.isBusy)
+            debug("")
+            debug("=== Hub ===")
+            debug("Temp F", hubUtil.getTempFahrenheit())
+            debug("Temp C", hubUtil.getTempCelsius())
+            debug("Temp K", hubUtil.getTempKelvin())
             debug("")
         }
     }
