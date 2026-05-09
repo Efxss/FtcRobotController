@@ -25,17 +25,20 @@ class Auto : AutoOpMode() {
     override fun onLoop() {
         follower.update()
         Scheduler.execute()
-        getDebugUtil().showAllDebug(follower, getHubUtil())
+        getDebugUtil().showAllDebug(follower, getHubUtil(), runtime)
         getDebugUtil().update(telemetry)
     }
     fun runAuto() : Command {
         return sequential(
-            follow(AutoPoseUtil.follower, AutoPoseUtil.BlueDepoStartScore, false),
-            follow(AutoPoseUtil.follower, AutoPoseUtil.BlueDepoCloseSpike, false),
-            follow(AutoPoseUtil.follower, AutoPoseUtil.BlueDepoCloseSpikeScore, false),
-            follow(AutoPoseUtil.follower, AutoPoseUtil.BlueDepoMiddleSpikeAlignment, false),
-            follow(AutoPoseUtil.follower, AutoPoseUtil.BlueDepoMiddleSpikeGrab, false),
-            follow(AutoPoseUtil.follower, AutoPoseUtil.BlueDepoMiddleSpikeScore, false)
+            follow(follower, AutoPoseUtil.BlueDepoStartScore, false),
+            follow(follower, AutoPoseUtil.BlueDepoCloseSpike, false),
+            follow(follower, AutoPoseUtil.BlueDepoCloseSpikeScore, false),
+            follow(follower, AutoPoseUtil.BlueDepoMiddleSpikeAlignment, false),
+            follow(follower, AutoPoseUtil.BlueDepoMiddleSpikeGrab, false),
+            follow(follower, AutoPoseUtil.BlueDepoMiddleSpikeScore, false),
+            follow(follower, AutoPoseUtil.BlueDepoFarSpikeAlignment, false),
+            follow(follower, AutoPoseUtil.BlueDepoFarSpikeGrab, false),
+            follow(follower, AutoPoseUtil.BlueDepoFarSpikeScore, false)
         )
     }
     fun initializePedroPathing() {

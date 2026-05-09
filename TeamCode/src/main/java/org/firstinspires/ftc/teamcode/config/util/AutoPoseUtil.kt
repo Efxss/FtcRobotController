@@ -11,6 +11,8 @@ object AutoPoseUtil {
     val BlueDepoCloseSpikeStripPose = Pose(18.0, 82.8, Math.toRadians(-180.0))
     val BlueDepoMiddleSpikeAlignmentPose = Pose(39.2, 59.0, Math.toRadians(-180.0))
     val BlueDepoMiddleSpikeGrabPose = Pose(18.0, 59.0, Math.toRadians(-180.0))
+    val BlueDepoFarSpikeAlignmentPose = Pose(39.1, 35.6, Math.toRadians(-180.0))
+    val BlueDepoFarSpikeGrabPose = Pose(18.0, 35.6, Math.toRadians(-180.0))
     val BlueDepoStartScore : PathChain by lazy { follower.pathBuilder()
         .addPath((BezierLine(startPoseBlueDepoPose, BlueDepoScorePose)))
         .setLinearHeadingInterpolation(startPoseBlueDepoPose.heading, BlueDepoScorePose.heading)
@@ -34,5 +36,17 @@ object AutoPoseUtil {
     val BlueDepoMiddleSpikeScore : PathChain by lazy { follower.pathBuilder()
         .addPath((BezierLine(BlueDepoMiddleSpikeGrabPose, BlueDepoScorePose)))
         .setLinearHeadingInterpolation(BlueDepoMiddleSpikeGrabPose.heading, BlueDepoScorePose.heading)
+        .build() }
+    val BlueDepoFarSpikeAlignment : PathChain by lazy { follower.pathBuilder()
+        .addPath((BezierLine(BlueDepoScorePose, BlueDepoFarSpikeAlignmentPose)))
+        .setLinearHeadingInterpolation(BlueDepoScorePose.heading, BlueDepoFarSpikeAlignmentPose.heading)
+        .build() }
+    val BlueDepoFarSpikeGrab : PathChain by lazy { follower.pathBuilder()
+        .addPath((BezierLine(BlueDepoFarSpikeAlignmentPose, BlueDepoFarSpikeGrabPose)))
+        .setLinearHeadingInterpolation(BlueDepoFarSpikeAlignmentPose.heading, BlueDepoFarSpikeGrabPose.heading)
+        .build() }
+    val BlueDepoFarSpikeScore : PathChain by lazy { follower.pathBuilder()
+        .addPath((BezierLine(BlueDepoFarSpikeGrabPose, BlueDepoScorePose)))
+        .setLinearHeadingInterpolation(BlueDepoFarSpikeGrabPose.heading, BlueDepoScorePose.heading)
         .build() }
 }

@@ -48,7 +48,7 @@ abstract class AutoOpMode : OpMode() {
     final override fun init() {
         // Any other shared init (hardware caching, subsystems, etc.)
 
-        // declare panels and init the debug util
+        // declare Panels and init the debug util
         panels = PanelsTelemetry.telemetry
         debugUtil = PanelsDebugUtil(panels)
         debugUtil.showInit()
@@ -63,7 +63,7 @@ abstract class AutoOpMode : OpMode() {
     }
 
     final override fun init_loop() {
-        // Draw on panels
+        // Draw on Panels
         DrawingUtil.drawOnlyCurrent(follower)
         // Clear the bulk read cache
         hubUtil.clearCache()
@@ -71,11 +71,12 @@ abstract class AutoOpMode : OpMode() {
     }
 
     final override fun start() {
+        resetRuntime()
         onStart()
     }
 
     final override fun loop() {
-        // Draw on panels
+        // Draw on Panels
         DrawingUtil.drawDebug(follower)
         // Clear the bulk read cache
         hubUtil.clearCache()

@@ -8,7 +8,8 @@ class PanelsDebugUtil(
 ) {
     fun showAllDebug(
         follower: Follower,
-        hubUtil: HubUtil
+        hubUtil: HubUtil,
+        runtime: Double
     ) {
         panels?.apply {
             debug("=== PedroPathing ===")
@@ -21,6 +22,9 @@ class PanelsDebugUtil(
             debug("Temp F", hubUtil.getTempFahrenheit())
             debug("Temp C", hubUtil.getTempCelsius())
             debug("Temp K", hubUtil.getTempKelvin())
+            debug("")
+            debug("=== OpMode ===")
+            debug("runtime", runtime)
             debug("")
         }
     }
