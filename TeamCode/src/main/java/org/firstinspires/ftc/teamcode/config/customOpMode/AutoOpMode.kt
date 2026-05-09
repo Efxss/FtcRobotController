@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.config.util.PanelsDebugUtil
  * Custom-made OpMode to copy and make a real OpMode
  * @author Jonny Todd - 29403 PiBytes
  */
-abstract class TeleOpMode : OpMode() {
+abstract class AutoOpMode : OpMode() {
 
     // Shared resources
     private var panels : TelemetryManager? = null
