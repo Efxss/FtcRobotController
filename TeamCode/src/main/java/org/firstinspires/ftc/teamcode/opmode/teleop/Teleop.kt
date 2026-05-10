@@ -5,7 +5,7 @@ import com.pedropathing.geometry.Pose
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import org.firstinspires.ftc.teamcode.config.customOpMode.TeleOpMode
 import org.firstinspires.ftc.teamcode.config.pedroPathing.Constants
-import org.firstinspires.ftc.teamcode.config.util.VariableState
+import org.firstinspires.ftc.teamcode.config.util.VariableStateUtil
 
 @TeleOp
 class Teleop : TeleOpMode() {
@@ -32,7 +32,7 @@ class Teleop : TeleOpMode() {
     }
 
     fun initializePedroPathing() {
-        val startPose = VariableState.endOfAutoPose ?: Pose()
+        val startPose = VariableStateUtil.endOfAutoPose ?: Pose()
         follower = Constants.createFollower(hardwareMap)
         follower.setStartingPose(startPose)
     }

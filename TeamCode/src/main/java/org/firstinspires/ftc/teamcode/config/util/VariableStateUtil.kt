@@ -8,7 +8,7 @@ import com.pedropathing.geometry.Pose
  * Robot Controller process it survives the OpMode lifecycle but resets
  * on a Robot Controller restart.
  */
-object VariableState {
+object VariableStateUtil {
     // Null means "no auto ran" -> TeleOp should fall back to a default pose.
     var endOfAutoPose: Pose? = null
 

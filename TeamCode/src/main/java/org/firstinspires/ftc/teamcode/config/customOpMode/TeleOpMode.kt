@@ -65,6 +65,9 @@ abstract class TeleOpMode : OpMode() {
     final override fun init_loop() {
         // Draw on panels
         DrawingUtil.drawOnlyCurrent(follower)
+        //Show and update debug
+        debugUtil.showAllDebug(follower, hubUtil, runtime)
+        debugUtil.update(telemetry)
         // Clear the bulk read cache
         hubUtil.clearCache()
         onInitLoop()
@@ -88,18 +91,32 @@ abstract class TeleOpMode : OpMode() {
 
     // Custom functions
 
-    /** Calling this function will return the panels variable to be accessible in TeleOP
+    /** Calling this function will return the Panels variable to be accessible in Teleop
      * @see [getDebugUtil]
-     * @see [getHubUtil] */
+     * @see [getHubUtil]
+     * @see [getFollower]
+     */
     protected fun getPanels() = panels
 
-    /** Calling this function will return the debugUtil variable to be accessible in TeleOP
+    /** Calling this function will return the DebugUtil variable to be accessible in Teleop
      * @see [getPanels]
-     * @see [getHubUtil] */
+     * @see [getHubUtil]
+     * @see [getFollower]
+     */
     protected fun getDebugUtil() = debugUtil
 
-    /** Calling this function will return the bulkRead variable to be accessible in TeleOP
+    /** Calling this function will return the HubUtil variable to be accessible in Teleop
      * @see [getDebugUtil]
-     * @see [getPanels] */
+     * @see [getPanels]
+     * @see [getFollower]
+     */
     protected fun getHubUtil() = hubUtil
+
+
+    /** Calling this function will return the Follower variable to be accessible in Teleop
+     * @see [getPanels]
+     * @see[getDebugUtil]
+     * @see [getHubUtil]
+     */
+    protected fun getFollower() = follower
 }

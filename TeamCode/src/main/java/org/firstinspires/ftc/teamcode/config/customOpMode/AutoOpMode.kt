@@ -3,10 +3,13 @@ package org.firstinspires.ftc.teamcode.config.customOpMode
 import com.bylazar.telemetry.PanelsTelemetry
 import com.bylazar.telemetry.TelemetryManager
 import com.pedropathing.follower.Follower
+import com.pedropathing.ivy.Scheduler
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
+import org.firstinspires.ftc.teamcode.config.util.Alliance
 import org.firstinspires.ftc.teamcode.config.util.DrawingUtil
 import org.firstinspires.ftc.teamcode.config.util.HubUtil
 import org.firstinspires.ftc.teamcode.config.util.PanelsDebugUtil
+import org.firstinspires.ftc.teamcode.config.util.VariableStateUtil
 
 /**
  * Custom-made OpMode to copy and make a real OpMode
@@ -21,6 +24,12 @@ abstract class AutoOpMode : OpMode() {
     private lateinit var debugUtil : PanelsDebugUtil
 
     // Custom lifecycle hooks
+
+    /**
+     * Mandatory property that defines which alliance this auto runs for.
+     * Must be overridden by the subclass (e.g. `override val alliance = Alliance.BLUE`)
+     */
+    abstract val alliance: Alliance
 
     /**
      * Mandatory function that will run all code inside one time upon pressing the initialization button
@@ -56,6 +65,9 @@ abstract class AutoOpMode : OpMode() {
         // Init the drawing util for panels and PedroPathing
         DrawingUtil.init()
 
+        // Reset Ivy scheduler so commands from a previous OpMode don't carry over
+        Scheduler.reset()
+
         // Init bulkRead
         hubUtil = HubUtil(hardwareMap)
         debugUtil.update(telemetry)
@@ -78,29 +90,49 @@ abstract class AutoOpMode : OpMode() {
     final override fun loop() {
         // Draw on Panels
         DrawingUtil.drawDebug(follower)
+        //Show and update debug
+        debugUtil.showAllDebug(follower, hubUtil, runtime)
+        debugUtil.update(telemetry)
+        // Update PedroPathing
+        follower.update()
         // Clear the bulk read cache
         hubUtil.clearCache()
         onLoop()
     }
 
     final override fun stop() {
+        VariableStateUtil.endOfAutoPose = follower.pose
         onStop()
     }
 
     // Custom functions
 
-    /** Calling this function will return the panels variable to be accessible in TeleOP
+    /** Calling this function will return the Panels variable to be accessible in Auto
      * @see [getDebugUtil]
-     * @see [getHubUtil] */
+     * @see [getHubUtil]
+     * @see [getFollower]
+     */
     protected fun getPanels() = panels
 
-    /** Calling this function will return the debugUtil variable to be accessible in TeleOP
+    /** Calling this function will return the DebugUtil variable to be accessible in Auto
      * @see [getPanels]
-     * @see [getHubUtil] */
+     * @see [getHubUtil]
+     * @see [getFollower]
+     */
     protected fun getDebugUtil() = debugUtil
 
-    /** Calling this function will return the bulkRead variable to be accessible in TeleOP
+    /** Calling this function will return the HubUtil variable to be accessible in Auto
      * @see [getDebugUtil]
-     * @see [getPanels] */
+     * @see [getPanels]
+     * @see [getFollower]
+     */
     protected fun getHubUtil() = hubUtil
+
+
+    /** Calling this function will return the Follower variable to be accessible in Auto
+     * @see [getPanels]
+     * @see[getDebugUtil]
+     * @see [getHubUtil]
+     */
+    protected fun getFollower() = follower
 }

@@ -13,13 +13,13 @@ object AutoPoseUtil {
     val BlueDepoMiddleSpikeGrabPose = Pose(18.0, 59.0, Math.toRadians(-180.0))
     val BlueDepoFarSpikeAlignmentPose = Pose(39.1, 35.6, Math.toRadians(-180.0))
     val BlueDepoFarSpikeGrabPose = Pose(18.0, 35.6, Math.toRadians(-180.0))
-    val startPoseRedDepoPose = Pose(18.1, 122.6, Math.toRadians(144.0)).mirror()!!
-    val RedDepoScorePose = Pose(57.6, 83.2, Math.toRadians(144.0)).mirror()!!
-    val RedDepoCloseSpikeStripPose = Pose(18.0, 82.8, Math.toRadians(-180.0)).mirror()!!
-    val RedDepoMiddleSpikeAlignmentPose = Pose(39.2, 59.0, Math.toRadians(-180.0)).mirror()!!
-    val RedDepoMiddleSpikeGrabPose = Pose(18.0, 59.0, Math.toRadians(-180.0)).mirror()!!
-    val RedDepoFarSpikeAlignmentPose = Pose(39.1, 35.6, Math.toRadians(-180.0)).mirror()!!
-    val RedDepoFarSpikeGrabPose = Pose(18.0, 35.6, Math.toRadians(-180.0)).mirror()!!
+    val startPoseRedDepoPose = startPoseBlueDepoPose.mirror()!!
+    val RedDepoScorePose = BlueDepoScorePose.mirror()!!
+    val RedDepoCloseSpikeStripPose = BlueDepoCloseSpikeStripPose.mirror()!!
+    val RedDepoMiddleSpikeAlignmentPose = BlueDepoMiddleSpikeAlignmentPose.mirror()!!
+    val RedDepoMiddleSpikeGrabPose = BlueDepoMiddleSpikeGrabPose.mirror()!!
+    val RedDepoFarSpikeAlignmentPose = BlueDepoFarSpikeAlignmentPose.mirror()!!
+    val RedDepoFarSpikeGrabPose = BlueDepoFarSpikeGrabPose.mirror()!!
     val BlueDepoStartScore : PathChain by lazy { follower.pathBuilder()
         .addPath((BezierLine(startPoseBlueDepoPose, BlueDepoScorePose)))
         .setLinearHeadingInterpolation(startPoseBlueDepoPose.heading, BlueDepoScorePose.heading)
