@@ -6,10 +6,12 @@ import com.pedropathing.ivy.Scheduler
 import com.pedropathing.ivy.Scheduler.schedule
 import com.pedropathing.ivy.groups.Groups.sequential
 import com.pedropathing.ivy.pedro.PedroCommands.follow
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import org.firstinspires.ftc.teamcode.config.customOpMode.AutoOpMode
 import org.firstinspires.ftc.teamcode.config.pedroPathing.Constants
 import org.firstinspires.ftc.teamcode.config.util.AutoPoseUtil
 
+@Autonomous(group = "Red Auto", name = "Auto Pod Path Test Red")
 class RedAuto : AutoOpMode() {
     lateinit var follower: Follower
     override fun onInit() {

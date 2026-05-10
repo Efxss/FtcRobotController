@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.config.customOpMode.AutoOpMode
 import org.firstinspires.ftc.teamcode.config.pedroPathing.Constants
 import org.firstinspires.ftc.teamcode.config.util.AutoPoseUtil
 
-@Autonomous(group = "Blue Auto", name = "Auto Pod Path Test")
+@Autonomous(group = "Blue Auto", name = "Auto Pod Path Test Blue")
 class BlueAuto : AutoOpMode() {
     lateinit var follower: Follower
     override fun onInit() {
