@@ -93,8 +93,6 @@ abstract class AutoOpMode : OpMode() {
         //Show and update debug
         debugUtil.showAllDebug(follower, hubUtil, runtime)
         debugUtil.update(telemetry)
-        // Update PedroPathing
-        follower.update()
         // Clear the bulk read cache
         hubUtil.clearCache()
         onLoop()
