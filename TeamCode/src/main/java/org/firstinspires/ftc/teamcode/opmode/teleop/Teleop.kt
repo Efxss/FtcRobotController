@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.opmode.teleop
 
-import com.pedropathing.follower.Follower
 import com.pedropathing.geometry.Pose
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import org.firstinspires.ftc.teamcode.config.customOpMode.TeleOpMode
@@ -9,7 +8,6 @@ import org.firstinspires.ftc.teamcode.config.util.VariableStateUtil
 
 @TeleOp
 class Teleop : TeleOpMode() {
-    lateinit var follower: Follower
     override fun onInit() {
         initializePedroPathing()
     }

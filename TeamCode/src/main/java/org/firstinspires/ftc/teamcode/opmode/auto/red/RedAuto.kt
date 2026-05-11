@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmode.auto.red
 
-import com.pedropathing.follower.Follower
 import com.pedropathing.ivy.Scheduler
+import com.pedropathing.ivy.commands.Commands.instant
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import org.firstinspires.ftc.teamcode.config.customOpMode.AutoOpMode
 import org.firstinspires.ftc.teamcode.config.pedroPathing.Constants
@@ -10,7 +10,6 @@ import org.firstinspires.ftc.teamcode.config.util.AutoPoseUtil
 
 @Autonomous(group = "Red Auto", name = "Auto Pod Path Test Red")
 class RedAuto : AutoOpMode() {
-    lateinit var follower: Follower
     override val alliance = Alliance.RED
     override fun onInit() {
         initializePedroPathing()
@@ -24,6 +23,8 @@ class RedAuto : AutoOpMode() {
         follower.update()
         Scheduler.execute()
     }
+
+    val fullTurn = instant { follower.turn(Math.toRadians(360.0)) }!!
 
     fun initializePedroPathing() {
         Scheduler.reset()

@@ -16,9 +16,9 @@ abstract class TeleOpMode : OpMode() {
 
     // Shared resources
     private var panels : TelemetryManager? = null
-    private lateinit var follower: Follower
     private lateinit var hubUtil : HubUtil
     private lateinit var debugUtil : PanelsDebugUtil
+    protected lateinit var follower: Follower
 
     // Custom lifecycle hooks
 
@@ -63,13 +63,10 @@ abstract class TeleOpMode : OpMode() {
     }
 
     final override fun init_loop() {
-        // Draw on panels
-        DrawingUtil.drawOnlyCurrent(follower)
-        //Show and update debug
-        debugUtil.showAllDebug(follower, hubUtil, runtime)
-        debugUtil.update(telemetry)
         // Clear the bulk read cache
         hubUtil.clearCache()
+        // Draw on panels
+        DrawingUtil.drawOnlyCurrent(follower)
         onInitLoop()
     }
 
@@ -78,10 +75,13 @@ abstract class TeleOpMode : OpMode() {
     }
 
     final override fun loop() {
-        // Draw on panels
-        DrawingUtil.drawDebug(follower)
         // Clear the bulk read cache
         hubUtil.clearCache()
+        // Draw on panels
+        DrawingUtil.drawDebug(follower)
+        //Show and update debug
+        debugUtil.showAllDebug(follower, hubUtil, runtime)
+        debugUtil.update(telemetry)
         onLoop()
     }
 

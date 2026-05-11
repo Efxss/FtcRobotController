@@ -19,9 +19,9 @@ abstract class AutoOpMode : OpMode() {
 
     // Shared resources
     private var panels : TelemetryManager? = null
-    private lateinit var follower: Follower
     private lateinit var hubUtil : HubUtil
     private lateinit var debugUtil : PanelsDebugUtil
+    protected lateinit var follower: Follower
 
     // Custom lifecycle hooks
 
@@ -75,10 +75,10 @@ abstract class AutoOpMode : OpMode() {
     }
 
     final override fun init_loop() {
-        // Draw on Panels
-        DrawingUtil.drawOnlyCurrent(follower)
         // Clear the bulk read cache
         hubUtil.clearCache()
+        // Draw on Panels
+        DrawingUtil.drawOnlyCurrent(follower)
         onInitLoop()
     }
 
@@ -88,18 +88,20 @@ abstract class AutoOpMode : OpMode() {
     }
 
     final override fun loop() {
+        // Clear the bulk read cache
+        hubUtil.clearCache()
         // Draw on Panels
         DrawingUtil.drawDebug(follower)
         //Show and update debug
         debugUtil.showAllDebug(follower, hubUtil, runtime)
         debugUtil.update(telemetry)
-        // Clear the bulk read cache
-        hubUtil.clearCache()
         onLoop()
     }
 
     final override fun stop() {
-        VariableStateUtil.endOfAutoPose = follower.pose
+        if (::follower.isInitialized) {
+            VariableStateUtil.endOfAutoPose = follower.pose
+        }
         onStop()
     }
 

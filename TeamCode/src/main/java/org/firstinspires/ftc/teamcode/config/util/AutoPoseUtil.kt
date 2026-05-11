@@ -99,29 +99,29 @@ object AutoPoseUtil {
 
     fun allSpikeAutoBlue() : Command {
         return sequential(
-            follow(AutoPoseUtil.follower, AutoPoseUtil.BlueDepoStartScore, false),
-            follow(AutoPoseUtil.follower, AutoPoseUtil.BlueDepoCloseSpike, false),
-            follow(AutoPoseUtil.follower, AutoPoseUtil.BlueDepoCloseSpikeScore, false),
-            follow(AutoPoseUtil.follower, AutoPoseUtil.BlueDepoMiddleSpikeAlignment, false),
-            follow(AutoPoseUtil.follower, AutoPoseUtil.BlueDepoMiddleSpikeGrab, false),
-            follow(AutoPoseUtil.follower, AutoPoseUtil.BlueDepoMiddleSpikeScore, false),
-            follow(AutoPoseUtil.follower, AutoPoseUtil.BlueDepoFarSpikeAlignment, false),
-            follow(AutoPoseUtil.follower, AutoPoseUtil.BlueDepoFarSpikeGrab, false),
-            follow(AutoPoseUtil.follower, AutoPoseUtil.BlueDepoFarSpikeScore, false)
+            follow(follower, BlueDepoStartScore, false),
+            follow(follower, BlueDepoCloseSpike, false),
+            follow(follower, BlueDepoCloseSpikeScore, false),
+            follow(follower, BlueDepoMiddleSpikeAlignment, false),
+            follow(follower, BlueDepoMiddleSpikeGrab, false),
+            follow(follower, BlueDepoMiddleSpikeScore, false),
+            follow(follower, BlueDepoFarSpikeAlignment, false),
+            follow(follower, BlueDepoFarSpikeGrab, false),
+            follow(follower, BlueDepoFarSpikeScore, false)
         )
     }
 
     fun allSpikeAutoRed() : Command {
         return sequential(
-            follow(AutoPoseUtil.follower, AutoPoseUtil.RedDepoStartScore, false),
-            follow(AutoPoseUtil.follower, AutoPoseUtil.RedDepoCloseSpike, false),
-            follow(AutoPoseUtil.follower, AutoPoseUtil.RedDepoCloseSpikeScore, false),
-            follow(AutoPoseUtil.follower, AutoPoseUtil.RedDepoMiddleSpikeAlignment, false),
-            follow(AutoPoseUtil.follower, AutoPoseUtil.RedDepoMiddleSpikeGrab, false),
-            follow(AutoPoseUtil.follower, AutoPoseUtil.RedDepoMiddleSpikeScore, false),
-            follow(AutoPoseUtil.follower, AutoPoseUtil.RedDepoFarSpikeAlignment, false),
-            follow(AutoPoseUtil.follower, AutoPoseUtil.RedDepoFarSpikeGrab, false),
-            follow(AutoPoseUtil.follower, AutoPoseUtil.RedDepoFarSpikeScore, false)
+            follow(follower, RedDepoStartScore, false),
+            follow(follower, RedDepoCloseSpike, false),
+            follow(follower, RedDepoCloseSpikeScore, false),
+            follow(follower, RedDepoMiddleSpikeAlignment, false),
+            follow(follower, RedDepoMiddleSpikeGrab, false),
+            follow(follower, RedDepoMiddleSpikeScore, false),
+            follow(follower, RedDepoFarSpikeAlignment, false),
+            follow(follower, RedDepoFarSpikeGrab, false),
+            follow(follower, RedDepoFarSpikeScore, false)
         )
     }
 }

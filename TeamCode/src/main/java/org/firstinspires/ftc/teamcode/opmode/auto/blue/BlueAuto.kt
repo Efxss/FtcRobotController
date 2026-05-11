@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.opmode.auto.blue
 
-import com.pedropathing.follower.Follower
 import com.pedropathing.ivy.Scheduler
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import org.firstinspires.ftc.teamcode.config.customOpMode.AutoOpMode
@@ -10,7 +9,6 @@ import org.firstinspires.ftc.teamcode.config.util.AutoPoseUtil
 
 @Autonomous(group = "Blue Auto", name = "Auto Pod Path Test Blue")
 class BlueAuto : AutoOpMode() {
-    lateinit var follower: Follower
     override val alliance = Alliance.BLUE
     override fun onInit() {
         initializePedroPathing()
