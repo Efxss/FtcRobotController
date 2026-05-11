@@ -2,6 +2,9 @@ package org.firstinspires.ftc.teamcode.config.util
 import com.pedropathing.follower.Follower
 import com.pedropathing.geometry.BezierLine
 import com.pedropathing.geometry.Pose
+import com.pedropathing.ivy.Command
+import com.pedropathing.ivy.groups.Groups.sequential
+import com.pedropathing.ivy.pedro.PedroCommands.follow
 import com.pedropathing.paths.PathChain
 
 object AutoPoseUtil {
@@ -93,4 +96,32 @@ object AutoPoseUtil {
         .addPath((BezierLine(RedDepoFarSpikeGrabPose, RedDepoScorePose)))
         .setLinearHeadingInterpolation(RedDepoFarSpikeGrabPose.heading, RedDepoScorePose.heading)
         .build() }
+
+    fun allSpikeAutoBlue() : Command {
+        return sequential(
+            follow(AutoPoseUtil.follower, AutoPoseUtil.BlueDepoStartScore, false),
+            follow(AutoPoseUtil.follower, AutoPoseUtil.BlueDepoCloseSpike, false),
+            follow(AutoPoseUtil.follower, AutoPoseUtil.BlueDepoCloseSpikeScore, false),
+            follow(AutoPoseUtil.follower, AutoPoseUtil.BlueDepoMiddleSpikeAlignment, false),
+            follow(AutoPoseUtil.follower, AutoPoseUtil.BlueDepoMiddleSpikeGrab, false),
+            follow(AutoPoseUtil.follower, AutoPoseUtil.BlueDepoMiddleSpikeScore, false),
+            follow(AutoPoseUtil.follower, AutoPoseUtil.BlueDepoFarSpikeAlignment, false),
+            follow(AutoPoseUtil.follower, AutoPoseUtil.BlueDepoFarSpikeGrab, false),
+            follow(AutoPoseUtil.follower, AutoPoseUtil.BlueDepoFarSpikeScore, false)
+        )
+    }
+
+    fun allSpikeAutoRed() : Command {
+        return sequential(
+            follow(AutoPoseUtil.follower, AutoPoseUtil.RedDepoStartScore, false),
+            follow(AutoPoseUtil.follower, AutoPoseUtil.RedDepoCloseSpike, false),
+            follow(AutoPoseUtil.follower, AutoPoseUtil.RedDepoCloseSpikeScore, false),
+            follow(AutoPoseUtil.follower, AutoPoseUtil.RedDepoMiddleSpikeAlignment, false),
+            follow(AutoPoseUtil.follower, AutoPoseUtil.RedDepoMiddleSpikeGrab, false),
+            follow(AutoPoseUtil.follower, AutoPoseUtil.RedDepoMiddleSpikeScore, false),
+            follow(AutoPoseUtil.follower, AutoPoseUtil.RedDepoFarSpikeAlignment, false),
+            follow(AutoPoseUtil.follower, AutoPoseUtil.RedDepoFarSpikeGrab, false),
+            follow(AutoPoseUtil.follower, AutoPoseUtil.RedDepoFarSpikeScore, false)
+        )
+    }
 }
