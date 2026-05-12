@@ -12,9 +12,8 @@ object VariableStateUtil {
     // Null means "no auto ran" -> TeleOp should fall back to a default pose.
     var endOfAutoPose: Pose? = null
 
-    // Add anything else you want to hand off later, e.g.:
-    // var alliance: Alliance = Alliance.RED
-    // var motif: Motif? = null
+    // Alliance var to pass from auto to TeleOP
+    var alliance: Alliance = Alliance.RED
 
     /** Call from TeleOp init if you want a clean slate after consuming the data. */
     fun clear() {

@@ -4,6 +4,7 @@ import com.bylazar.telemetry.PanelsTelemetry
 import com.bylazar.telemetry.TelemetryManager
 import com.pedropathing.follower.Follower
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
+import org.firstinspires.ftc.teamcode.config.util.Alliance
 import org.firstinspires.ftc.teamcode.config.util.DrawingUtil
 import org.firstinspires.ftc.teamcode.config.util.HubUtil
 import org.firstinspires.ftc.teamcode.config.util.PanelsDebugUtil
@@ -21,6 +22,12 @@ abstract class TeleOpMode : OpMode() {
     protected lateinit var follower: Follower
 
     // Custom lifecycle hooks
+
+    /**
+     * Mandatory property that defines which alliance this auto runs for.
+     * Must be overridden by the subclass (e.g. `override val alliance = Alliance.BLUE`)
+     */
+    abstract val alliance: Alliance
 
     /**
      * Mandatory function that will run all code inside one time upon pressing the initialization button
@@ -48,7 +55,7 @@ abstract class TeleOpMode : OpMode() {
     final override fun init() {
         // Any other shared init (hardware caching, subsystems, etc.)
 
-        // declare panels and init the debug util
+        // declare Panels and init the debug util
         panels = PanelsTelemetry.telemetry
         debugUtil = PanelsDebugUtil(panels)
         debugUtil.showInit()

@@ -102,6 +102,7 @@ abstract class AutoOpMode : OpMode() {
         if (::follower.isInitialized) {
             VariableStateUtil.endOfAutoPose = follower.pose
         }
+        VariableStateUtil.alliance = alliance
         onStop()
     }
 
