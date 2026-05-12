@@ -4,7 +4,6 @@ import com.pedropathing.geometry.Pose
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import org.firstinspires.ftc.teamcode.config.customOpMode.TeleOpMode
 import org.firstinspires.ftc.teamcode.config.pedroPathing.Constants
-import org.firstinspires.ftc.teamcode.config.util.VariableStateUtil
 
 @TeleOp
 class Teleop : TeleOpMode() {
@@ -20,12 +19,13 @@ class Teleop : TeleOpMode() {
         follower.update()
         var rotate = if(gamepad1.left_bumper) 1.0 else if (gamepad1.right_bumper) -1.0 else 0.0
         var forward = -gamepad1.left_stick_y.toDouble()
-        var strafe = gamepad1.right_stick_x.toDouble()
+        var strafe = -gamepad1.right_stick_x.toDouble()
         follower.setTeleOpDrive(forward, strafe, rotate, true)
     }
 
     fun initializePedroPathing() {
-        val startPose = VariableStateUtil.endOfAutoPose ?: Pose()
+        //val startPose = VariableStateUtil.endOfAutoPose ?: Pose()
+        val startPose = Pose(8.5, 8.375, Math.toRadians(90.0))
         follower = Constants.createFollower(hardwareMap)
         follower.setStartingPose(startPose)
     }

@@ -110,29 +110,18 @@ abstract class AutoOpMode : OpMode() {
     /** Calling this function will return the Panels variable to be accessible in Auto
      * @see [getDebugUtil]
      * @see [getHubUtil]
-     * @see [getFollower]
      */
     protected fun getPanels() = panels
 
     /** Calling this function will return the DebugUtil variable to be accessible in Auto
      * @see [getPanels]
      * @see [getHubUtil]
-     * @see [getFollower]
      */
     protected fun getDebugUtil() = debugUtil
 
     /** Calling this function will return the HubUtil variable to be accessible in Auto
      * @see [getDebugUtil]
      * @see [getPanels]
-     * @see [getFollower]
      */
     protected fun getHubUtil() = hubUtil
-
-
-    /** Calling this function will return the Follower variable to be accessible in Auto
-     * @see [getPanels]
-     * @see[getDebugUtil]
-     * @see [getHubUtil]
-     */
-    protected fun getFollower() = follower
 }

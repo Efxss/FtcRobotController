@@ -14,8 +14,8 @@ class PanelsDebugUtil(
         panels?.apply {
             debug("=== PedroPathing ===")
             debug("Follow Pose X", follower.pose.x)
-            debug("Follow Pose X", follower.pose.y)
-            debug("Follow Heading", follower.pose.heading)
+            debug("Follow Pose Y", follower.pose.y)
+            debug("Follow Heading", Math.toDegrees(follower.pose.heading))
             debug("Follow IsBusy", follower.isBusy)
             debug("")
             debug("=== Hub ===")
