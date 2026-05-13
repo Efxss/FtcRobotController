@@ -20,10 +20,13 @@ class Teleop : TeleOpMode() {
 
     override fun onLoop() {
         follower.update()
-        var rotate = if(gamepad1.left_bumper) 1.0 else if (gamepad1.right_bumper) -1.0 else 0.0
+        /*var rotate = if(gamepad1.left_bumper) 1.0 else if (gamepad1.right_bumper) -1.0 else 0.0
         var forward = -gamepad1.left_stick_y.toDouble()
-        var strafe = -gamepad1.right_stick_x.toDouble()
-        follower.setTeleOpDrive(forward, strafe, rotate, true)
+        var strafe = -gamepad1.right_stick_x.toDouble()*/
+        val rotate = gamepad1.right_stick_x.toDouble()
+        val forward = -gamepad1.left_stick_y.toDouble()
+        val strafe = -gamepad1.left_stick_x.toDouble()
+        follower.setTeleOpDrive(forward, strafe, rotate, false)
     }
 
     fun initializePedroPathing() {
