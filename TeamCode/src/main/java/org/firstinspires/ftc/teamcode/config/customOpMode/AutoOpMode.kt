@@ -5,6 +5,7 @@ import com.bylazar.telemetry.TelemetryManager
 import com.pedropathing.follower.Follower
 import com.pedropathing.ivy.Scheduler
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
+import org.firstinspires.ftc.teamcode.config.subSystem.IntakeSS
 import org.firstinspires.ftc.teamcode.config.util.Alliance
 import org.firstinspires.ftc.teamcode.config.util.DrawingUtil
 import org.firstinspires.ftc.teamcode.config.util.HubUtil
@@ -21,6 +22,7 @@ abstract class AutoOpMode : OpMode() {
     private var panels : TelemetryManager? = null
     private lateinit var hubUtil : HubUtil
     private lateinit var debugUtil : PanelsDebugUtil
+    private lateinit var intakeSS: IntakeSS
     protected lateinit var follower: Follower
 
     // Custom lifecycle hooks
@@ -69,8 +71,9 @@ abstract class AutoOpMode : OpMode() {
         Scheduler.reset()
 
         // Init bulkRead
-        hubUtil = HubUtil(hardwareMap)
         debugUtil.update(telemetry)
+        intakeSS = IntakeSS(hardwareMap)
+        hubUtil = HubUtil(hardwareMap)
         onInit()
     }
 
@@ -93,7 +96,7 @@ abstract class AutoOpMode : OpMode() {
         // Draw on Panels
         DrawingUtil.drawDebug(follower)
         //Show and update debug
-        debugUtil.showAllDebug(follower, hubUtil, runtime)
+        debugUtil.showAllDebugAuto(follower, hubUtil, runtime)
         debugUtil.update(telemetry)
         onLoop()
     }
@@ -125,4 +128,6 @@ abstract class AutoOpMode : OpMode() {
      * @see [getPanels]
      */
     protected fun getHubUtil() = hubUtil
+
+    protected fun getIntakeSS() = intakeSS
 }

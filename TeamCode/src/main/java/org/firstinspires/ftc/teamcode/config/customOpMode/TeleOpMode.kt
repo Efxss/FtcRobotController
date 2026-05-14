@@ -3,7 +3,9 @@ package org.firstinspires.ftc.teamcode.config.customOpMode
 import com.bylazar.telemetry.PanelsTelemetry
 import com.bylazar.telemetry.TelemetryManager
 import com.pedropathing.follower.Follower
+import com.pedropathing.ivy.Scheduler
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
+import org.firstinspires.ftc.teamcode.config.subSystem.IntakeSS
 import org.firstinspires.ftc.teamcode.config.util.Alliance
 import org.firstinspires.ftc.teamcode.config.util.DrawingUtil
 import org.firstinspires.ftc.teamcode.config.util.HubUtil
@@ -19,7 +21,9 @@ abstract class TeleOpMode : OpMode() {
     private var panels : TelemetryManager? = null
     private lateinit var hubUtil : HubUtil
     private lateinit var debugUtil : PanelsDebugUtil
+    private lateinit var intakeSS: IntakeSS
     protected lateinit var follower: Follower
+
 
     // Custom lifecycle hooks
 
@@ -63,31 +67,36 @@ abstract class TeleOpMode : OpMode() {
         // Init the drawing util for panels and PedroPathing
         DrawingUtil.init()
 
+        // Reset Ivy scheduler so commands from a previous OpMode don't carry over
+        Scheduler.reset()
+
         // Init bulkRead
-        hubUtil = HubUtil(hardwareMap)
         debugUtil.update(telemetry)
+        intakeSS = IntakeSS(hardwareMap)
+        hubUtil = HubUtil(hardwareMap)
         onInit()
     }
 
     final override fun init_loop() {
         // Clear the bulk read cache
         hubUtil.clearCache()
-        // Draw on panels
+        // Draw on Panels
         DrawingUtil.drawOnlyCurrent(follower)
         onInitLoop()
     }
 
     final override fun start() {
+        resetRuntime()
         onStart()
     }
 
     final override fun loop() {
         // Clear the bulk read cache
         hubUtil.clearCache()
-        // Draw on panels
+        // Draw on Panels
         DrawingUtil.drawDebug(follower)
         //Show and update debug
-        debugUtil.showAllDebug(follower, hubUtil, runtime)
+        debugUtil.showAllDebugTeleop(follower, hubUtil, runtime)
         debugUtil.update(telemetry)
         onLoop()
     }
@@ -115,4 +124,6 @@ abstract class TeleOpMode : OpMode() {
      * @see [getPanels]
      */
     protected fun getHubUtil() = hubUtil
+
+    protected fun getIntakeSS() = intakeSS
 }

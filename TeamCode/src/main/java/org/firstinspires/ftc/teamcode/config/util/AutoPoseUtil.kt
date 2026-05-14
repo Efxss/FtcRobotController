@@ -10,7 +10,7 @@ import com.pedropathing.paths.PathChain
 object AutoPoseUtil {
     lateinit var follower: Follower
     val startPoseBlueDepoPose = Pose(18.1, 122.6, Math.toRadians(140.0))
-    val BlueDepoScorePose = Pose(65.6, 83.2, Math.toRadians(140.0))
+    val BlueDepoScorePose = Pose(65.6, 77.0, Math.toRadians(140.0))
     val BlueDepoCloseSpikeStripPose = Pose(26.0, 82.8, Math.toRadians(-180.0))
     val BlueDepoMiddleSpikeAlignmentPose = Pose(47.2, 59.0, Math.toRadians(-180.0))
     val BlueDepoMiddleSpikeGrabPose = Pose(26.0, 59.0, Math.toRadians(-180.0))
