@@ -6,6 +6,7 @@ import com.pedropathing.ivy.groups.Groups
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import org.firstinspires.ftc.teamcode.config.customOpMode.TeleOpMode
 import org.firstinspires.ftc.teamcode.config.pedroPathing.Constants
+import org.firstinspires.ftc.teamcode.config.util.MathUtil
 import org.firstinspires.ftc.teamcode.config.util.VariableStateUtil
 
 @TeleOp
@@ -25,8 +26,8 @@ class Teleop : TeleOpMode() {
         follower.update()
         Scheduler.execute()
         val rotate = if(gamepad1.left_bumper) 1.0 else if (gamepad1.right_bumper) -1.0 else 0.0
-        val forward = -gamepad1.left_stick_y.toDouble()
-        val strafe = -gamepad1.right_stick_x.toDouble()
+        val forward = MathUtil.shapeStick(-gamepad1.left_stick_y.toDouble())
+        val strafe  = MathUtil.shapeStick(-gamepad1.right_stick_x.toDouble())
         follower.setTeleOpDrive(forward, strafe, rotate, true)
     }
 
