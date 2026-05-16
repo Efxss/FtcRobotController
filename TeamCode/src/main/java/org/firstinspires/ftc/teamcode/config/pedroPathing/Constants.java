@@ -22,14 +22,14 @@ public class Constants {
             .mass(6.7);
 
     public static PathConstraints pathConstraints = new PathConstraints(
-            0.995,
-            50.0,
-            0.1,
+            0.95,
+            100.0,
+            0.2,
             0.009,
-            30.0,
-            2.0,
+            10.0,
+            0.25,
             10,
-            0.6
+            1.0
     );
 
     public static MecanumConstants driveConstants = new MecanumConstants()

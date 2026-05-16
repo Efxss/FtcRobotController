@@ -3,6 +3,7 @@ import com.pedropathing.follower.Follower
 import com.pedropathing.geometry.BezierLine
 import com.pedropathing.geometry.Pose
 import com.pedropathing.ivy.Command
+import com.pedropathing.ivy.commands.Commands.waitMs
 import com.pedropathing.ivy.groups.Groups.sequential
 import com.pedropathing.ivy.pedro.PedroCommands.follow
 import com.pedropathing.paths.PathChain
@@ -10,22 +11,30 @@ import com.pedropathing.paths.PathChain
 object AutoPoseUtil {
     lateinit var follower: Follower
     val startPoseBlueDepoPose = Pose(18.1, 122.6, Math.toRadians(140.0))
+    val BlueDepoEndPose = Pose(17.925, 122.425, Math.toRadians(140.0))
     val BlueDepoScorePose = Pose(65.6, 77.0, Math.toRadians(140.0))
     val BlueDepoCloseSpikeStripPose = Pose(26.0, 82.8, Math.toRadians(-180.0))
     val BlueDepoMiddleSpikeAlignmentPose = Pose(47.2, 59.0, Math.toRadians(-180.0))
     val BlueDepoMiddleSpikeGrabPose = Pose(26.0, 59.0, Math.toRadians(-180.0))
     val BlueDepoFarSpikeAlignmentPose = Pose(47.1, 35.6, Math.toRadians(-180.0))
     val BlueDepoFarSpikeGrabPose = Pose(26.0, 35.6, Math.toRadians(-180.0))
+    val BlueSideSquarePose = Pose(38.7, 31.2, Math.toRadians(-180.0))
     val startPoseRedDepoPose = startPoseBlueDepoPose.mirror()!!
+    val RedDepoEndPose = BlueDepoEndPose.mirror()!!
     val RedDepoScorePose = BlueDepoScorePose.withX(BlueDepoScorePose.x - 8.0).mirror()!!
     val RedDepoCloseSpikeStripPose = BlueDepoCloseSpikeStripPose.withX(BlueDepoCloseSpikeStripPose.x - 8.0).mirror()!!
     val RedDepoMiddleSpikeAlignmentPose = BlueDepoMiddleSpikeAlignmentPose.withX(BlueDepoMiddleSpikeAlignmentPose.x - 8.0).mirror()!!
     val RedDepoMiddleSpikeGrabPose = BlueDepoMiddleSpikeGrabPose.withX(BlueDepoMiddleSpikeGrabPose.x - 8.0).mirror()!!
     val RedDepoFarSpikeAlignmentPose = BlueDepoFarSpikeAlignmentPose.withX(BlueDepoFarSpikeAlignmentPose.x - 8.0).mirror()!!
     val RedDepoFarSpikeGrabPose = BlueDepoFarSpikeGrabPose.withX(BlueDepoFarSpikeGrabPose.x - 8.0).mirror()!!
+    val RedSideSquarePose = BlueSideSquarePose.withX(BlueSideSquarePose.x - 8.0).mirror()!!
     val BlueDepoStartScore : PathChain by lazy { follower.pathBuilder()
         .addPath((BezierLine(startPoseBlueDepoPose, BlueDepoScorePose)))
         .setLinearHeadingInterpolation(startPoseBlueDepoPose.heading, BlueDepoScorePose.heading)
+        .build() }
+    val BlueDepoScoreToBlueDepoEnd : PathChain by lazy { follower.pathBuilder()
+        .addPath((BezierLine(BlueDepoScorePose, BlueDepoEndPose)))
+        .setLinearHeadingInterpolation(BlueDepoScorePose.heading, BlueDepoEndPose.heading)
         .build() }
     val BlueDepoCloseSpike : PathChain by lazy { follower.pathBuilder()
         .addPath((BezierLine(BlueDepoScorePose, BlueDepoCloseSpikeStripPose)))
@@ -59,10 +68,26 @@ object AutoPoseUtil {
         .addPath((BezierLine(BlueDepoFarSpikeGrabPose, BlueDepoScorePose)))
         .setLinearHeadingInterpolation(BlueDepoFarSpikeGrabPose.heading, BlueDepoScorePose.heading)
         .build() }
+    val BlueDepoScoreToRedSideSquare : PathChain by lazy { follower.pathBuilder()
+        .addPath(BezierLine(BlueDepoScorePose, RedSideSquarePose))
+        .setLinearHeadingInterpolation(BlueDepoScorePose.heading, RedSideSquarePose.heading)
+        .build() }
+    val BlueDepoScoreToBlueSideSquare : PathChain by lazy { follower.pathBuilder()
+        .addPath(BezierLine(BlueDepoScorePose, BlueSideSquarePose))
+        .setLinearHeadingInterpolation(BlueDepoScorePose.heading, BlueSideSquarePose.heading)
+        .build() }
+    val BlueSideSquareToBlueDepoScorePose : PathChain by lazy { follower.pathBuilder()
+        .addPath(BezierLine(BlueSideSquarePose, BlueDepoScorePose))
+        .setLinearHeadingInterpolation(BlueSideSquarePose.heading, BlueDepoScorePose.heading)
+        .build() }
 
     val RedDepoStartScore : PathChain by lazy { follower.pathBuilder()
         .addPath((BezierLine(startPoseRedDepoPose, RedDepoScorePose)))
         .setLinearHeadingInterpolation(startPoseRedDepoPose.heading, RedDepoScorePose.heading)
+        .build() }
+    val RedDepoScoreToRedDepoEnd : PathChain by lazy { follower.pathBuilder()
+        .addPath((BezierLine(RedDepoScorePose, RedDepoEndPose)))
+        .setLinearHeadingInterpolation(RedDepoScorePose.heading, RedDepoEndPose.heading)
         .build() }
     val RedDepoCloseSpike : PathChain by lazy { follower.pathBuilder()
         .addPath((BezierLine(RedDepoScorePose, RedDepoCloseSpikeStripPose)))
@@ -96,32 +121,45 @@ object AutoPoseUtil {
         .addPath((BezierLine(RedDepoFarSpikeGrabPose, RedDepoScorePose)))
         .setLinearHeadingInterpolation(RedDepoFarSpikeGrabPose.heading, RedDepoScorePose.heading)
         .build() }
+    val RedDepoScoreToBlueSideSquare : PathChain by lazy { follower.pathBuilder()
+        .addPath(BezierLine(RedDepoScorePose, BlueSideSquarePose))
+        .setLinearHeadingInterpolation(RedDepoScorePose.heading, BlueSideSquarePose.heading)
+        .build() }
+    val RedDepoScoreToRedSideSquare : PathChain by lazy { follower.pathBuilder()
+        .addPath(BezierLine(RedDepoScorePose, RedSideSquarePose))
+        .setLinearHeadingInterpolation(RedDepoScorePose.heading, RedSideSquarePose.heading)
+        .build() }
 
     fun allSpikeAutoBlue() : Command {
         return sequential(
-            follow(follower, BlueDepoStartScore, false),
-            follow(follower, BlueDepoCloseSpike, false),
-            follow(follower, BlueDepoCloseSpikeScore, false),
-            follow(follower, BlueDepoMiddleSpikeAlignment, false),
-            follow(follower, BlueDepoMiddleSpikeGrab, false),
-            follow(follower, BlueDepoMiddleSpikeScore, false),
-            follow(follower, BlueDepoFarSpikeAlignment, false),
-            follow(follower, BlueDepoFarSpikeGrab, false),
-            follow(follower, BlueDepoFarSpikeScore, false)
+            follow(follower, BlueDepoStartScore, true),
+            follow(follower, BlueDepoCloseSpike, true),
+            follow(follower, BlueDepoCloseSpikeScore, true),
+            follow(follower, BlueDepoMiddleSpikeAlignment, true),
+            follow(follower, BlueDepoMiddleSpikeGrab, true),
+            follow(follower, BlueDepoMiddleSpikeScore, true),
+            follow(follower, BlueDepoFarSpikeAlignment, true),
+            follow(follower, BlueDepoFarSpikeGrab, true),
+            follow(follower, BlueDepoFarSpikeScore, true),
+            follow(follower, BlueDepoScoreToBlueSideSquare, true),
+            waitMs(1000.0),
+            follow(follower, BlueSideSquareToBlueDepoScorePose, true),
+            follow(follower, BlueDepoScoreToBlueDepoEnd, true, 0.3)
         )
     }
 
     fun allSpikeAutoRed() : Command {
         return sequential(
-            follow(follower, RedDepoStartScore, false),
-            follow(follower, RedDepoCloseSpike, false),
-            follow(follower, RedDepoCloseSpikeScore, false),
-            follow(follower, RedDepoMiddleSpikeAlignment, false),
-            follow(follower, RedDepoMiddleSpikeGrab, false),
-            follow(follower, RedDepoMiddleSpikeScore, false),
-            follow(follower, RedDepoFarSpikeAlignment, false),
-            follow(follower, RedDepoFarSpikeGrab, false),
-            follow(follower, RedDepoFarSpikeScore, false)
+            follow(follower, RedDepoStartScore, true),
+            follow(follower, RedDepoCloseSpike, true),
+            follow(follower, RedDepoCloseSpikeScore, true),
+            follow(follower, RedDepoMiddleSpikeAlignment, true),
+            follow(follower, RedDepoMiddleSpikeGrab, true),
+            follow(follower, RedDepoMiddleSpikeScore, true),
+            follow(follower, RedDepoFarSpikeAlignment, true),
+            follow(follower, RedDepoFarSpikeGrab, true),
+            follow(follower, RedDepoFarSpikeScore, true),
+            follow(follower, RedDepoScoreToRedDepoEnd, true)
         )
     }
 }

@@ -30,8 +30,9 @@ object MathUtil {
      * @param [deadzone] Ignores anything under this value to account for stick noise
      * @param [exponent] Curve steepness 1.0 is linear 2.0 is quadratic (recommended) higher gives gentler low end
      * @param [maxPower] Maximum output magnitude useful for implementing a slow mode
+     *
      */
-    fun shapeStick(input : Double, deadzone : Double = 0.05, exponent : Double = 2.0, maxPower : Double = 1.0) : Double {
+    @Deprecated("Unused right now might need to remove from code") fun shapeStick(input : Double, deadzone : Double = 0.01, exponent : Double = 2.0, maxPower : Double = 1.0) : Double {
         if (abs(input) < deadzone) return 0.0
         val scaled = (abs(input) - deadzone) / (1.0 - deadzone)
         return sign(input) * scaled.pow(exponent) * maxPower
