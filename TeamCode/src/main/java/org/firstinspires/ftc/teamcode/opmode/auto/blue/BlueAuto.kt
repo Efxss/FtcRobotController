@@ -25,6 +25,7 @@ class BlueAuto : AutoOpMode() {
         )
         Scheduler.schedule(AutoPoseUtil.allSpikeAutoBlue())
     }
+
     override fun onLoop() {
         follower.update()
         Scheduler.execute()

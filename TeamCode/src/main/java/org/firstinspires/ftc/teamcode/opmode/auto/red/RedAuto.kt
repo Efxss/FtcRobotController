@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmode.auto.red
 
 import com.pedropathing.ivy.Scheduler
-import com.pedropathing.ivy.commands.Commands.instant
+import com.pedropathing.ivy.commands.Commands
 import com.pedropathing.ivy.groups.Groups
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import org.firstinspires.ftc.teamcode.config.customOpMode.AutoOpMode
@@ -17,7 +17,12 @@ class RedAuto : AutoOpMode() {
     }
 
     override fun onStart() {
-        Scheduler.schedule(Groups.loop(getIntakeSS().runIntake))
+        Scheduler.schedule(
+            Groups.sequential(
+                Commands.waitMs(250.0),
+                Groups.loop(getIntakeSS().runIntake)
+            )
+        )
         Scheduler.schedule(AutoPoseUtil.allSpikeAutoRed())
     }
 
@@ -25,8 +30,6 @@ class RedAuto : AutoOpMode() {
         follower.update()
         Scheduler.execute()
     }
-
-    val fullTurn = instant { follower.turn(Math.toRadians(360.0)) }!!
 
     fun initializePedroPathing() {
         follower = Constants.createFollower(hardwareMap)
