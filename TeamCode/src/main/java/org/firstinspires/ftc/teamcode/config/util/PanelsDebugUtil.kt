@@ -9,6 +9,7 @@ class PanelsDebugUtil(
     fun showAllDebugAuto(
         follower: Follower,
         hubUtil: HubUtil,
+        alliance: Alliance,
         runtime: Double
     ) {
         panels?.apply {
@@ -28,6 +29,7 @@ class PanelsDebugUtil(
             debug("")
             debug("=== OpMode ===")
             debug("runtime", runtime)
+            debug("Alliance", alliance.name)
             debug("")
         }
     }
@@ -35,6 +37,7 @@ class PanelsDebugUtil(
     fun showAllDebugTeleop(
         follower: Follower,
         hubUtil: HubUtil,
+        alliance: Alliance,
         runtime: Double
     ) {
         panels?.apply {
@@ -51,6 +54,7 @@ class PanelsDebugUtil(
             debug("")
             debug("=== OpMode ===")
             debug("runtime", runtime)
+            debug("Alliance", alliance.name)
             debug("")
         }
     }

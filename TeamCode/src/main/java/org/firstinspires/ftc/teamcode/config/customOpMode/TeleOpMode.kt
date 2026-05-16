@@ -96,7 +96,7 @@ abstract class TeleOpMode : OpMode() {
         // Draw on Panels
         DrawingUtil.drawDebug(follower)
         //Show and update debug
-        debugUtil.showAllDebugTeleop(follower, hubUtil, runtime)
+        debugUtil.showAllDebugTeleop(follower, hubUtil, alliance, runtime)
         debugUtil.update(telemetry)
         onLoop()
     }
@@ -110,20 +110,28 @@ abstract class TeleOpMode : OpMode() {
     /** Calling this function will return the Panels variable to be accessible in Teleop
      * @see [getDebugUtil]
      * @see [getHubUtil]
+     * @see [getIntakeSS]
      */
     protected fun getPanels() = panels
 
     /** Calling this function will return the DebugUtil variable to be accessible in Teleop
      * @see [getPanels]
      * @see [getHubUtil]
+     * @see [getIntakeSS]
      */
     protected fun getDebugUtil() = debugUtil
 
     /** Calling this function will return the HubUtil variable to be accessible in Teleop
      * @see [getDebugUtil]
      * @see [getPanels]
+     * @see [getIntakeSS]
      */
     protected fun getHubUtil() = hubUtil
 
+    /** Calling this function will return the Intake SubSystem to be accessible in Teleop
+     * @see [getPanels]
+     * @see [getDebugUtil]
+     * @see [getHubUtil]
+     */
     protected fun getIntakeSS() = intakeSS
 }

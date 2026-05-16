@@ -129,6 +129,14 @@ object AutoPoseUtil {
         .addPath(BezierLine(RedDepoScorePose, RedSideSquarePose))
         .setLinearHeadingInterpolation(RedDepoScorePose.heading, RedSideSquarePose.heading)
         .build() }
+    val RedSideSquareToRedDepoScorePose : PathChain by lazy { follower.pathBuilder()
+        .addPath(BezierLine(RedSideSquarePose, RedDepoScorePose))
+        .setLinearHeadingInterpolation(RedSideSquarePose.heading, RedDepoScorePose.heading)
+        .build() }
+    val RedSideSquareToBlueDepoScorePose : PathChain by lazy { follower.pathBuilder()
+        .addPath(BezierLine(RedSideSquarePose, BlueDepoScorePose))
+        .setLinearHeadingInterpolation(RedSideSquarePose.heading, BlueDepoScorePose.heading)
+        .build() }
 
     fun allSpikeAutoBlue() : Command {
         return sequential(
@@ -159,7 +167,10 @@ object AutoPoseUtil {
             follow(follower, RedDepoFarSpikeAlignment, true),
             follow(follower, RedDepoFarSpikeGrab, true),
             follow(follower, RedDepoFarSpikeScore, true),
-            follow(follower, RedDepoScoreToRedDepoEnd, true)
+            follow(follower, RedDepoScoreToRedSideSquare, true),
+            waitMs(1000.0),
+            follow(follower, RedSideSquareToRedDepoScorePose, true),
+            follow(follower, RedDepoScoreToRedDepoEnd, true, 0.3)
         )
     }
 }
