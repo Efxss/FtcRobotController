@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.config.util
 
 import com.bylazar.telemetry.TelemetryManager
 import com.pedropathing.follower.Follower
+import com.qualcomm.robotcore.hardware.Gamepad
 
 class PanelsDebugUtil(
     private val panels : TelemetryManager?
@@ -32,7 +33,8 @@ class PanelsDebugUtil(
         follower: Follower,
         hubUtil: HubUtil,
         alliance: Alliance,
-        runtime: Double
+        runtime: Double,
+        gamepad : Gamepad
     ) {
         panels?.apply {
             debug("=== PedroPathing ===")
@@ -40,6 +42,11 @@ class PanelsDebugUtil(
             debug("Follower Pose Y", follower.pose.y)
             debug("Follower Heading", Math.toDegrees(follower.pose.heading))
             debug("Total Heading", Math.toDegrees(follower.totalHeading))
+            debug("")
+            debug("=== Gamepad ===")
+            debug("Left Stick X", gamepad.left_stick_x)
+            debug("Left Stick Y", gamepad.left_stick_y)
+            debug("Right Stick X", gamepad.right_stick_x)
             debug("")
             debug("=== OpMode ===")
             debug("runtime", runtime)

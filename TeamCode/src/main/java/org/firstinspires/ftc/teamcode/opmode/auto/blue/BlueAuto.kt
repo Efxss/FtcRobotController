@@ -10,7 +10,6 @@ import org.firstinspires.ftc.teamcode.config.util.AutoPoseUtil
 @Autonomous(group = "Blue Auto", name = "Blue Auto")
 class BlueAuto : AutoOpMode() {
     override val alliance = Alliance.BLUE
-
     override fun onInit() {
         initializePedroPathing()
     }
@@ -19,7 +18,7 @@ class BlueAuto : AutoOpMode() {
         /*Scheduler.schedule(
             Groups.sequential(
                 Commands.waitMs(250.0),
-                Groups.loop(getIntakeSS().runIntakeCommand)
+                getIntakeSS().runIntakeCommand
             )
         )*/
         Scheduler.schedule(AutoPoseUtil.allSpikeAutoBlue())

@@ -18,7 +18,7 @@ class RedAuto : AutoOpMode() {
         /*Scheduler.schedule(
             Groups.sequential(
                 Commands.waitMs(250.0),
-                Groups.loop(getIntakeSS().runIntakeCommand)
+                getIntakeSS().runIntakeCommand
             )
         )*/
         Scheduler.schedule(AutoPoseUtil.allSpikeAutoRed())

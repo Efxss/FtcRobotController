@@ -107,7 +107,7 @@ abstract class TeleOpMode : OpMode() {
         // Draw on Panels
         DrawingUtil.drawDebug(follower)
         //Show and update debug
-        debugUtil.showAllDebugTeleop(follower, hubUtil, alliance, runtime)
+        debugUtil.showAllDebugTeleop(follower, hubUtil, alliance, runtime, gamepad1)
         debugUtil.update(telemetry)
         onLoop()
     }
