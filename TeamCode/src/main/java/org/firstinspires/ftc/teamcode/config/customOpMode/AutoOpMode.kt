@@ -22,8 +22,8 @@ abstract class AutoOpMode : OpMode() {
     private var panels : TelemetryManager? = null
     private lateinit var hubUtil : HubUtil
     private lateinit var debugUtil : PanelsDebugUtil
-    private lateinit var intakeSS: IntakeSS
-    protected lateinit var follower: Follower
+    private lateinit var intakeSS : IntakeSS
+    protected lateinit var follower : Follower
 
     // Custom lifecycle hooks
 

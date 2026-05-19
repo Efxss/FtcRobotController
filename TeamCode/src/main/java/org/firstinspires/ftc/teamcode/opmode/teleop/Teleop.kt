@@ -15,17 +15,20 @@ class Teleop : TeleOpMode() {
     }
 
     override fun onStart() {
-        //Scheduler.schedule(Groups.loop(getIntakeSS().runIntake))
+        //Scheduler.schedule(Groups.loop(getIntakeSS().runIntakeCommand))
         follower.startTeleopDrive()
     }
 
     override fun onLoop() {
         follower.update()
         //Scheduler.execute()
-        val rotate = if(gamepad1.left_bumper) 1.0 else if (gamepad1.right_bumper) -1.0 else 0.0
+        val rotate = gamepad1.right_stick_x.toDouble()
         val forward = -gamepad1.left_stick_y.toDouble()
-        val strafe  = -gamepad1.right_stick_x.toDouble()
+        val strafe  = -gamepad1.left_stick_x.toDouble()
         follower.setTeleOpDrive(forward, strafe, rotate, true)
+        if (gamepad1.circle) getIntakeSS().runIntakeFun()
+        else getIntakeSS().stopIntakeFun()
+        if (gamepad1.cross) follower.pose = resetPose
     }
 
     fun initializePedroPathing() {

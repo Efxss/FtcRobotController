@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.config.customOpMode
 import com.bylazar.telemetry.PanelsTelemetry
 import com.bylazar.telemetry.TelemetryManager
 import com.pedropathing.follower.Follower
+import com.pedropathing.geometry.Pose
 import com.pedropathing.ivy.Scheduler
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import org.firstinspires.ftc.teamcode.config.subSystem.IntakeSS
@@ -21,8 +22,9 @@ abstract class TeleOpMode : OpMode() {
     private var panels : TelemetryManager? = null
     private lateinit var hubUtil : HubUtil
     private lateinit var debugUtil : PanelsDebugUtil
-    private lateinit var intakeSS: IntakeSS
-    protected lateinit var follower: Follower
+    private lateinit var intakeSS : IntakeSS
+    protected lateinit var follower : Follower
+    protected var resetPose = Pose(8.0, 8.0, Math.toRadians(90.0))
 
 
     // Custom lifecycle hooks
@@ -87,6 +89,15 @@ abstract class TeleOpMode : OpMode() {
 
     final override fun start() {
         resetRuntime()
+        resetPose = when (alliance) {
+            Alliance.BLUE -> {
+                Pose(8.0, 8.0, Math.toRadians(90.0))
+            }
+
+            Alliance.RED -> {
+                Pose(136.0, 8.0, Math.toRadians(90.0))
+            }
+        }
         onStart()
     }
 

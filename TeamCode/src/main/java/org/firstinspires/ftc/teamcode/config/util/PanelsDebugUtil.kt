@@ -22,15 +22,9 @@ class PanelsDebugUtil(
             debug("Follower IsStuck", follower.isRobotStuck)
             debug("follower IsTurning", follower.isTurning)
             debug("")
-            debug("=== Hub ===")
-            debug("Temp F", hubUtil.getTempFahrenheit())
-            debug("Temp C", hubUtil.getTempCelsius())
-            debug("Temp K", hubUtil.getTempKelvin())
-            debug("")
             debug("=== OpMode ===")
             debug("runtime", runtime)
             debug("Alliance", alliance.name)
-            debug("")
         }
     }
 
@@ -47,15 +41,9 @@ class PanelsDebugUtil(
             debug("Follower Heading", Math.toDegrees(follower.pose.heading))
             debug("Total Heading", Math.toDegrees(follower.totalHeading))
             debug("")
-            debug("=== Hub ===")
-            debug("Temp F", hubUtil.getTempFahrenheit())
-            debug("Temp C", hubUtil.getTempCelsius())
-            debug("Temp K", hubUtil.getTempKelvin())
-            debug("")
             debug("=== OpMode ===")
             debug("runtime", runtime)
             debug("Alliance", alliance.name)
-            debug("")
         }
     }
     fun showInit() {

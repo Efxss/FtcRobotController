@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.config.pedroPathing.Constants
 import org.firstinspires.ftc.teamcode.config.util.Alliance
 import org.firstinspires.ftc.teamcode.config.util.AutoPoseUtil
 
-@Autonomous(group = "Red Auto", name = "Auto Pod Path Test Red")
+@Autonomous(group = "Red Auto", name = "Red Auto")
 class RedAuto : AutoOpMode() {
     override val alliance = Alliance.RED
     override fun onInit() {
@@ -18,7 +18,7 @@ class RedAuto : AutoOpMode() {
         /*Scheduler.schedule(
             Groups.sequential(
                 Commands.waitMs(250.0),
-                Groups.loop(getIntakeSS().runIntake)
+                Groups.loop(getIntakeSS().runIntakeCommand)
             )
         )*/
         Scheduler.schedule(AutoPoseUtil.allSpikeAutoRed())

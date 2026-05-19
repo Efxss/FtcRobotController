@@ -6,8 +6,6 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
-import kotlin.math.pow
-import kotlin.math.sign
 
 /** An object made to hold different math related functions for ease of use */
 object MathUtil {
@@ -22,20 +20,6 @@ object MathUtil {
      */
     fun setMotorVelocityFromPseudoPower(motor: DcMotorEx, power: Double, velocityPowerScale : Double, pidf : PIDFCoefficients) {
         motor.velocity = powerToTicksPerSecond(motor, power, velocityPowerScale, pidf)
-    }
-
-    /**
-     * Applies a deadzone and an exponential power curve to a stick input for finer low-end control while still reaching full power at full deflection
-     * @param [input] Raw stick value expected in [-1.0, 1.0]
-     * @param [deadzone] Ignores anything under this value to account for stick noise
-     * @param [exponent] Curve steepness 1.0 is linear 2.0 is quadratic (recommended) higher gives gentler low end
-     * @param [maxPower] Maximum output magnitude useful for implementing a slow mode
-     *
-     */
-    @Deprecated("Unused right now might need to remove from code") fun shapeStick(input : Double, deadzone : Double = 0.01, exponent : Double = 2.0, maxPower : Double = 1.0) : Double {
-        if (abs(input) < deadzone) return 0.0
-        val scaled = (abs(input) - deadzone) / (1.0 - deadzone)
-        return sign(input) * scaled.pow(exponent) * maxPower
     }
 
     fun powerToTicksPerSecond(motor : DcMotorEx, power : Double, velocityPowerScale : Double, pidf : PIDFCoefficients) : Double {

@@ -16,7 +16,7 @@ object VariableStateUtil {
     var alliance: Alliance = Alliance.RED
 
     /** Call from TeleOp init if you want a clean slate after consuming the data. */
-    fun clear() {
+    fun clearEndOfAutoPose() {
         endOfAutoPose = null
     }
 }
