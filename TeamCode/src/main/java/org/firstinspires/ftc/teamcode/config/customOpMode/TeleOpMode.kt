@@ -7,6 +7,7 @@ import com.pedropathing.geometry.Pose
 import com.pedropathing.ivy.Scheduler
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import org.firstinspires.ftc.teamcode.config.subSystem.IntakeSS
+import org.firstinspires.ftc.teamcode.config.subSystem.LLSS
 import org.firstinspires.ftc.teamcode.config.util.Alliance
 import org.firstinspires.ftc.teamcode.config.util.DrawingUtil
 import org.firstinspires.ftc.teamcode.config.util.HubUtil
@@ -23,6 +24,7 @@ abstract class TeleOpMode : OpMode() {
     private lateinit var hubUtil : HubUtil
     private lateinit var debugUtil : PanelsDebugUtil
     private lateinit var intakeSS : IntakeSS
+    private lateinit var llss: LLSS
     protected lateinit var follower : Follower
     protected var resetPose = Pose(8.0, 8.0, Math.toRadians(90.0))
 
@@ -72,9 +74,10 @@ abstract class TeleOpMode : OpMode() {
         // Reset Ivy scheduler so commands from a previous OpMode don't carry over
         Scheduler.reset()
 
-        // Init bulkRead
+        // Init all utils and SS
         debugUtil.update(telemetry)
         intakeSS = IntakeSS(hardwareMap)
+        llss = LLSS(hardwareMap)
         hubUtil = HubUtil(hardwareMap)
         onInit()
     }
@@ -107,12 +110,13 @@ abstract class TeleOpMode : OpMode() {
         // Draw on Panels
         DrawingUtil.drawDebug(follower)
         //Show and update debug
-        debugUtil.showAllDebugTeleop(follower, hubUtil, alliance, runtime, gamepad1)
+        debugUtil.showAllDebugTeleop(follower, hubUtil, alliance, runtime, gamepad1, llss)
         debugUtil.update(telemetry)
         onLoop()
     }
 
     final override fun stop() {
+        llss.stop()
         onStop()
     }
 

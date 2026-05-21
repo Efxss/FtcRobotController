@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.config.util
 import com.bylazar.telemetry.TelemetryManager
 import com.pedropathing.follower.Follower
 import com.qualcomm.robotcore.hardware.Gamepad
+import org.firstinspires.ftc.teamcode.config.subSystem.LLSS
 
 class PanelsDebugUtil(
     private val panels : TelemetryManager?
@@ -34,7 +35,8 @@ class PanelsDebugUtil(
         hubUtil: HubUtil,
         alliance: Alliance,
         runtime: Double,
-        gamepad : Gamepad
+        gamepad : Gamepad,
+        limelight : LLSS
     ) {
         panels?.apply {
             debug("=== PedroPathing ===")
@@ -42,6 +44,9 @@ class PanelsDebugUtil(
             debug("Follower Pose Y", follower.pose.y)
             debug("Follower Heading", Math.toDegrees(follower.pose.heading))
             debug("Total Heading", Math.toDegrees(follower.totalHeading))
+            debug("")
+            debug("=== Vision ===")
+            debug("Rotate Power", limelight.getRotationPowerFromTag())
             debug("")
             debug("=== Gamepad ===")
             debug("Left Stick X", gamepad.left_stick_x)
