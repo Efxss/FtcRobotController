@@ -98,7 +98,7 @@ abstract class TeleOpMode : OpMode() {
             }
 
             Alliance.RED -> {
-                Pose(136.0, 8.0, Math.toRadians(90.0))
+                Pose(134.0, 7.0, Math.toRadians(90.0))
             }
         }
         onStart()
@@ -108,7 +108,9 @@ abstract class TeleOpMode : OpMode() {
         // Clear the bulk read cache
         hubUtil.clearCache()
         // Draw on Panels
-        DrawingUtil.drawDebug(follower)
+        if (::follower.isInitialized) {
+            DrawingUtil.drawDebug(follower)
+        }
         //Show and update debug
         debugUtil.showAllDebugTeleop(follower, hubUtil, alliance, runtime, gamepad1, llss)
         debugUtil.update(telemetry)

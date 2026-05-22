@@ -94,7 +94,9 @@ abstract class AutoOpMode : OpMode() {
         // Clear the bulk read cache
         hubUtil.clearCache()
         // Draw on Panels
-        DrawingUtil.drawDebug(follower)
+        if (::follower.isInitialized) {
+            DrawingUtil.drawDebug(follower)
+        }
         //Show and update debug
         debugUtil.showAllDebugAuto(follower, hubUtil, alliance, runtime)
         debugUtil.update(telemetry)

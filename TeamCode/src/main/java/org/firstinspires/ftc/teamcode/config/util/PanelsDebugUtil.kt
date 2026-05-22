@@ -46,7 +46,7 @@ class PanelsDebugUtil(
             debug("Total Heading", Math.toDegrees(follower.totalHeading))
             debug("")
             debug("=== Vision ===")
-            debug("Rotate Power", limelight.getRotationPowerFromTag())
+            debug("Rotate Power", limelight.getRotationPowerFromTag(alliance))
             debug("")
             debug("=== Gamepad ===")
             debug("Left Stick X", gamepad.left_stick_x)

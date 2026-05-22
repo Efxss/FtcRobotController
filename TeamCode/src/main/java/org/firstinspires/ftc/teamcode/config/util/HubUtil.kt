@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.config.util
 
 import com.qualcomm.hardware.lynx.LynxModule
 import com.qualcomm.robotcore.hardware.HardwareMap
-import org.firstinspires.ftc.robotcore.external.navigation.TempUnit
 
 /**
  * A utility for getting and sending information to the REV hub (Like bulk reads)
@@ -25,19 +24,4 @@ class HubUtil (
 
     /** Clears the bulk read cache on every hub. Call this once at the start of each loop() cycle. */
     fun clearCache() = hubs.forEach { it.clearBulkCache() }
-
-    /** Calling this function will return the temperature of the hub in Celsius
-     * @see [getTempFahrenheit]
-     * @see [getTempKelvin] */
-    fun getTempCelsius() = hubs.map { it.getTemperature(TempUnit.CELSIUS) }
-
-    /** Calling this function will return the temperature of the hub in Fahrenheit
-     * @see [getTempCelsius]
-     * @see [getTempKelvin] */
-    fun getTempFahrenheit() = hubs.map { it.getTemperature(TempUnit.FARENHEIT) }
-
-    /** Calling this function will return the temperature of the hub in Kelvins
-     * @see [getTempCelsius]
-     * @see [getTempFahrenheit] */
-    fun getTempKelvin() = hubs.map { it.getTemperature(TempUnit.KELVIN) }
 }
