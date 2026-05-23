@@ -24,7 +24,7 @@ abstract class TeleOpMode : OpMode() {
     private lateinit var hubUtil : HubUtil
     private lateinit var debugUtil : PanelsDebugUtil
     private lateinit var intakeSS : IntakeSS
-    private lateinit var llss: LLSS
+    protected lateinit var llss: LLSS
     protected lateinit var follower : Follower
     protected var resetPose = Pose(8.0, 8.0, Math.toRadians(90.0))
 
@@ -101,6 +101,7 @@ abstract class TeleOpMode : OpMode() {
                 Pose(134.0, 7.0, Math.toRadians(90.0))
             }
         }
+        follower.activateAllPIDFs()
         onStart()
     }
 
