@@ -101,7 +101,6 @@ abstract class TeleOpMode : OpMode() {
                 Pose(134.0, 7.0, Math.toRadians(90.0))
             }
         }
-        follower.activateAllPIDFs()
         onStart()
     }
 

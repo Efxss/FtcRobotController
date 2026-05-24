@@ -19,7 +19,6 @@ public class Constants {
             .headingPIDFCoefficients(new PIDFCoefficients(1.5, 0, 0.1, 0))
             .predictiveBrakingCoefficients(new PredictiveBrakingCoefficients(0.3, 0.045841157247118285, 0.0017797337397567827))
             .centripetalScaling(0)
-            .turnHeadingErrorThreshold(2.0)
             .mass(6.7);
 
     public static PathConstraints pathConstraints = new PathConstraints(
