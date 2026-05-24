@@ -13,7 +13,7 @@ object VariableStateUtil {
     var endOfAutoPose: Pose? = null
 
     // Alliance var to pass from auto to TeleOP
-    var alliance: Alliance = Alliance.BLUE
+    var alliance: Alliance = Alliance.RED
 
     /** Call from TeleOp init if you want a clean slate after consuming the data. */
     fun clearEndOfAutoPose() {
