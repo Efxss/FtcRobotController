@@ -21,12 +21,19 @@ abstract class TeleOpMode : OpMode() {
 
     // Shared resources
     private var panels : TelemetryManager? = null
-    private lateinit var hubUtil : HubUtil
-    private lateinit var debugUtil : PanelsDebugUtil
-    private lateinit var intakeSS : IntakeSS
+    protected lateinit var hubUtil : HubUtil
+    protected lateinit var debugUtil : PanelsDebugUtil
+    protected lateinit var intakeSS : IntakeSS
     protected lateinit var llss: LLSS
     protected lateinit var follower : Follower
     protected var resetPose = Pose(8.0, 8.0, Math.toRadians(90.0))
+    protected var rotate = 0.0
+    protected var strafe = 0.0
+    protected var forward = 0.0
+    protected val autoTurnDoneRad = Math.toRadians(1.0)
+    protected val autoTurnTimeoutSec = 0.5
+    open var autoTurnStartTime = 0.0
+    open var isAutoTurning = false
 
 
     // Custom lifecycle hooks
@@ -111,6 +118,21 @@ abstract class TeleOpMode : OpMode() {
         if (::follower.isInitialized) {
             DrawingUtil.drawDebug(follower)
         }
+
+        rotate = gamepad1.right_stick_x.toDouble()
+        forward = when (alliance) {
+            Alliance.BLUE -> gamepad1.left_stick_y.toDouble()
+            Alliance.RED -> -gamepad1.left_stick_y.toDouble()
+        }
+        strafe  = when (alliance) {
+            Alliance.BLUE -> gamepad1.left_stick_x.toDouble()
+            Alliance.RED -> -gamepad1.left_stick_x.toDouble()
+        }
+
+        if (gamepad1.circle) intakeSS.runIntakeCommand.start()
+        else intakeSS.runIntakeCommand.cancel()
+        if (gamepad1.cross) follower.pose = resetPose
+
         //Show and update debug
         debugUtil.showAllDebugTeleop(follower, hubUtil, alliance, runtime, gamepad1, llss)
         debugUtil.update(telemetry)
@@ -119,36 +141,9 @@ abstract class TeleOpMode : OpMode() {
 
     final override fun stop() {
         llss.stop()
+        intakeSS.runIntakeCommand.cancel()
         onStop()
     }
 
     // Custom functions
-
-    /** Calling this function will return the Panels variable to be accessible in Teleop
-     * @see [getDebugUtil]
-     * @see [getHubUtil]
-     * @see [getIntakeSS]
-     */
-    protected fun getPanels() = panels
-
-    /** Calling this function will return the DebugUtil variable to be accessible in Teleop
-     * @see [getPanels]
-     * @see [getHubUtil]
-     * @see [getIntakeSS]
-     */
-    protected fun getDebugUtil() = debugUtil
-
-    /** Calling this function will return the HubUtil variable to be accessible in Teleop
-     * @see [getDebugUtil]
-     * @see [getPanels]
-     * @see [getIntakeSS]
-     */
-    protected fun getHubUtil() = hubUtil
-
-    /** Calling this function will return the Intake SubSystem to be accessible in Teleop
-     * @see [getPanels]
-     * @see [getDebugUtil]
-     * @see [getHubUtil]
-     */
-    protected fun getIntakeSS() = intakeSS
 }

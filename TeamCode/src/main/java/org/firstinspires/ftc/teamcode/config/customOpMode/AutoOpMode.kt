@@ -20,9 +20,9 @@ abstract class AutoOpMode : OpMode() {
 
     // Shared resources
     private var panels : TelemetryManager? = null
-    private lateinit var hubUtil : HubUtil
-    private lateinit var debugUtil : PanelsDebugUtil
-    private lateinit var intakeSS : IntakeSS
+    protected lateinit var hubUtil : HubUtil
+    protected lateinit var debugUtil : PanelsDebugUtil
+    protected lateinit var intakeSS : IntakeSS
     protected lateinit var follower : Follower
 
     // Custom lifecycle hooks
@@ -112,32 +112,4 @@ abstract class AutoOpMode : OpMode() {
     }
 
     // Custom functions
-
-    /** Calling this function will return the Panels variable to be accessible in Auto
-     * @see [getDebugUtil]
-     * @see [getHubUtil]
-     * @see [getIntakeSS]
-     */
-    protected fun getPanels() = panels
-
-    /** Calling this function will return the DebugUtil variable to be accessible in Auto
-     * @see [getPanels]
-     * @see [getHubUtil]
-     * @see [getIntakeSS]
-     */
-    protected fun getDebugUtil() = debugUtil
-
-    /** Calling this function will return the HubUtil variable to be accessible in Auto
-     * @see [getDebugUtil]
-     * @see [getPanels]
-     * @see [getIntakeSS]
-     */
-    protected fun getHubUtil() = hubUtil
-
-    /** Calling this function will return the Intake SubSystem to be accessible in Auto
-     * @see [getPanels]
-     * @see [getDebugUtil]
-     * @see [getHubUtil]
-     */
-    protected fun getIntakeSS() = intakeSS
 }
