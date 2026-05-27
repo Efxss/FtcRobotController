@@ -1,13 +1,10 @@
 package org.firstinspires.ftc.teamcode.opmode.teleop
 
 import com.pedropathing.geometry.Pose
-import com.pedropathing.paths.PathChain
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import org.firstinspires.ftc.teamcode.config.customOpMode.TeleOpMode
 import org.firstinspires.ftc.teamcode.config.pedroPathing.Constants
-import org.firstinspires.ftc.teamcode.config.util.Alliance
 import org.firstinspires.ftc.teamcode.config.util.VariableStateUtil
-import kotlin.math.abs
 
 @TeleOp
 class Teleop : TeleOpMode() {
@@ -29,12 +26,12 @@ class Teleop : TeleOpMode() {
             follower.turn(Math.toRadians(llss.currentTagXDeg(alliance)))
             isAutoTurning = true
             autoTurnStartTime = runtime
+            return
         }
         if (isAutoTurning) {
-            val headingErr = abs(follower.headingError)
             val timedOut = (runtime - autoTurnStartTime) >= autoTurnTimeoutSec
-            if (headingErr <= autoTurnDoneRad || timedOut) {
-                gamepad1.rumble(100.0,100.0,150)
+            if (!follower.isTurning || timedOut) {
+                gamepad1.rumble(1.0, 1.0, 150)
                 follower.startTeleopDrive()
                 isAutoTurning = false
             }
