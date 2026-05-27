@@ -108,6 +108,7 @@ abstract class AutoOpMode : OpMode() {
             VariableStateUtil.endOfAutoPose = follower.pose
         }
         VariableStateUtil.alliance = alliance
+        if (intakeSS.runIntakeCommand.isScheduled) intakeSS.runIntakeCommand.cancel()
         onStop()
     }
 

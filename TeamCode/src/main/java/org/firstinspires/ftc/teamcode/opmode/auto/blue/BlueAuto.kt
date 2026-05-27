@@ -18,7 +18,7 @@ class BlueAuto : AutoOpMode() {
         /*Scheduler.schedule(
             Groups.sequential(
                 Commands.waitMs(250.0),
-                getIntakeSS().runIntakeCommand
+                intakeSS.runIntakeCommand.start()
             )
         )*/
         Scheduler.schedule(AutoPoseUtil.allSpikeAutoBlue())

@@ -129,7 +129,7 @@ abstract class TeleOpMode : OpMode() {
             Alliance.RED -> -gamepad1.left_stick_x.toDouble()
         }
 
-        if (gamepad1.circle) intakeSS.runIntakeCommand.start()
+        if (gamepad1.left_bumper) intakeSS.runIntakeCommand.start()
         else intakeSS.runIntakeCommand.cancel()
         if (gamepad1.cross) follower.pose = resetPose
 
@@ -141,7 +141,7 @@ abstract class TeleOpMode : OpMode() {
 
     final override fun stop() {
         llss.stop()
-        intakeSS.runIntakeCommand.cancel()
+        if (intakeSS.runIntakeCommand.isScheduled) intakeSS.runIntakeCommand.cancel()
         onStop()
     }
 
