@@ -23,7 +23,7 @@ class Teleop : TeleOpMode() {
         follower.update()
         //Scheduler.execute()
         if (gamepad1.rightBumperWasPressed() && llss.isTagSeen(alliance) && !isAutoTurning) {
-            follower.turn(Math.toRadians(llss.currentTagXDeg(alliance)))
+            follower.turn(llss.currentTagXRad(alliance, autoTurnPixel))
             isAutoTurning = true
             autoTurnStartTime = runtime
             return

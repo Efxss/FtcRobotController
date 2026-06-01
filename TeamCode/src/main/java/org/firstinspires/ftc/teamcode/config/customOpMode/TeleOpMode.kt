@@ -30,7 +30,7 @@ abstract class TeleOpMode : OpMode() {
     protected var rotate = 0.0
     protected var strafe = 0.0
     protected var forward = 0.0
-    protected val autoTurnDoneRad = Math.toRadians(1.0)
+    protected val autoTurnPixel = 1.0
     protected val autoTurnTimeoutSec = 0.5
     open var autoTurnStartTime = 0.0
     open var isAutoTurning = false
