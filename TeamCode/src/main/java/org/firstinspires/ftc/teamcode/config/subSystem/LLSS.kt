@@ -43,8 +43,8 @@ class LLSS(
         if (result == null || !result.isValid) return 0.0
         val targetTag = result.fiducialResults.firstOrNull { it.fiducialId == targetId }
         if (targetTag == null) return 0.0
-        val tx = targetTag.targetXDegrees
-        return if (tx in 0.0 .. deadzone) 0.0 else -tx
+        val td = targetTag.targetXDegrees
+        return if (td in 0.0 .. abs(deadzone)) 0.0 else -td
     }
 
     fun currentTagXRad(alliance : Alliance, deadzone : Double) : Double {
@@ -56,8 +56,8 @@ class LLSS(
         if (result == null || !result.isValid) return 0.0
         val targetTag = result.fiducialResults.firstOrNull { it.fiducialId == targetId }
         if (targetTag == null) return 0.0
-        val tx = targetTag.targetXDegrees
-        return if (tx in 0.0 .. deadzone) 0.0 else Math.toRadians(-tx)
+        val tr = targetTag.targetXDegrees
+        return if (tr in 0.0 .. abs(deadzone)) 0.0 else Math.toRadians(-tr)
     }
 
     fun isTagSeen(alliance : Alliance) : Boolean {
