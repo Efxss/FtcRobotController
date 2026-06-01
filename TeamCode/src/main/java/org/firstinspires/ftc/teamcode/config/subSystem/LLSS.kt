@@ -44,7 +44,7 @@ class LLSS(
         val targetTag = result.fiducialResults.firstOrNull { it.fiducialId == targetId }
         if (targetTag == null) return 0.0
         val tx = targetTag.targetXDegrees
-        return if (tx in 0.0 .. deadzone) 0.0 else Math.toRadians(-tx)
+        return if (tx in 0.0 .. deadzone) 0.0 else -tx
     }
 
     fun currentTagXRad(alliance : Alliance, deadzone : Double) : Double {
