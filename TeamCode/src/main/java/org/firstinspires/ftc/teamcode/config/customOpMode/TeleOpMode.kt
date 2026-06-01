@@ -134,7 +134,7 @@ abstract class TeleOpMode : OpMode() {
         if (gamepad1.cross) follower.pose = resetPose
 
         //Show and update debug
-        debugUtil.showAllDebugTeleop(follower, hubUtil, alliance, runtime, gamepad1, llss)
+        debugUtil.showAllDebugTeleop(follower, hubUtil, alliance, runtime, gamepad1, llss, autoTurnPixel)
         debugUtil.update(telemetry)
         onLoop()
     }

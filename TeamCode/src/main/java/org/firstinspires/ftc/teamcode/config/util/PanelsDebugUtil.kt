@@ -36,7 +36,8 @@ class PanelsDebugUtil(
         alliance: Alliance,
         runtime: Double,
         gamepad : Gamepad,
-        limelight : LLSS
+        limelight : LLSS,
+        llDeadZone : Double
     ) {
         panels?.apply {
             debug("=== PedroPathing ===")
@@ -46,7 +47,7 @@ class PanelsDebugUtil(
             debug("Total Heading", Math.toDegrees(follower.totalHeading))
             debug("")
             debug("=== Vision ===")
-            debug("Target X Deg", limelight.currentTagXDeg(alliance))
+            debug("Target X Deg", limelight.currentTagXDeg(alliance, llDeadZone))
             debug("")
             debug("=== Gamepad ===")
             debug("Left Stick X", gamepad.left_stick_x)
