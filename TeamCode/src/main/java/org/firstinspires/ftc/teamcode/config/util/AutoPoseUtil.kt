@@ -11,8 +11,8 @@ import com.pedropathing.paths.PathChain
 
 object AutoPoseUtil {
     lateinit var follower: Follower
-    val startPoseBlueDepoPose = Pose(18.1, 122.6, Math.toRadians(140.0))
-    val BlueDepoEndPose = Pose(17.925, 122.425, Math.toRadians(140.0))
+    val startPoseBlueDepoPose = Pose(32.7, 135.3, Math.toRadians(90.0))
+    val BlueDepoEndPose = Pose(32.5, 135.0, Math.toRadians(90.0))
     val BlueDepoScorePose = Pose(65.6, 77.0, Math.toRadians(140.0))
     val BlueDepoCloseSpikeStripPose = Pose(26.0, 82.8, Math.toRadians(-180.0))
     val BlueDepoMiddleSpikeAlignmentPose = Pose(47.2, 59.0, Math.toRadians(-180.0))
@@ -34,8 +34,8 @@ object AutoPoseUtil {
         .setLinearHeadingInterpolation(startPoseBlueDepoPose.heading, BlueDepoScorePose.heading)
         .build() }
     val BlueDepoScoreToBlueDepoEnd : PathChain by lazy { follower.pathBuilder()
-        .addPath((BezierLine(BlueDepoScorePose, BlueDepoEndPose)))
-        .setLinearHeadingInterpolation(BlueDepoScorePose.heading, BlueDepoEndPose.heading)
+        .addPath((BezierLine(BlueDepoScorePose, startPoseBlueDepoPose)))
+        .setConstantHeadingInterpolation(startPoseBlueDepoPose.heading)
         .build() }
     val BlueDepoCloseSpike : PathChain by lazy { follower.pathBuilder()
         .addPath((BezierLine(BlueDepoScorePose, BlueDepoCloseSpikeStripPose)))

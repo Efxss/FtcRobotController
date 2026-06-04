@@ -30,7 +30,7 @@ abstract class TeleOpMode : OpMode() {
     protected var rotate = 0.0
     protected var strafe = 0.0
     protected var forward = 0.0
-    protected val autoTurnPixel = 1.0
+    protected val autoTurnPixel = 2.0
     protected val autoTurnTimeoutSec = 0.5
     open var autoTurnStartTime = 0.0
     open var isAutoTurning = false
@@ -129,9 +129,12 @@ abstract class TeleOpMode : OpMode() {
             Alliance.RED -> -gamepad1.left_stick_x.toDouble()
         }
 
-        if (gamepad1.left_bumper) intakeSS.runIntakeCommand.start()
-        else intakeSS.runIntakeCommand.cancel()
+        if (gamepad1.leftBumperWasPressed()) intakeSS.runIntakeCommand.schedule()
+        if (gamepad1.leftBumperWasReleased()) intakeSS.runIntakeCommand.cancel()
         if (gamepad1.cross) follower.pose = resetPose
+
+        // Run the Ivy Scheduler to actually update Commands
+        Scheduler.execute()
 
         //Show and update debug
         debugUtil.showAllDebugTeleop(follower, hubUtil, alliance, runtime, gamepad1, llss, autoTurnPixel)

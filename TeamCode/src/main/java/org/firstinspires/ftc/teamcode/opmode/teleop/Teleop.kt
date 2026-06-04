@@ -15,13 +15,11 @@ class Teleop : TeleOpMode() {
     }
 
     override fun onStart() {
-        //Scheduler.schedule(getIntakeSS().runIntakeCommand)
         follower.startTeleopDrive()
     }
 
     override fun onLoop() {
         follower.update()
-        //Scheduler.execute()
         if (gamepad1.rightBumperWasPressed() && llss.isTagSeen(alliance) && !isAutoTurning) {
             follower.turn(llss.currentTagXRad(alliance, autoTurnPixel))
             isAutoTurning = true
@@ -32,6 +30,7 @@ class Teleop : TeleOpMode() {
             val timedOut = (runtime - autoTurnStartTime) >= autoTurnTimeoutSec
             if (!follower.isTurning || timedOut) {
                 gamepad1.rumble(1.0, 1.0, 150)
+                gamepad1.setLedColor(0.0, 255.0, 0.0, 1000)
                 follower.startTeleopDrive()
                 isAutoTurning = false
             }
