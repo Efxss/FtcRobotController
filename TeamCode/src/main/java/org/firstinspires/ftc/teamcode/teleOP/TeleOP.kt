@@ -18,7 +18,7 @@ class TeleOP : OutReachOpMode() {
     private val movingPidf = PIDFCoefficients(10.0, 0.0, 0.05, 0.025)
 
     override fun onInit() {
-        centerUtil = CenterUtil(hardwareMap, 0.2, 15, 17, 1.0, movingPidf)
+        centerUtil = CenterUtil(hardwareMap, 0.2, 15, 21, 1.0, movingPidf)
         cam = CamSS(hardwareMap, 0.55 , 0.0)
         spinDexer = SpinDexerSS(hardwareMap)
         firing = FiringUtil(hardwareMap, spinDexer, cam, 0.5, 1.0, firingPidf)
