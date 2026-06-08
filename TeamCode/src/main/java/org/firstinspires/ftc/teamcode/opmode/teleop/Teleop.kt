@@ -20,7 +20,7 @@ class Teleop : TeleOpMode() {
 
     override fun onLoop() {
         follower.update()
-        if (gamepad1.rightBumperWasPressed() && llss.isTagSeen(alliance) && !isAutoTurning) {
+        if (gamepad1.leftBumperWasPressed() && llss.isTagSeen(alliance) && !isAutoTurning) {
             follower.turn(llss.currentTagXRad(alliance, autoTurnPixel))
             isAutoTurning = true
             autoTurnStartTime = runtime
