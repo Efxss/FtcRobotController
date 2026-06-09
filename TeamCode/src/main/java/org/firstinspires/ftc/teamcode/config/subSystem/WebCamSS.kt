@@ -44,7 +44,6 @@ class WebCamSS(
                 .setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
                 .setOutputUnits(DistanceUnit.INCH, AngleUnit.RADIANS)
                 .setCameraPose(cameraPosition, cameraOrientation)
-                .setLensIntrinsics(908.758, 908.758, 696.345, 376.979)
                 .build()
         val builder = VisionPortal.Builder()
         builder.setCamera(hardwareMap.get(WebcamName::class.java, webcamName))
@@ -53,4 +52,5 @@ class WebCamSS(
         builder.addProcessor(aprilTag)
         visionPortal = builder.build()
     }
+    fun stop() { visionPortal?.close() }
 }
