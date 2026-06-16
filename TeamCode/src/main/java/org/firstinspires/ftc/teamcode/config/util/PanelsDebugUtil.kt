@@ -32,7 +32,6 @@ class PanelsDebugUtil(
 
     fun showAllDebugTeleop(
         follower: Follower,
-        hubUtil: HubUtil,
         alliance: Alliance,
         runtime: Double,
         gamepad : Gamepad,
@@ -53,6 +52,7 @@ class PanelsDebugUtil(
             debug("Left Stick X", gamepad.left_stick_x)
             debug("Left Stick Y", gamepad.left_stick_y)
             debug("Right Stick X", gamepad.right_stick_x)
+            debug("Right Bumper", gamepad.right_bumper)
             debug("")
             debug("=== OpMode ===")
             debug("runtime", runtime)
@@ -62,7 +62,7 @@ class PanelsDebugUtil(
     fun showInit() {
         panels?.debug("Init Started")
     }
-    fun update(telemetry: org.firstinspires.ftc.robotcore.external.Telemetry) {
+    fun update(telemetry : org.firstinspires.ftc.robotcore.external.Telemetry) {
         panels?.update(telemetry)
     }
 }

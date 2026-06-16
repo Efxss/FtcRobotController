@@ -138,7 +138,7 @@ abstract class TeleOpMode : OpMode() {
         Scheduler.execute()
 
         //Show and update debug
-        debugUtil.showAllDebugTeleop(follower, hubUtil, alliance, runtime, gamepad1, llss, autoTurnPixel)
+        debugUtil.showAllDebugTeleop(follower, alliance, runtime, gamepad1, llss, autoTurnPixel)
         debugUtil.update(telemetry)
         onLoop()
     }
