@@ -13,16 +13,16 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor
 import kotlin.math.abs
 
 class WebCamSS(
-    hardwareMap : HardwareMap,
-    webcamName : String = "Webcam 1"
+    hardwareMap: HardwareMap,
+    webcamName: String = "Webcam 1"
 ) {
-    private var aprilTag : AprilTagProcessor? = null
-    private var visionPortal : VisionPortal? = null
-    private val cameraPosition : Position = Position(DistanceUnit.INCH, 0.0, 0.0, 0.0, 0)
+    private var aprilTag: AprilTagProcessor? = null
+    private var visionPortal: VisionPortal? = null
+    private val cameraPosition: Position = Position(DistanceUnit.INCH, 0.0, 0.0, 0.0, 0)
     private val cameraOrientation = YawPitchRollAngles(AngleUnit.DEGREES, 0.0, -90.0, 0.0, 0)
     private var cameraRes = Size(1280, 800)
     init { initAprilTag(hardwareMap, webcamName) }
-    fun currentTagXRad(alliance : Alliance, deadzone : Double) : Double {
+    fun currentTagXRad(alliance: Alliance, deadzone: Double): Double {
         val targetId = when (alliance) {
             Alliance.BLUE -> 20
             Alliance.RED -> 24
@@ -31,7 +31,7 @@ class WebCamSS(
         val tr = detection.ftcPose.bearing
         return if (tr in 0.0..abs(deadzone)) 0.0 else tr
     }
-    fun isTagSeen(alliance: Alliance) : Boolean {
+    fun isTagSeen(alliance: Alliance): Boolean {
         val targetId = when (alliance) {
             Alliance.BLUE -> 20
             Alliance.RED -> 24
@@ -39,7 +39,7 @@ class WebCamSS(
         val detection = aprilTag?.detections?.firstOrNull { it.id == targetId && it.ftcPose != null } ?: return false
         return detection.metadata != null
     }
-    private fun initAprilTag(hardwareMap : HardwareMap, webcamName : String) {
+    private fun initAprilTag(hardwareMap: HardwareMap, webcamName: String) {
         aprilTag = AprilTagProcessor.Builder()
                 .setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
                 .setOutputUnits(DistanceUnit.INCH, AngleUnit.RADIANS)

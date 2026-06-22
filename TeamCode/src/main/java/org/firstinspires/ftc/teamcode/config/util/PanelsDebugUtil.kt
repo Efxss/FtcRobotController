@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.Gamepad
 import org.firstinspires.ftc.teamcode.config.subSystem.LLSS
 
 class PanelsDebugUtil(
-    private val panels : TelemetryManager?
+    private val panels: TelemetryManager?
 ) {
     fun showAllDebugAuto(
         follower: Follower,
@@ -34,9 +34,9 @@ class PanelsDebugUtil(
         follower: Follower,
         alliance: Alliance,
         runtime: Double,
-        gamepad : Gamepad,
-        limelight : LLSS,
-        llDeadZone : Double
+        gamepad: Gamepad,
+        limelight: LLSS,
+        llDeadZone: Double
     ) {
         panels?.apply {
             debug("=== PedroPathing ===")
@@ -62,7 +62,7 @@ class PanelsDebugUtil(
     fun showInit() {
         panels?.debug("Init Started")
     }
-    fun update(telemetry : org.firstinspires.ftc.robotcore.external.Telemetry) {
+    fun update(telemetry: org.firstinspires.ftc.robotcore.external.Telemetry) {
         panels?.update(telemetry)
     }
 }

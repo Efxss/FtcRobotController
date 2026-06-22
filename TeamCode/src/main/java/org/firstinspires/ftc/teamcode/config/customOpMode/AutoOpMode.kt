@@ -19,11 +19,11 @@ import org.firstinspires.ftc.teamcode.config.util.VariableStateUtil
 abstract class AutoOpMode : OpMode() {
 
     // Shared resources
-    private var panels : TelemetryManager? = null
-    protected lateinit var hubUtil : HubUtil
-    protected lateinit var debugUtil : PanelsDebugUtil
-    protected lateinit var intakeSS : IntakeSS
-    protected lateinit var follower : Follower
+    private var panels: TelemetryManager? = null
+    protected lateinit var hubUtil: HubUtil
+    protected lateinit var debugUtil: PanelsDebugUtil
+    protected lateinit var intakeSS: IntakeSS
+    protected lateinit var follower: Follower
 
     // Custom lifecycle hooks
 

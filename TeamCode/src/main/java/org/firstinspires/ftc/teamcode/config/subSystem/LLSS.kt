@@ -10,10 +10,10 @@ import kotlin.math.sign
 class LLSS(
     hardwareMap: HardwareMap
 ) {
-    private val ll : Limelight3A = hardwareMap.get(Limelight3A::class.java, "LL")
+    private val ll: Limelight3A = hardwareMap.get(Limelight3A::class.java, "LL")
     init {ll.start()}
 
-    fun getRotationPowerFromTag(alliance : Alliance) : Double {
+    fun getRotationPowerFromTag(alliance: Alliance): Double {
         var kP = 0.025
         var minPower = 0.05
         var maxPower = 1.0
@@ -34,7 +34,7 @@ class LLSS(
         return -power
     }
 
-    fun currentTagXDeg(alliance : Alliance, deadzone : Double) : Double {
+    fun currentTagXDeg(alliance: Alliance, deadzone: Double): Double {
         val targetId = when (alliance) {
             Alliance.BLUE -> 20
             Alliance.RED -> 24
@@ -47,7 +47,7 @@ class LLSS(
         return if (td in 0.0 .. abs(deadzone)) 0.0 else -td
     }
 
-    fun currentTagXRad(alliance : Alliance, deadzone : Double) : Double {
+    fun currentTagXRad(alliance: Alliance, deadzone: Double): Double {
         val targetId = when (alliance) {
             Alliance.BLUE -> 20
             Alliance.RED -> 24
@@ -60,7 +60,7 @@ class LLSS(
         return if (tr in 0.0 .. abs(deadzone)) 0.0 else Math.toRadians(-tr)
     }
 
-    fun isTagSeen(alliance : Alliance) : Boolean {
+    fun isTagSeen(alliance: Alliance): Boolean {
         val targetId = when (alliance) {
             Alliance.BLUE -> 20
             Alliance.RED -> 24

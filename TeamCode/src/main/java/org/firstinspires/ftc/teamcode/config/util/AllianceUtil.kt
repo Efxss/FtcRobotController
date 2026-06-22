@@ -1,6 +1,3 @@
 package org.firstinspires.ftc.teamcode.config.util
 
-enum class Alliance {
-    BLUE,
-    RED
-}
+enum class Alliance {BLUE, RED}

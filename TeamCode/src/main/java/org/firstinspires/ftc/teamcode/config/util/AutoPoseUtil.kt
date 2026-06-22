@@ -29,101 +29,101 @@ object AutoPoseUtil {
     val RedDepoFarSpikeAlignmentPose = BlueDepoFarSpikeAlignmentPose.withX(BlueDepoFarSpikeAlignmentPose.x - 8.0).mirror()!!
     val RedDepoFarSpikeGrabPose = BlueDepoFarSpikeGrabPose.withX(BlueDepoFarSpikeGrabPose.x - 8.0).mirror()!!
     val RedSideSquarePose = BlueSideSquarePose.withX(BlueSideSquarePose.x - 6.0).mirror()!!
-    val BlueDepoStartScore : PathChain by lazy { follower.pathBuilder()
+    val BlueDepoStartScore: PathChain by lazy { follower.pathBuilder()
         .addPath((BezierLine(startPoseBlueDepoPose, BlueDepoScorePose)))
         .setLinearHeadingInterpolation(startPoseBlueDepoPose.heading, BlueDepoScorePose.heading)
         .build() }
-    val BlueDepoScoreToBlueDepoEnd : PathChain by lazy { follower.pathBuilder()
+    val BlueDepoScoreToBlueDepoEnd: PathChain by lazy { follower.pathBuilder()
         .addPath((BezierLine(BlueDepoScorePose, startPoseBlueDepoPose)))
         .setConstantHeadingInterpolation(startPoseBlueDepoPose.heading)
         .build() }
-    val BlueDepoCloseSpike : PathChain by lazy { follower.pathBuilder()
+    val BlueDepoCloseSpike: PathChain by lazy { follower.pathBuilder()
         .addPath((BezierLine(BlueDepoScorePose, BlueDepoCloseSpikeStripPose)))
         .setConstantHeadingInterpolation(BlueDepoCloseSpikeStripPose.heading)
         .build() }
-    val BlueDepoCloseSpikeScore : PathChain by lazy { follower.pathBuilder()
+    val BlueDepoCloseSpikeScore: PathChain by lazy { follower.pathBuilder()
         .addPath((BezierLine(BlueDepoCloseSpikeStripPose, BlueDepoScorePose)))
         .setLinearHeadingInterpolation(BlueDepoCloseSpikeStripPose.heading, BlueDepoScorePose.heading)
         .build() }
-    val BlueDepoMiddleSpikeGrabCurve : PathChain by lazy { follower.pathBuilder()
+    val BlueDepoMiddleSpikeGrabCurve: PathChain by lazy { follower.pathBuilder()
         .addPath(BezierCurve(BlueDepoScorePose, BlueDepoMiddleSpikeAlignmentPose, BlueDepoMiddleSpikeGrabPose))
         .setConstantHeadingInterpolation(BlueDepoMiddleSpikeGrabPose.heading)
         .build() }
-    val BlueDepoMiddleSpikeScore : PathChain by lazy { follower.pathBuilder()
+    val BlueDepoMiddleSpikeScore: PathChain by lazy { follower.pathBuilder()
         .addPath((BezierLine(BlueDepoMiddleSpikeGrabPose, BlueDepoScorePose)))
         .setLinearHeadingInterpolation(BlueDepoMiddleSpikeGrabPose.heading, BlueDepoScorePose.heading)
         .build() }
-    val BlueDepoFarSpikeGrabCurve : PathChain by lazy { follower.pathBuilder()
+    val BlueDepoFarSpikeGrabCurve: PathChain by lazy { follower.pathBuilder()
         .addPath(BezierCurve(BlueDepoScorePose, BlueDepoFarSpikeAlignmentPose, BlueDepoFarSpikeGrabPose))
         .setConstantHeadingInterpolation(BlueDepoFarSpikeGrabPose.heading)
         .build() }
-    val BlueDepoFarSpikeScore : PathChain by lazy { follower.pathBuilder()
+    val BlueDepoFarSpikeScore: PathChain by lazy { follower.pathBuilder()
         .addPath((BezierLine(BlueDepoFarSpikeGrabPose, BlueDepoScorePose)))
         .setLinearHeadingInterpolation(BlueDepoFarSpikeGrabPose.heading, BlueDepoScorePose.heading)
         .build() }
-    val BlueDepoScoreToRedSideSquare : PathChain by lazy { follower.pathBuilder()
+    val BlueDepoScoreToRedSideSquare: PathChain by lazy { follower.pathBuilder()
         .addPath(BezierLine(BlueDepoScorePose, RedSideSquarePose))
         .setLinearHeadingInterpolation(BlueDepoScorePose.heading, RedSideSquarePose.heading)
         .build() }
-    val BlueDepoScoreToBlueSideSquare : PathChain by lazy { follower.pathBuilder()
+    val BlueDepoScoreToBlueSideSquare: PathChain by lazy { follower.pathBuilder()
         .addPath(BezierLine(BlueDepoScorePose, BlueSideSquarePose))
         .setLinearHeadingInterpolation(BlueDepoScorePose.heading, BlueSideSquarePose.heading)
         .build() }
-    val BlueSideSquareToBlueDepoScorePose : PathChain by lazy { follower.pathBuilder()
+    val BlueSideSquareToBlueDepoScorePose: PathChain by lazy { follower.pathBuilder()
         .addPath(BezierLine(BlueSideSquarePose, BlueDepoScorePose))
         .setLinearHeadingInterpolation(BlueSideSquarePose.heading, BlueDepoScorePose.heading)
         .build() }
 
-    val RedDepoStartScore : PathChain by lazy { follower.pathBuilder()
+    val RedDepoStartScore: PathChain by lazy { follower.pathBuilder()
         .addPath((BezierLine(startPoseRedDepoPose, RedDepoScorePose)))
         .setLinearHeadingInterpolation(startPoseRedDepoPose.heading, RedDepoScorePose.heading)
         .build() }
-    val RedDepoScoreToRedDepoEnd : PathChain by lazy { follower.pathBuilder()
+    val RedDepoScoreToRedDepoEnd: PathChain by lazy { follower.pathBuilder()
         .addPath((BezierLine(RedDepoScorePose, RedDepoEndPose)))
         .setLinearHeadingInterpolation(RedDepoScorePose.heading, RedDepoEndPose.heading)
         .build() }
-    val RedDepoCloseSpike : PathChain by lazy { follower.pathBuilder()
+    val RedDepoCloseSpike: PathChain by lazy { follower.pathBuilder()
         .addPath((BezierLine(RedDepoScorePose, RedDepoCloseSpikeStripPose)))
         .setConstantHeadingInterpolation(RedDepoCloseSpikeStripPose.heading)
         .build() }
-    val RedDepoCloseSpikeScore : PathChain by lazy { follower.pathBuilder()
+    val RedDepoCloseSpikeScore: PathChain by lazy { follower.pathBuilder()
         .addPath((BezierLine(RedDepoCloseSpikeStripPose, RedDepoScorePose)))
         .setLinearHeadingInterpolation(RedDepoCloseSpikeStripPose.heading, RedDepoScorePose.heading)
         .build() }
-    val RedDepoMiddleSpikeGrabCurve : PathChain by lazy { follower.pathBuilder()
+    val RedDepoMiddleSpikeGrabCurve: PathChain by lazy { follower.pathBuilder()
         .addPath(BezierCurve(RedDepoScorePose, RedDepoMiddleSpikeAlignmentPose, RedDepoMiddleSpikeGrabPose))
         .setConstantHeadingInterpolation(RedDepoMiddleSpikeGrabPose.heading)
         .build() }
-    val RedDepoMiddleSpikeScore : PathChain by lazy { follower.pathBuilder()
+    val RedDepoMiddleSpikeScore: PathChain by lazy { follower.pathBuilder()
         .addPath((BezierLine(RedDepoMiddleSpikeGrabPose, RedDepoScorePose)))
         .setLinearHeadingInterpolation(RedDepoMiddleSpikeGrabPose.heading, RedDepoScorePose.heading)
         .build() }
-    val RedDepoFarSpikeGrabCurve : PathChain by lazy { follower.pathBuilder()
+    val RedDepoFarSpikeGrabCurve: PathChain by lazy { follower.pathBuilder()
         .addPath(BezierCurve(RedDepoScorePose, RedDepoFarSpikeAlignmentPose, RedDepoFarSpikeGrabPose))
         .setConstantHeadingInterpolation(RedDepoFarSpikeGrabPose.heading)
         .build() }
-    val RedDepoFarSpikeScore : PathChain by lazy { follower.pathBuilder()
+    val RedDepoFarSpikeScore: PathChain by lazy { follower.pathBuilder()
         .addPath((BezierLine(RedDepoFarSpikeGrabPose, RedDepoScorePose)))
         .setLinearHeadingInterpolation(RedDepoFarSpikeGrabPose.heading, RedDepoScorePose.heading)
         .build() }
-    val RedDepoScoreToBlueSideSquare : PathChain by lazy { follower.pathBuilder()
+    val RedDepoScoreToBlueSideSquare: PathChain by lazy { follower.pathBuilder()
         .addPath(BezierLine(RedDepoScorePose, BlueSideSquarePose))
         .setLinearHeadingInterpolation(RedDepoScorePose.heading, BlueSideSquarePose.heading)
         .build() }
-    val RedDepoScoreToRedSideSquare : PathChain by lazy { follower.pathBuilder()
+    val RedDepoScoreToRedSideSquare: PathChain by lazy { follower.pathBuilder()
         .addPath(BezierLine(RedDepoScorePose, RedSideSquarePose))
         .setLinearHeadingInterpolation(RedDepoScorePose.heading, RedSideSquarePose.heading)
         .build() }
-    val RedSideSquareToRedDepoScorePose : PathChain by lazy { follower.pathBuilder()
+    val RedSideSquareToRedDepoScorePose: PathChain by lazy { follower.pathBuilder()
         .addPath(BezierLine(RedSideSquarePose, RedDepoScorePose))
         .setLinearHeadingInterpolation(RedSideSquarePose.heading, RedDepoScorePose.heading)
         .build() }
-    val RedSideSquareToBlueDepoScorePose : PathChain by lazy { follower.pathBuilder()
+    val RedSideSquareToBlueDepoScorePose: PathChain by lazy { follower.pathBuilder()
         .addPath(BezierLine(RedSideSquarePose, BlueDepoScorePose))
         .setLinearHeadingInterpolation(RedSideSquarePose.heading, BlueDepoScorePose.heading)
         .build() }
 
-    fun allSpikeAutoBlue() : Command {
+    fun allSpikeAutoBlue(): Command {
         return sequential(
             follow(follower, BlueDepoStartScore, true),
             follow(follower, BlueDepoCloseSpike, true),
@@ -139,7 +139,7 @@ object AutoPoseUtil {
         )
     }
 
-    fun allSpikeAutoRed() : Command {
+    fun allSpikeAutoRed(): Command {
         return sequential(
             follow(follower, RedDepoStartScore, true),
             follow(follower, RedDepoCloseSpike, true),

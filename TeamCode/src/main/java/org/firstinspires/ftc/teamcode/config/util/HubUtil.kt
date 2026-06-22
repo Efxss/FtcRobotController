@@ -13,10 +13,10 @@ import com.qualcomm.robotcore.hardware.HardwareMap
  * Call [clearCache] at the top of every loop() iteration.
  */
 class HubUtil (
-    hardwareMap : HardwareMap
+    hardwareMap: HardwareMap
 ) {
 
-    private val hubs : List<LynxModule> = hardwareMap.getAll(LynxModule::class.java)
+    private val hubs: List<LynxModule> = hardwareMap.getAll(LynxModule::class.java)
 
     init {
         hubs.forEach { it.bulkCachingMode = LynxModule.BulkCachingMode.MANUAL }

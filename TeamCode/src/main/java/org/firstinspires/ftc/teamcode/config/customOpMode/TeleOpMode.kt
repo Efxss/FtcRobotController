@@ -20,12 +20,12 @@ import org.firstinspires.ftc.teamcode.config.util.PanelsDebugUtil
 abstract class TeleOpMode : OpMode() {
 
     // Shared resources
-    private var panels : TelemetryManager? = null
-    protected lateinit var hubUtil : HubUtil
-    protected lateinit var debugUtil : PanelsDebugUtil
-    protected lateinit var intakeSS : IntakeSS
+    private var panels: TelemetryManager? = null
+    protected lateinit var hubUtil: HubUtil
+    protected lateinit var debugUtil: PanelsDebugUtil
+    protected lateinit var intakeSS: IntakeSS
     protected lateinit var llss: LLSS
-    protected lateinit var follower : Follower
+    protected lateinit var follower: Follower
     protected var resetPose = Pose(8.0, 8.0, Math.toRadians(90.0))
     protected var rotate = 0.0
     protected var strafe = 0.0
