@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.config.util
 
 import com.pedropathing.geometry.Pose
+import org.firstinspires.ftc.teamcode.config.subSystem.RampSS
 
 /**
  * Holds state that needs to persist between OpModes (Auto -> TeleOp).
@@ -14,4 +15,5 @@ object VariableStateUtil {
 
     // Alliance var to pass from auto to TeleOP
     var alliance: Alliance = Alliance.BLUE
+    var rampState: RampSS.STATE = RampSS.STATE.INTAKE
 }

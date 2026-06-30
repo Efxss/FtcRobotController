@@ -15,11 +15,11 @@ class Teleop : TeleOpMode() {
     }
 
     override fun onStart() {
-        follower.startTeleopDrive()
+        //follower.startTeleopDrive()
     }
 
     override fun onLoop() {
-        follower.update()
+        /*follower.update()
         if (gamepad1.leftBumperWasPressed() && llss.isTagSeen(alliance) && !isAutoTurning) {
             follower.turn(llss.currentTagXRad(alliance, autoTurnPixel))
             isAutoTurning = true
@@ -36,7 +36,7 @@ class Teleop : TeleOpMode() {
             }
         } else {
             follower.setTeleOpDrive(forward, strafe, rotate, false)
-        }
+        }*/
     }
 
     fun initializePedroPathing() {

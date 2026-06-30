@@ -26,7 +26,6 @@ class BlueAuto : AutoOpMode() {
 
     override fun onLoop() {
         follower.update()
-        Scheduler.execute()
     }
 
     fun initializePedroPathing() {

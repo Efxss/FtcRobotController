@@ -4,6 +4,7 @@ import com.bylazar.telemetry.TelemetryManager
 import com.pedropathing.follower.Follower
 import com.qualcomm.robotcore.hardware.Gamepad
 import org.firstinspires.ftc.teamcode.config.subSystem.LLSS
+import org.firstinspires.ftc.teamcode.config.subSystem.RampSS
 
 class PanelsDebugUtil(
     private val panels: TelemetryManager?
@@ -36,9 +37,11 @@ class PanelsDebugUtil(
         runtime: Double,
         gamepad: Gamepad,
         limelight: LLSS,
-        llDeadZone: Double
+        llDeadZone: Double,
+        rampSS: RampSS
     ) {
         panels?.apply {
+            debug("ramp position", rampSS.position())
             debug("=== PedroPathing ===")
             debug("Follower Pose X", follower.pose.x)
             debug("Follower Pose Y", follower.pose.y)

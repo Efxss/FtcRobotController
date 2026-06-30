@@ -6,6 +6,7 @@ import com.pedropathing.follower.Follower
 import com.pedropathing.ivy.Scheduler
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import org.firstinspires.ftc.teamcode.config.subSystem.IntakeSS
+import org.firstinspires.ftc.teamcode.config.subSystem.RampSS
 import org.firstinspires.ftc.teamcode.config.util.Alliance
 import org.firstinspires.ftc.teamcode.config.util.DrawingUtil
 import org.firstinspires.ftc.teamcode.config.util.HubUtil
@@ -23,6 +24,8 @@ abstract class AutoOpMode : OpMode() {
     protected lateinit var hubUtil: HubUtil
     protected lateinit var debugUtil: PanelsDebugUtil
     protected lateinit var intakeSS: IntakeSS
+    protected lateinit var rampSS: RampSS
+    //protected lateinit var sweepSS: SweepSS
     protected lateinit var follower: Follower
 
     // Custom lifecycle hooks
@@ -73,6 +76,8 @@ abstract class AutoOpMode : OpMode() {
         // Init bulkRead
         debugUtil.update(telemetry)
         intakeSS = IntakeSS(hardwareMap)
+        rampSS = RampSS(hardwareMap)
+        //sweepSS = SweepSS(hardwareMap)
         hubUtil = HubUtil(hardwareMap)
         onInit()
     }
@@ -97,6 +102,11 @@ abstract class AutoOpMode : OpMode() {
         if (::follower.isInitialized) {
             DrawingUtil.drawDebug(follower)
         }
+        rampSS.update(VariableStateUtil.rampState)
+
+        // Run the Ivy Scheduler to actually update Commands
+        Scheduler.execute()
+
         //Show and update debug
         debugUtil.showAllDebugAuto(follower, hubUtil, alliance, runtime)
         debugUtil.update(telemetry)

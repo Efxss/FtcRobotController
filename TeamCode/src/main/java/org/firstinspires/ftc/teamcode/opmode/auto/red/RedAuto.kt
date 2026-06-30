@@ -26,7 +26,6 @@ class RedAuto : AutoOpMode() {
 
     override fun onLoop() {
         follower.update()
-        Scheduler.execute()
     }
 
     fun initializePedroPathing() {
