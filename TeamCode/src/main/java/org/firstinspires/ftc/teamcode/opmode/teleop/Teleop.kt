@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.config.util.VariableStateUtil
 @TeleOp
 class Teleop : TeleOpMode() {
     companion object {
+        @JvmField
         var intakePose: Double = 0.0
         var holdPose: Double = 0.25
         var firePos: Double = 0.5
