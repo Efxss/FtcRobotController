@@ -1,13 +1,22 @@
 package org.firstinspires.ftc.teamcode.opmode.teleop
 
+import com.bylazar.configurables.annotations.Configurable
 import com.pedropathing.geometry.Pose
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import org.firstinspires.ftc.teamcode.config.customOpMode.TeleOpMode
 import org.firstinspires.ftc.teamcode.config.pedroPathing.Constants
+import org.firstinspires.ftc.teamcode.config.subSystem.RampSS
 import org.firstinspires.ftc.teamcode.config.util.VariableStateUtil
 
+@Configurable
 @TeleOp
 class Teleop : TeleOpMode() {
+    companion object {
+        var intakePose: Double = 0.0
+        var holdPose: Double = 0.25
+        var firePos: Double = 0.5
+        var rampState: RampSS.STATE = RampSS.STATE.INTAKE
+    }
     override val alliance = VariableStateUtil.alliance
 
     override fun onInit() {
@@ -37,6 +46,7 @@ class Teleop : TeleOpMode() {
         } else {
             follower.setTeleOpDrive(forward, strafe, rotate, false)
         }*/
+        rampSS.update(rampState, intakePose, holdPose, firePos)
     }
 
     fun initializePedroPathing() {

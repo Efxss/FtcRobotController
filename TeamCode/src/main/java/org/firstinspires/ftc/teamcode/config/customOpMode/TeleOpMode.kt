@@ -13,7 +13,6 @@ import org.firstinspires.ftc.teamcode.config.util.Alliance
 import org.firstinspires.ftc.teamcode.config.util.DrawingUtil
 import org.firstinspires.ftc.teamcode.config.util.HubUtil
 import org.firstinspires.ftc.teamcode.config.util.PanelsDebugUtil
-import org.firstinspires.ftc.teamcode.config.util.VariableStateUtil
 
 /**
  * Custom-made OpMode to copy and make a real OpMode
@@ -123,7 +122,7 @@ abstract class TeleOpMode : OpMode() {
         if (::follower.isInitialized) {
             DrawingUtil.drawDebug(follower)
         }
-        rampSS.update(VariableStateUtil.rampState)
+        //rampSS.update(VariableStateUtil.rampState)
         rotate = gamepad1.right_stick_x.toDouble()
         forward = when (alliance) {
             Alliance.BLUE -> gamepad1.left_stick_y.toDouble()

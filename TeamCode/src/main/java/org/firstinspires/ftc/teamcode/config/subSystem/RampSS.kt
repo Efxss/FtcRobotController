@@ -9,7 +9,7 @@ class RampSS(
     enum class STATE { INTAKE, HOLD, FIRE }
     private var lastPos: Double = Double.NaN
     val rampServo: Servo = hardwareMap.get(Servo::class.java, "ramp")
-    fun update(state: STATE) {
+    fun update(state: STATE, intakePose: Double, holdPose: Double, firePos: Double) {
         when (state) {
             STATE.INTAKE -> setPosition(0.0)
             STATE.HOLD -> setPosition(0.25)

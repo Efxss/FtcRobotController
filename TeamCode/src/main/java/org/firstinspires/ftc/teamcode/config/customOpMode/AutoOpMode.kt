@@ -102,7 +102,7 @@ abstract class AutoOpMode : OpMode() {
         if (::follower.isInitialized) {
             DrawingUtil.drawDebug(follower)
         }
-        rampSS.update(VariableStateUtil.rampState)
+        //rampSS.update(VariableStateUtil.rampState)
 
         // Run the Ivy Scheduler to actually update Commands
         Scheduler.execute()
