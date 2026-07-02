@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import org.firstinspires.ftc.teamcode.config.subSystem.IntakeSS
 import org.firstinspires.ftc.teamcode.config.subSystem.LLSS
 import org.firstinspires.ftc.teamcode.config.subSystem.RampSS
+import org.firstinspires.ftc.teamcode.config.subSystem.SweepSS
 import org.firstinspires.ftc.teamcode.config.util.Alliance
 import org.firstinspires.ftc.teamcode.config.util.DrawingUtil
 import org.firstinspires.ftc.teamcode.config.util.HubUtil
@@ -26,6 +27,7 @@ abstract class TeleOpMode : OpMode() {
     protected lateinit var debugUtil: PanelsDebugUtil
     protected lateinit var intakeSS: IntakeSS
     protected lateinit var rampSS: RampSS
+    protected lateinit var sweepSS: SweepSS
     protected lateinit var llss: LLSS
     protected lateinit var follower: Follower
     protected var resetPose = Pose(8.0, 8.0, Math.toRadians(90.0))
@@ -88,6 +90,7 @@ abstract class TeleOpMode : OpMode() {
         debugUtil.update(telemetry)
         intakeSS = IntakeSS(hardwareMap)
         rampSS = RampSS(hardwareMap)
+        sweepSS = SweepSS(hardwareMap)
         llss = LLSS(hardwareMap)
         hubUtil = HubUtil(hardwareMap)
         onInit()
@@ -141,7 +144,7 @@ abstract class TeleOpMode : OpMode() {
         Scheduler.execute()
 
         //Show and update debug
-        debugUtil.showAllDebugTeleop(follower, alliance, runtime, gamepad1, llss, autoTurnPixel, rampSS)
+        debugUtil.showAllDebugTeleop(follower, alliance, runtime, gamepad1, llss, autoTurnPixel, sweepSS)
         debugUtil.update(telemetry)
         onLoop()
     }
