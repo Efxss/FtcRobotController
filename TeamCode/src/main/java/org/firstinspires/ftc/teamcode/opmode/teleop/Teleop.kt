@@ -47,9 +47,9 @@ class Teleop : TeleOpMode() {
             follower.setTeleOpDrive(forward, strafe, rotate, false)
         }*/
         rampSS.update(rampState)
-        if (gamepad1.leftBumperWasReleased()) {
-            sweepSS.execSweepServo().schedule()
-        }
+        if (gamepad1.leftBumperWasReleased()) sweepSS.execSweepServo().schedule()
+        if (gamepad1.crossWasReleased()) firingSS.execFiring(sweepSS).schedule()
+
     }
 
     fun initializePedroPathing() {

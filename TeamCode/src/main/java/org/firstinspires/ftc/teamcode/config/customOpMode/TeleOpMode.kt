@@ -6,6 +6,7 @@ import com.pedropathing.follower.Follower
 import com.pedropathing.geometry.Pose
 import com.pedropathing.ivy.Scheduler
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
+import org.firstinspires.ftc.teamcode.config.subSystem.FiringSS
 import org.firstinspires.ftc.teamcode.config.subSystem.IntakeSS
 import org.firstinspires.ftc.teamcode.config.subSystem.LLSS
 import org.firstinspires.ftc.teamcode.config.subSystem.RampSS
@@ -28,6 +29,7 @@ abstract class TeleOpMode : OpMode() {
     protected lateinit var intakeSS: IntakeSS
     protected lateinit var rampSS: RampSS
     protected lateinit var sweepSS: SweepSS
+    protected lateinit var firingSS: FiringSS
     protected lateinit var llss: LLSS
     protected lateinit var follower: Follower
     protected var resetPose = Pose(8.0, 8.0, Math.toRadians(90.0))
@@ -91,6 +93,7 @@ abstract class TeleOpMode : OpMode() {
         intakeSS = IntakeSS(hardwareMap)
         rampSS = RampSS(hardwareMap)
         sweepSS = SweepSS(hardwareMap)
+        firingSS = FiringSS()
         llss = LLSS(hardwareMap)
         hubUtil = HubUtil(hardwareMap)
         onInit()
