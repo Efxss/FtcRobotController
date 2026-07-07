@@ -5,6 +5,7 @@ import com.bylazar.telemetry.TelemetryManager
 import com.pedropathing.follower.Follower
 import com.pedropathing.ivy.Command
 import com.pedropathing.ivy.Scheduler
+import com.pedropathing.ivy.commands.Commands.waitMs
 import com.pedropathing.ivy.groups.Groups
 import com.pedropathing.ivy.pedro.PedroCommands.follow
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
@@ -134,9 +135,16 @@ abstract class AutoOpMode : OpMode() {
     fun runAuto(): Command {
         return Groups.sequential(
             intakeSS.runIntakeCommand,
-            follow(follower,AutoPoseUtil.startToCornerToSpike,true),
+            follow(follower,AutoPoseUtil.startToLeftCorner,true),
+            rampSS.rampHold(),
+            Groups.parallel(
+                follow(follower, AutoPoseUtil.leftCornerToLeftSpike,true),
+                waitMs(500.0),
+                rampSS.rampIntake()
+            ),
+            rampSS.rampHold(),
             follow(follower, AutoPoseUtil.leftSpikeToHiveFour,true),
-            firingSS.execFiring(sweepSS)
+            firingSS.execFiring(sweepSS, rampSS)
         )
     }
 }
