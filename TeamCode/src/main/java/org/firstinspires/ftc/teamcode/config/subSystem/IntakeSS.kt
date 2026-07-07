@@ -13,7 +13,7 @@ class IntakeSS(
         intakeMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
         intakeMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
     }
-    private val intakeVelocity = 840.0
+    private val intakeVelocity = 840.0 // 840.0
     private var lastVelocity: Double = Double.NaN
     private fun setVelocity(velocity: Double) { if (velocity != lastVelocity) { intakeMotor.velocity = velocity
             lastVelocity = velocity } }

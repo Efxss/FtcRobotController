@@ -3,11 +3,17 @@ package org.firstinspires.ftc.teamcode.config.customOpMode
 import com.bylazar.telemetry.PanelsTelemetry
 import com.bylazar.telemetry.TelemetryManager
 import com.pedropathing.follower.Follower
+import com.pedropathing.ivy.Command
 import com.pedropathing.ivy.Scheduler
+import com.pedropathing.ivy.groups.Groups
+import com.pedropathing.ivy.pedro.PedroCommands.follow
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
+import org.firstinspires.ftc.teamcode.config.subSystem.FiringSS
 import org.firstinspires.ftc.teamcode.config.subSystem.IntakeSS
 import org.firstinspires.ftc.teamcode.config.subSystem.RampSS
+import org.firstinspires.ftc.teamcode.config.subSystem.SweepSS
 import org.firstinspires.ftc.teamcode.config.util.Alliance
+import org.firstinspires.ftc.teamcode.config.util.AutoPoseUtil
 import org.firstinspires.ftc.teamcode.config.util.DrawingUtil
 import org.firstinspires.ftc.teamcode.config.util.HubUtil
 import org.firstinspires.ftc.teamcode.config.util.PanelsDebugUtil
@@ -24,8 +30,9 @@ abstract class AutoOpMode : OpMode() {
     protected lateinit var hubUtil: HubUtil
     protected lateinit var debugUtil: PanelsDebugUtil
     protected lateinit var intakeSS: IntakeSS
+    protected lateinit var sweepSS: SweepSS
     protected lateinit var rampSS: RampSS
-    //protected lateinit var sweepSS: SweepSS
+    protected lateinit var firingSS: FiringSS
     protected lateinit var follower: Follower
 
     // Custom lifecycle hooks
@@ -77,7 +84,8 @@ abstract class AutoOpMode : OpMode() {
         debugUtil.update(telemetry)
         intakeSS = IntakeSS(hardwareMap)
         rampSS = RampSS(hardwareMap)
-        //sweepSS = SweepSS(hardwareMap)
+        sweepSS = SweepSS(hardwareMap)
+        firingSS = FiringSS()
         hubUtil = HubUtil(hardwareMap)
         onInit()
     }
@@ -102,7 +110,7 @@ abstract class AutoOpMode : OpMode() {
         if (::follower.isInitialized) {
             DrawingUtil.drawDebug(follower)
         }
-        //rampSS.update(VariableStateUtil.rampState)
+        rampSS.update(VariableStateUtil.rampState)
 
         // Run the Ivy Scheduler to actually update Commands
         Scheduler.execute()
@@ -123,4 +131,12 @@ abstract class AutoOpMode : OpMode() {
     }
 
     // Custom functions
+    fun runAuto(): Command {
+        return Groups.sequential(
+            intakeSS.runIntakeCommand,
+            follow(follower,AutoPoseUtil.startToCornerToSpike,true),
+            follow(follower, AutoPoseUtil.leftSpikeToHiveFour,true),
+            firingSS.execFiring(sweepSS)
+        )
+    }
 }

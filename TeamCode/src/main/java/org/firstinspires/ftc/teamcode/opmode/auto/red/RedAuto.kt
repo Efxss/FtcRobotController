@@ -1,13 +1,13 @@
 package org.firstinspires.ftc.teamcode.opmode.auto.red
 
-import com.pedropathing.ivy.Scheduler
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import org.firstinspires.ftc.teamcode.config.customOpMode.AutoOpMode
 import org.firstinspires.ftc.teamcode.config.pedroPathing.Constants
 import org.firstinspires.ftc.teamcode.config.util.Alliance
 import org.firstinspires.ftc.teamcode.config.util.AutoPoseUtil
 
-@Autonomous(group = "Red Auto", name = "Red Auto")
+@Disabled
+//@Autonomous(group = "Red Auto", name = "Red Auto")
 class RedAuto : AutoOpMode() {
     override val alliance = Alliance.RED
     override fun onInit() {
@@ -21,7 +21,7 @@ class RedAuto : AutoOpMode() {
                 intakeSS.runIntakeCommand.start()
             )
         )*/
-        Scheduler.schedule(AutoPoseUtil.allSpikeAutoRed())
+        //Scheduler.schedule(AutoPoseUtil.allSpikeAutoRed())
     }
 
     override fun onLoop() {
@@ -30,7 +30,7 @@ class RedAuto : AutoOpMode() {
 
     fun initializePedroPathing() {
         follower = Constants.createFollower(hardwareMap)
-        follower.setStartingPose(AutoPoseUtil.startPoseRedDepoPose)
+        //follower.setStartingPose(AutoPoseUtil.startPoseRedDepoPose)
         AutoPoseUtil.follower = follower
     }
 }

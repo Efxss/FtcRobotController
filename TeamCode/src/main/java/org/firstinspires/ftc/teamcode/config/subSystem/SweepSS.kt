@@ -13,7 +13,7 @@ class SweepSS(
     private val sweepServo: Servo = hardwareMap.get(Servo::class.java, "sweep")
     init { sweepServo.position = 0.23 }
     private fun returnSweepServo(): Command { return instant { sweepServo.position = 0.23 } }
-    private fun runSweepServoOut(): Command { return instant { sweepServo.position = 0.47 } }
+    private fun runSweepServoOut(): Command { return instant { sweepServo.position = 0.53 } }
     fun execSweepServo(): Command {
         return sequential(
             runSweepServoOut(),
