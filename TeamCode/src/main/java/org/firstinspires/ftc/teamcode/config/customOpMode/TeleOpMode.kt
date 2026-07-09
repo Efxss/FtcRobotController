@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import org.firstinspires.ftc.teamcode.config.subSystem.FiringSS
 import org.firstinspires.ftc.teamcode.config.subSystem.IntakeSS
 import org.firstinspires.ftc.teamcode.config.subSystem.LLSS
+import org.firstinspires.ftc.teamcode.config.subSystem.PushServoSS
 import org.firstinspires.ftc.teamcode.config.subSystem.RampSS
 import org.firstinspires.ftc.teamcode.config.subSystem.SweepSS
 import org.firstinspires.ftc.teamcode.config.util.Alliance
@@ -28,6 +29,7 @@ abstract class TeleOpMode : OpMode() {
     protected lateinit var debugUtil: PanelsDebugUtil
     protected lateinit var intakeSS: IntakeSS
     protected lateinit var rampSS: RampSS
+    protected lateinit var pushServoSS: PushServoSS
     protected lateinit var sweepSS: SweepSS
     protected lateinit var firingSS: FiringSS
     protected lateinit var llss: LLSS
@@ -92,6 +94,7 @@ abstract class TeleOpMode : OpMode() {
         debugUtil.update(telemetry)
         intakeSS = IntakeSS(hardwareMap)
         rampSS = RampSS(hardwareMap)
+        pushServoSS = PushServoSS(hardwareMap)
         sweepSS = SweepSS(hardwareMap)
         firingSS = FiringSS()
         llss = LLSS(hardwareMap)
@@ -139,8 +142,14 @@ abstract class TeleOpMode : OpMode() {
             Alliance.RED -> -gamepad1.left_stick_x.toDouble()
         }
 
-        if (gamepad1.rightBumperWasPressed()) intakeSS.runIntakeCommand.schedule()
-        if (gamepad1.rightBumperWasReleased()) intakeSS.runIntakeCommand.cancel()
+        if (gamepad1.rightBumperWasPressed()) {
+            intakeSS.runIntakeCommand.schedule()
+            pushServoSS.runPush.schedule()
+        }
+        if (gamepad1.rightBumperWasReleased()) {
+            intakeSS.runIntakeCommand.cancel()
+            pushServoSS.runPush.cancel()
+        }
         if (gamepad1.cross) follower.pose = resetPose
 
         // Run the Ivy Scheduler to actually update Commands
@@ -155,6 +164,7 @@ abstract class TeleOpMode : OpMode() {
     final override fun stop() {
         llss.stop()
         if (intakeSS.runIntakeCommand.isScheduled) intakeSS.runIntakeCommand.cancel()
+        if (pushServoSS.runPush.isScheduled) pushServoSS.runPush.cancel()
         onStop()
     }
 

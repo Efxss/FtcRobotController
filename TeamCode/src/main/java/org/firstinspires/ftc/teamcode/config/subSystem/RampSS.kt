@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.config.util.VariableStateUtil
 
 class RampSS(
     hardwareMap: HardwareMap
-)  {
+) {
     enum class STATE { INTAKE, HOLD, FIRE }
     private val rampServo: Servo = hardwareMap.get(Servo::class.java, "ramp")
     fun update(state: STATE) {

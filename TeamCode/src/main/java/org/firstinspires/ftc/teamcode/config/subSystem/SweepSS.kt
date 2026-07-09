@@ -17,7 +17,7 @@ class SweepSS(
     fun execSweepServo(): Command {
         return sequential(
             runSweepServoOut(),
-            waitMs(1000.0),
+            waitMs(3000.0),
             returnSweepServo()
         )
     }

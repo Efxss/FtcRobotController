@@ -11,6 +11,7 @@ import com.pedropathing.ivy.pedro.PedroCommands.follow
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import org.firstinspires.ftc.teamcode.config.subSystem.FiringSS
 import org.firstinspires.ftc.teamcode.config.subSystem.IntakeSS
+import org.firstinspires.ftc.teamcode.config.subSystem.PushServoSS
 import org.firstinspires.ftc.teamcode.config.subSystem.RampSS
 import org.firstinspires.ftc.teamcode.config.subSystem.SweepSS
 import org.firstinspires.ftc.teamcode.config.util.Alliance
@@ -33,6 +34,7 @@ abstract class AutoOpMode : OpMode() {
     protected lateinit var intakeSS: IntakeSS
     protected lateinit var sweepSS: SweepSS
     protected lateinit var rampSS: RampSS
+    protected lateinit var pushServoSS: PushServoSS
     protected lateinit var firingSS: FiringSS
     protected lateinit var follower: Follower
 
@@ -86,6 +88,7 @@ abstract class AutoOpMode : OpMode() {
         intakeSS = IntakeSS(hardwareMap)
         rampSS = RampSS(hardwareMap)
         sweepSS = SweepSS(hardwareMap)
+        pushServoSS = PushServoSS(hardwareMap)
         firingSS = FiringSS()
         hubUtil = HubUtil(hardwareMap)
         onInit()
@@ -128,6 +131,7 @@ abstract class AutoOpMode : OpMode() {
         }
         VariableStateUtil.alliance = alliance
         if (intakeSS.runIntakeCommand.isScheduled) intakeSS.runIntakeCommand.cancel()
+        if (pushServoSS.runPush.isScheduled) pushServoSS.runPush.cancel()
         onStop()
     }
 
