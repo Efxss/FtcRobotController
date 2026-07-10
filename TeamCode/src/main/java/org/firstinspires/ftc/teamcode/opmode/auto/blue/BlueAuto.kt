@@ -18,7 +18,7 @@ class BlueAuto : AutoOpMode() {
     override fun onStart() {
         Scheduler.schedule(
             Groups.sequential(
-
+                runAuto()
             )
         )
     }

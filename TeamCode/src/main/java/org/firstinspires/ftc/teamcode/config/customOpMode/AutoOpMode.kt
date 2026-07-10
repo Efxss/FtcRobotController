@@ -141,9 +141,9 @@ abstract class AutoOpMode : OpMode() {
             intakeSS.runIntakeCommand,
             follow(follower,AutoPoseUtil.startToLeftCorner,true),
             rampSS.rampHold(),
-            Groups.parallel(
+            Groups.race(
                 follow(follower, AutoPoseUtil.leftCornerToLeftSpike,true),
-                waitMs(500.0),
+                waitMs(2000.0),
                 rampSS.rampIntake()
             ),
             rampSS.rampHold(),
