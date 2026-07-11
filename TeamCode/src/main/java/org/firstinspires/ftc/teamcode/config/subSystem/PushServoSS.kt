@@ -11,4 +11,7 @@ class PushServoSS(
     val runPush: Command = Command.build()
         .setStart { pushServo.power = 1.0 }
         .setEnd { pushServo.power = 0.0 }
+    val stopPush: Command = Command.build()
+        .setStart { pushServo.power = 0.0 }
+        .setEnd { pushServo.power = 1.0 }
 }

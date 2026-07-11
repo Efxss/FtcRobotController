@@ -137,18 +137,22 @@ abstract class AutoOpMode : OpMode() {
 
     // Custom functions
     fun runAuto(): Command {
+        fun runLTS(): Command { return Groups.sequential(follow(follower, AutoPoseUtil.leftCornerToLeftSpike,true),) }
         return Groups.sequential(
             intakeSS.runIntakeCommand,
             follow(follower,AutoPoseUtil.startToLeftCorner,true),
             rampSS.rampHold(),
-            Groups.race(
-                follow(follower, AutoPoseUtil.leftCornerToLeftSpike,true),
-                waitMs(2000.0),
-                rampSS.rampIntake()
+            Groups.parallel(
+                runLTS(),
+                Groups.deadline(
+                    runLTS(),
+                    waitMs(2000.0),
+                    rampSS.rampIntake()
+                ),
             ),
             rampSS.rampHold(),
             follow(follower, AutoPoseUtil.leftSpikeToHiveFour,true),
-            firingSS.execFiring(sweepSS, rampSS)
+            firingSS.execFiring(sweepSS, rampSS, pushServoSS),
         )
     }
 }

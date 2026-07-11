@@ -5,13 +5,15 @@ import com.pedropathing.ivy.commands.Commands.waitMs
 import com.pedropathing.ivy.groups.Groups.sequential
 
 class FiringSS {
-    fun execFiring(sweepSS: SweepSS, rampSS: RampSS): Command {
+    fun execFiring(sweepSS: SweepSS, rampSS: RampSS, pushServoSS: PushServoSS): Command {
         return sequential(
+            pushServoSS.runPush,
             rampSS.rampFire(),
             waitMs(3000.0),
             sweepSS.execSweepServo(),
             waitMs(3000.0),
-            rampSS.rampIntake()
+            rampSS.rampIntake(),
+            pushServoSS.stopPush
         )
     }
 }
