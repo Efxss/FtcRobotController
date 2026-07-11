@@ -37,7 +37,9 @@ class TeleOP : OutReachOpMode() {
 
         firing.apply {
             startFiring(gamepad1.crossWasReleased())
+            startFastFiring(gamepad1.psWasReleased())
             update()
+            fastUpdate()
         }
 
         getDebugUtil().showAllDebug(

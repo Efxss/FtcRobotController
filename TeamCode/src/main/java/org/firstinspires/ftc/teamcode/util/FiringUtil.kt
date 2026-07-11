@@ -30,7 +30,11 @@ class FiringUtil(
         IDLE, SPIN_UP, MOVE_DEXER, WAIT_DEXER, FIRE_CAM, WAIT_CAM_FIRE, CAM_HOME, WAIT_CAM_HOME, DONE
     }
 
+    private enum class FastFiringState {
+        IDLE, SPIN_UP, MOVE_DEXER, WAIT_DEXER, FIRE_CAM, WAIT_CAM_FIRE, CAM_HOME, WAIT_CAM_HOME, DONE
+    }
     private var state = FiringState.IDLE
+    private var fastState = FastFiringState.IDLE
     private var currentStep = 0
     private val steps: Array<() -> Unit> = arrayOf(
         { spinDexer.fireTwo() },
@@ -96,6 +100,62 @@ class FiringUtil(
         }
     }
 
+    fun fastUpdate() {
+        when (fastState) {
+            FastFiringState.IDLE -> { }
+
+            FastFiringState.SPIN_UP -> {
+                MathUtil.setMotorVelocityFromPseudoPower(flyWheel, maxPower, velocityPowerScale, pidf)
+                currentStep = 0
+                fastState = FastFiringState.MOVE_DEXER
+                timer.reset()
+            }
+
+            FastFiringState.MOVE_DEXER -> {
+                if (timer.milliseconds() >= 650) {
+                    steps[currentStep]()
+                    timer.reset()
+                    fastState = FastFiringState.WAIT_DEXER
+                }
+            }
+
+            FastFiringState.WAIT_DEXER -> {
+                if (timer.milliseconds() >= 1500) {
+                    cam.fire()
+                    timer.reset()
+                    fastState = FastFiringState.FIRE_CAM
+                }
+            }
+
+            FastFiringState.FIRE_CAM -> {
+                if (timer.milliseconds() >= 350) {
+                    cam.home()
+                    timer.reset()
+                    fastState = FastFiringState.WAIT_CAM_HOME
+                }
+            }
+
+            FastFiringState.WAIT_CAM_HOME -> {
+                if (timer.milliseconds() >= 150) {
+                    currentStep++
+                    if (currentStep < steps.size) {
+                        timer.reset()
+                        fastState = FastFiringState.MOVE_DEXER
+                    } else {
+                        fastState = FastFiringState.DONE
+                    }
+                }
+            }
+
+            FastFiringState.DONE -> {
+                spinDexer.loadOne(true)
+                flyWheel.power = 0.0
+                fastState = FastFiringState.IDLE
+            }
+
+            else -> {}
+        }
+    }
     /** Call this function to enter the firing sequence */
     fun startFiring(button: Boolean) {
         if (button && state == FiringState.IDLE) {
@@ -103,6 +163,11 @@ class FiringUtil(
         }
     }
 
+    fun startFastFiring(button: Boolean) {
+        if (button && fastState == FastFiringState.IDLE) {
+            fastState = FastFiringState.SPIN_UP
+        }
+    }
     /** This function will return true if the robot is firing else it will return false */
     fun isFiring(): Boolean = state != FiringState.IDLE
 
