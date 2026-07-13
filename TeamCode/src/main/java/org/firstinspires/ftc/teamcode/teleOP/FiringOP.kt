@@ -8,8 +8,8 @@ import org.firstinspires.ftc.teamcode.subSystems.SpinDexerSS
 import org.firstinspires.ftc.teamcode.util.CenterUtil
 import org.firstinspires.ftc.teamcode.util.FiringUtil
 
-@TeleOp(name = "TeleOP", group = "Main TeleOP")
-class TeleOP : OutReachOpMode() {
+@TeleOp(name = "Firing TeleOP", group = "TeleOP")
+class FiringOP : OutReachOpMode() {
     private lateinit var centerUtil : CenterUtil
     private lateinit var spinDexer : SpinDexerSS
     private lateinit var firing : FiringUtil

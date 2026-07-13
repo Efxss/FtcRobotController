@@ -28,4 +28,34 @@ class DriveUtil (
         MathUtil.setMotorVelocityFromPseudoPower(lDrive, leftPower, velocityPowerScale, pidf)
         MathUtil.setMotorVelocityFromPseudoPower(rDrive, rightPower, velocityPowerScale, pidf)
     }
+    fun setDrivePowersForTicks(leftPower: Double, rightPower: Double, ticks: Int) {
+        if (lDrive.currentPosition >= ticks) {
+            MathUtil.setMotorVelocityFromPseudoPower(lDrive, leftPower, velocityPowerScale, pidf)
+            MathUtil.setMotorVelocityFromPseudoPower(rDrive, rightPower, velocityPowerScale, pidf)
+        } else {
+            MathUtil.setMotorVelocityFromPseudoPower(lDrive, 0.0, velocityPowerScale, pidf)
+            MathUtil.setMotorVelocityFromPseudoPower(rDrive, 0.0, velocityPowerScale, pidf)
+        }
+    }
+    fun setDrivePowersForPositiveTicks(leftPower: Double, rightPower: Double, ticks: Int) {
+        if (lDrive.currentPosition <= ticks) {
+            MathUtil.setMotorVelocityFromPseudoPower(lDrive, leftPower, velocityPowerScale, pidf)
+            MathUtil.setMotorVelocityFromPseudoPower(rDrive, rightPower, velocityPowerScale, pidf)
+        } else {
+            MathUtil.setMotorVelocityFromPseudoPower(lDrive, 0.0, velocityPowerScale, pidf)
+            MathUtil.setMotorVelocityFromPseudoPower(rDrive, 0.0, velocityPowerScale, pidf)
+        }
+    }
+    fun resetTicks() {
+        lDrive.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        rDrive.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        lDrive.mode = DcMotor.RunMode.RUN_USING_ENCODER
+        rDrive.mode = DcMotor.RunMode.RUN_USING_ENCODER
+    }
+    fun lDriveTicks(): Int {
+        return lDrive.currentPosition
+    }
+    fun rDriveTicks(): Int {
+        return rDrive.currentPosition
+    }
 }
