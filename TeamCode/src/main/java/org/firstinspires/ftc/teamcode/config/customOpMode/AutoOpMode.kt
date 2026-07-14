@@ -142,6 +142,7 @@ abstract class AutoOpMode : OpMode() {
         ids[{ follower.pose == AutoPoseUtil.startPose } as BooleanSupplier] = runLTS()
         ids[{ follower.pose == AutoPoseUtil.startPose } as BooleanSupplier] = follow(follower,AutoPoseUtil.startToLeftCorner,true)*/
         return Groups.sequential(
+            rampSS.rampIntake(),
             follow(follower,AutoPoseUtil.startToLeftCorner,true, 0.3),
             rampSS.rampHold(),
             Groups.parallel(

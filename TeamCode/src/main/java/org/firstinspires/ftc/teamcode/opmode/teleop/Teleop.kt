@@ -24,7 +24,7 @@ class Teleop : TeleOpMode() {
     }
 
     override fun onStart() {
-        //follower.startTeleopDrive()
+        follower.startTeleopDrive()
     }
 
     override fun onLoop() {
