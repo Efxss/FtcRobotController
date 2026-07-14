@@ -137,13 +137,12 @@ abstract class AutoOpMode : OpMode() {
 
     // Custom functions
     fun runAuto(): Command {
-        fun runLTS(): Command { return Groups.sequential(follow(follower, AutoPoseUtil.leftCornerToLeftSpike,true)) }
+        fun runLTS(): Command { return Groups.sequential(follow(follower, AutoPoseUtil.leftCornerToLeftSpike,true, 0.3)) }
         /*var ids = LinkedHashMap<BooleanSupplier, Command>()
         ids[{ follower.pose == AutoPoseUtil.startPose } as BooleanSupplier] = runLTS()
         ids[{ follower.pose == AutoPoseUtil.startPose } as BooleanSupplier] = follow(follower,AutoPoseUtil.startToLeftCorner,true)*/
         return Groups.sequential(
-            intakeSS.runIntakeCommand,
-            follow(follower,AutoPoseUtil.startToLeftCorner,true),
+            follow(follower,AutoPoseUtil.startToLeftCorner,true, 0.3),
             rampSS.rampHold(),
             Groups.parallel(
                 runLTS(),
@@ -154,7 +153,7 @@ abstract class AutoOpMode : OpMode() {
                 ),
             ),
             rampSS.rampHold(),
-            follow(follower, AutoPoseUtil.leftSpikeToHiveFour,true),
+            follow(follower, AutoPoseUtil.leftSpikeToHiveFour,true,0.3),
             firingSS.execFiring(sweepSS, rampSS, pushServoSS)
         )
     }

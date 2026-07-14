@@ -28,7 +28,7 @@ class Teleop : TeleOpMode() {
     }
 
     override fun onLoop() {
-        /*follower.update()
+        follower.update()
         if (gamepad1.leftBumperWasPressed() && llss.isTagSeen(alliance) && !isAutoTurning) {
             follower.turn(llss.currentTagXRad(alliance, autoTurnPixel))
             isAutoTurning = true
@@ -45,7 +45,7 @@ class Teleop : TeleOpMode() {
             }
         } else {
             follower.setTeleOpDrive(forward, strafe, rotate, false)
-        }*/
+        }
         rampSS.update(rampState)
         if (gamepad1.leftBumperWasReleased()) sweepSS.execSweepServo().schedule()
         //if (gamepad1.crossWasReleased()) firingSS.execFiring(sweepSS, rampSS).schedule()

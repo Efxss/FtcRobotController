@@ -11,15 +11,15 @@ object AutoPoseUtil {
     val leftSpike = Pose(23.7, 75.2, Math.toRadians(90.0))
     val hiveFourLeftSide = Pose(54.0, 132.0, Math.toRadians(0.0))
     val startToLeftCorner: PathChain by lazy { follower.pathBuilder()
-        .addPath(BezierLine(startPose, leftCorner))
-        .setConstantHeadingInterpolation(180.0)
+        .addPath((BezierLine(startPose, leftCorner)))
+        .setConstantHeadingInterpolation(leftCorner.heading)
         .build() }
     val leftCornerToLeftSpike: PathChain by lazy { follower.pathBuilder()
-        .addPath(BezierLine(leftCorner, leftSpike))
+        .addPath((BezierLine(leftCorner, leftSpike)))
         .setLinearHeadingInterpolation(leftSpike.heading, leftSpike.heading)
         .build()}
     val leftSpikeToHiveFour: PathChain by lazy { follower.pathBuilder()
-        .addPath(BezierLine(leftSpike, hiveFourLeftSide))
+        .addPath((BezierLine(leftSpike, hiveFourLeftSide)))
         .setConstantHeadingInterpolation(0.0)
         .build() }
     // Example to go off of
