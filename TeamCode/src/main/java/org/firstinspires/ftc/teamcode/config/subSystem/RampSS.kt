@@ -18,8 +18,8 @@ class RampSS(
             STATE.FIRE -> rampServo.position = (0.53)
         }
     }
-    fun rampFire(): Command { return instant { VariableStateUtil.rampState = RampSS.STATE.FIRE } }
-    fun rampHold(): Command { return  instant { VariableStateUtil.rampState = RampSS.STATE.HOLD }}
     fun rampIntake(): Command { return instant { VariableStateUtil.rampState = RampSS.STATE.INTAKE } }
+    fun rampHold(): Command { return  instant { VariableStateUtil.rampState = RampSS.STATE.HOLD }}
+    fun rampFire(): Command { return instant { VariableStateUtil.rampState = RampSS.STATE.FIRE } }
     fun position(): Double = rampServo.position
 }

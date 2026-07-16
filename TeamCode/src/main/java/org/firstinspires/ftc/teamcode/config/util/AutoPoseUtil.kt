@@ -7,15 +7,19 @@ import com.pedropathing.paths.PathChain
 object AutoPoseUtil {
     lateinit var follower: Follower
     val startPose = Pose(31.7, 8.0, Math.toRadians(180.0))
-    val leftCorner = Pose(12.0, 8.0, Math.toRadians(180.0))
-    val leftSpike = Pose(23.7, 75.2, Math.toRadians(90.0))
+    val bottomLeftCorner = Pose(10.0, 8.0, Math.toRadians(180.0))
+    val bottomRightCorner = bottomLeftCorner.mirror()!!
+    val topLeftCorner = Pose(10.0, 132.0, Math.toRadians(180.0))
+    val topRightCorner = topLeftCorner.mirror()!!
+    val leftSpike = Pose(23.7, 76.5, Math.toRadians(90.0))
+    val rightSpike = leftSpike.mirror()!!
     val hiveFourLeftSide = Pose(54.0, 132.0, Math.toRadians(0.0))
     val startToLeftCorner: PathChain by lazy { follower.pathBuilder()
-        .addPath((BezierLine(startPose, leftCorner)))
-        .setConstantHeadingInterpolation(leftCorner.heading)
+        .addPath((BezierLine(startPose, bottomLeftCorner)))
+        .setConstantHeadingInterpolation(bottomLeftCorner.heading)
         .build() }
-    val leftCornerToLeftSpike: PathChain by lazy { follower.pathBuilder()
-        .addPath((BezierLine(leftCorner, leftSpike)))
+    val bottomLeftCornerToLeftSpike: PathChain by lazy { follower.pathBuilder()
+        .addPath((BezierLine(bottomLeftCorner, leftSpike)))
         .setLinearHeadingInterpolation(leftSpike.heading, leftSpike.heading)
         .build()}
     val leftSpikeToHiveFour: PathChain by lazy { follower.pathBuilder()

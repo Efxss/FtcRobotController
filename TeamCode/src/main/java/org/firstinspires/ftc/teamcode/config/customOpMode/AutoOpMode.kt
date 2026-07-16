@@ -137,7 +137,7 @@ abstract class AutoOpMode : OpMode() {
 
     // Custom functions
     fun runAuto(): Command {
-        fun runLTS(): Command { return Groups.sequential(follow(follower, AutoPoseUtil.leftCornerToLeftSpike,true, 0.3)) }
+        fun runLTS(): Command { return Groups.sequential(follow(follower, AutoPoseUtil.bottomLeftCornerToLeftSpike,true, 0.3)) }
         /*var ids = LinkedHashMap<BooleanSupplier, Command>()
         ids[{ follower.pose == AutoPoseUtil.startPose } as BooleanSupplier] = runLTS()
         ids[{ follower.pose == AutoPoseUtil.startPose } as BooleanSupplier] = follow(follower,AutoPoseUtil.startToLeftCorner,true)*/
