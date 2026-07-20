@@ -8,10 +8,6 @@ class PushServoSS(
     hardwareMap: HardwareMap
 ) {
     private val pushServo: CRServo = hardwareMap.get(CRServo::class.java, "push")
-    val runPush: Command = Command.build()
-        .setStart { pushServo.power = 1.0 }
-        .setEnd { pushServo.power = 0.0 }
-    val stopPush: Command = Command.build()
-        .setStart { pushServo.power = 0.0 }
-        .setEnd { pushServo.power = 1.0 }
+    val runPush: Command = com.pedropathing.ivy.commands.Commands.instant { pushServo.power = 1.0 }
+    val stopPush: Command = com.pedropathing.ivy.commands.Commands.instant { pushServo.power = 0.0 }
 }

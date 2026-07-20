@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.config.util
 import com.pedropathing.follower.Follower
 import com.pedropathing.geometry.BezierLine
 import com.pedropathing.geometry.Pose
+import com.pedropathing.paths.HeadingInterpolator
 import com.pedropathing.paths.PathChain
 
 object AutoPoseUtil {
@@ -11,20 +12,32 @@ object AutoPoseUtil {
     val bottomRightCorner = bottomLeftCorner.mirror()!!
     val topLeftCorner = Pose(10.0, 132.0, Math.toRadians(180.0))
     val topRightCorner = topLeftCorner.mirror()!!
-    val leftSpike = Pose(23.7, 76.5, Math.toRadians(90.0))
+    val leftSpike = Pose(23.7, 78.5, Math.toRadians(90.0))
     val rightSpike = leftSpike.mirror()!!
-    val hiveFourLeftSide = Pose(54.0, 132.0, Math.toRadians(0.0))
+    val hiveFourLeftSide = Pose(56.0, 132.0, Math.toRadians(0.0))
     val startToLeftCorner: PathChain by lazy { follower.pathBuilder()
         .addPath((BezierLine(startPose, bottomLeftCorner)))
         .setConstantHeadingInterpolation(bottomLeftCorner.heading)
         .build() }
     val bottomLeftCornerToLeftSpike: PathChain by lazy { follower.pathBuilder()
         .addPath((BezierLine(bottomLeftCorner, leftSpike)))
-        .setLinearHeadingInterpolation(leftSpike.heading, leftSpike.heading)
+        //.setLinearHeadingInterpolation(leftSpike.heading, leftSpike.heading)
+        .setHeadingInterpolation ( HeadingInterpolator.piecewise(
+            HeadingInterpolator.PiecewiseNode(
+                0.0,
+                0.4,
+                HeadingInterpolator.constant(bottomLeftCorner.heading)
+            ),
+            HeadingInterpolator.PiecewiseNode(
+                0.4,
+                1.0,
+                HeadingInterpolator.linear(bottomLeftCorner.heading, leftSpike.heading)
+            )
+        ) )
         .build()}
     val leftSpikeToHiveFour: PathChain by lazy { follower.pathBuilder()
         .addPath((BezierLine(leftSpike, hiveFourLeftSide)))
-        .setConstantHeadingInterpolation(0.0)
+        .setConstantHeadingInterpolation(hiveFourLeftSide.heading)
         .build() }
     // Example to go off of
     /*val startPoseBlueDepoPose = Pose(32.7, 135.3, Math.toRadians(90.0))

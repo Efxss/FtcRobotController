@@ -5,7 +5,7 @@ import com.bylazar.telemetry.TelemetryManager
 import com.pedropathing.follower.Follower
 import com.pedropathing.ivy.Command
 import com.pedropathing.ivy.Scheduler
-import com.pedropathing.ivy.commands.Commands.waitMs
+import com.pedropathing.ivy.commands.Commands
 import com.pedropathing.ivy.groups.Groups
 import com.pedropathing.ivy.pedro.PedroCommands.follow
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
@@ -20,6 +20,7 @@ import org.firstinspires.ftc.teamcode.config.util.DrawingUtil
 import org.firstinspires.ftc.teamcode.config.util.HubUtil
 import org.firstinspires.ftc.teamcode.config.util.PanelsDebugUtil
 import org.firstinspires.ftc.teamcode.config.util.VariableStateUtil
+import java.util.function.BooleanSupplier
 
 /**
  * Custom-made OpMode to copy and make a real OpMode
@@ -137,24 +138,26 @@ abstract class AutoOpMode : OpMode() {
 
     // Custom functions
     fun runAuto(): Command {
-        fun runLTS(): Command { return Groups.sequential(follow(follower, AutoPoseUtil.bottomLeftCornerToLeftSpike,true, 0.3)) }
+        fun runLTS(): Command { return Groups.sequential(follow(follower, AutoPoseUtil.bottomLeftCornerToLeftSpike,true, 0.5)) }
         /*var ids = LinkedHashMap<BooleanSupplier, Command>()
         ids[{ follower.pose == AutoPoseUtil.startPose } as BooleanSupplier] = runLTS()
         ids[{ follower.pose == AutoPoseUtil.startPose } as BooleanSupplier] = follow(follower,AutoPoseUtil.startToLeftCorner,true)*/
+        var cases = LinkedHashMap<BooleanSupplier, Command>()
+        cases[BooleanSupplier {follower.distanceRemaining <= 15.0}] = rampSS.rampIntake()
+        val handlePos: Command = Commands.branch(cases)
         return Groups.sequential(
             rampSS.rampIntake(),
-            follow(follower,AutoPoseUtil.startToLeftCorner,true, 0.3),
+            follow(follower,AutoPoseUtil.startToLeftCorner,true, 0.5),
             rampSS.rampHold(),
             Groups.parallel(
                 runLTS(),
                 Groups.deadline(
                     runLTS(),
-                    waitMs(2000.0),
-                    rampSS.rampIntake()
+                    Groups.loop(handlePos)
                 ),
             ),
             rampSS.rampHold(),
-            follow(follower, AutoPoseUtil.leftSpikeToHiveFour,true,0.3),
+            follow(follower, AutoPoseUtil.leftSpikeToHiveFour,true,0.5),
             firingSS.execFiring(sweepSS, rampSS, pushServoSS)
         )
     }
