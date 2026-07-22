@@ -9,9 +9,9 @@ class FiringSS {
         return sequential(
             pushServoSS.runPush,
             rampSS.rampFire(),
-            waitMs(3000.0),
+            waitMs(2000.0),
             sweepSS.execSweepServo(),
-            waitMs(3000.0),
+            waitMs(2000.0),
             rampSS.rampIntake(),
             pushServoSS.stopPush
         )

@@ -12,7 +12,7 @@ object AutoPoseUtil {
     val bottomRightCorner = bottomLeftCorner.mirror()!!
     val topLeftCorner = Pose(10.0, 132.0, Math.toRadians(180.0))
     val topRightCorner = topLeftCorner.mirror()!!
-    val leftSpike = Pose(23.7, 78.5, Math.toRadians(90.0))
+    val leftSpike = Pose(23.7, 85.0, Math.toRadians(90.0))
     val rightSpike = leftSpike.mirror()!!
     val hiveFourLeftSide = Pose(56.0, 132.0, Math.toRadians(0.0))
     val startToLeftCorner: PathChain by lazy { follower.pathBuilder()
@@ -25,13 +25,13 @@ object AutoPoseUtil {
         .setHeadingInterpolation ( HeadingInterpolator.piecewise(
             HeadingInterpolator.PiecewiseNode(
                 0.0,
-                0.4,
+                0.1,
                 HeadingInterpolator.constant(bottomLeftCorner.heading)
             ),
             HeadingInterpolator.PiecewiseNode(
-                0.4,
+                0.1,
                 1.0,
-                HeadingInterpolator.linear(bottomLeftCorner.heading, leftSpike.heading)
+                HeadingInterpolator.constant(leftSpike.heading)
             )
         ) )
         .build()}

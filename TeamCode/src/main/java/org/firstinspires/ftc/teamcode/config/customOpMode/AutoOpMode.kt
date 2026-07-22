@@ -148,6 +148,7 @@ abstract class AutoOpMode : OpMode() {
         return Groups.sequential(
             rampSS.rampIntake(),
             follow(follower,AutoPoseUtil.startToLeftCorner,true, 0.5),
+            Commands.waitMs(750.0),
             rampSS.rampHold(),
             Groups.parallel(
                 runLTS(),

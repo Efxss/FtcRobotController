@@ -14,12 +14,12 @@ class RampSS(
     fun update(state: STATE) {
         when (state) {
             STATE.INTAKE -> rampServo.position = (0.0)
-            STATE.HOLD -> rampServo.position = (0.34)
+            STATE.HOLD -> rampServo.position = (0.25)
             STATE.FIRE -> rampServo.position = (0.53)
         }
     }
-    fun rampIntake(): Command { return instant { VariableStateUtil.rampState = RampSS.STATE.INTAKE } }
-    fun rampHold(): Command { return  instant { VariableStateUtil.rampState = RampSS.STATE.HOLD }}
-    fun rampFire(): Command { return instant { VariableStateUtil.rampState = RampSS.STATE.FIRE } }
+    fun rampIntake(): Command { return instant { VariableStateUtil.rampState = STATE.INTAKE } }
+    fun rampHold(): Command { return  instant { VariableStateUtil.rampState = STATE.HOLD }}
+    fun rampFire(): Command { return instant { VariableStateUtil.rampState = STATE.FIRE } }
     fun position(): Double = rampServo.position
 }
