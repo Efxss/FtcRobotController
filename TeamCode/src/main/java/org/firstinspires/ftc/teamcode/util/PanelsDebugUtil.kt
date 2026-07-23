@@ -17,7 +17,9 @@ class PanelsDebugUtil (
     ) {
         panels?.apply {
             debug("Current Tag", tagSS.currentTag())
-            debug("Tag List", tagSS.tagList())
+            debug("Tag List Data", tagSS.tagListDat())
+            debug("Tag List Size", tagSS.tagListSize())
+            debug("Last Tag", tagSS.lastTag)
         }
     }
 

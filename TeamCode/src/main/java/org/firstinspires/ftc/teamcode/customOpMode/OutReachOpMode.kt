@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.customOpMode
 import com.bylazar.telemetry.PanelsTelemetry
 import com.bylazar.telemetry.TelemetryManager
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
+import org.firstinspires.ftc.teamcode.subSystems.TagSS
 import org.firstinspires.ftc.teamcode.util.HubUtil
 import org.firstinspires.ftc.teamcode.util.PanelsDebugUtil
 
@@ -16,6 +17,7 @@ abstract class OutReachOpMode : OpMode() {
     private var panels : TelemetryManager? = null
     private lateinit var debugUtil : PanelsDebugUtil
     private lateinit var hubUtil : HubUtil
+    protected lateinit var tagSS: TagSS
 
     // Custom lifecycle hooks
 
@@ -74,6 +76,7 @@ abstract class OutReachOpMode : OpMode() {
     }
 
     final override fun stop() {
+        if (::tagSS.isInitialized) { tagSS.stop() }
         onStop()
     }
 

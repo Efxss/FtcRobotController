@@ -6,9 +6,8 @@ import org.firstinspires.ftc.teamcode.subSystems.TagSS
 
 @TeleOp(name = "Card Programming TeleOP", group = "TeleOP")
 class CardProgOP: OutReachOpMode() {
-    private lateinit var tagSS: TagSS
     override fun onInit() {
-       tagSS = TagSS(hardwareMap)
+        tagSS = TagSS(hardwareMap)
     }
 
     override fun onLoop() {
