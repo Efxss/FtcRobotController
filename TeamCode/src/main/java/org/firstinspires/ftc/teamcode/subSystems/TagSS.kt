@@ -31,7 +31,7 @@ class TagSS(
                    lastTag = detections.id
                    return detections.id
                 } else {
-                    tagList.add(lastTag, tagList.size)
+                    tagList.add(lastTag)
                 }
             }
         }
