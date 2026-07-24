@@ -7,6 +7,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.robotcore.external.navigation.Position
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles
+import org.firstinspires.ftc.teamcode.util.VariableStateUtil
 import org.firstinspires.ftc.vision.VisionPortal
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor
@@ -20,7 +21,6 @@ class TagSS(
     private val cameraPosition: Position = Position(DistanceUnit.INCH, 0.0, 0.0, 0.0, 0)
     private val cameraOrientation = YawPitchRollAngles(AngleUnit.DEGREES, 0.0, -90.0, 0.0, 0)
     private val cameraRes = Size(640, 480)
-    private var tagList = mutableListOf<Int>()
     var lastTag = 0
     init {initAprilTag(hardwareMap, webcamName)}
     fun currentTag(): Int {
@@ -30,22 +30,16 @@ class TagSS(
                 if (detections?.metadata != null) {
                    lastTag = detections.id
                    return detections.id
-                } else {
-                    tagList.add(lastTag)
                 }
             }
+        } else {
+            VariableStateUtil.tagList.add(lastTag)
         }
         return 0
     }
-    fun tagListDat(): MutableList<Int> {
-        return tagList
-    }
-    fun tagListSize(): Int {
-        return tagList.size
-    }
-    fun lastTag(): Int {
-        return lastTag
-    }
+    fun tagListDat(): MutableList<Int> = VariableStateUtil.tagList
+    fun tagListSize(): Int = VariableStateUtil.tagList.size
+    fun lastTag(): Int = lastTag
     private fun initAprilTag(hardwareMap: HardwareMap, webcamName: String) {
         aprilTag = AprilTagProcessor.Builder()
             .setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)

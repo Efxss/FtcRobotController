@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.util
 
+import com.pedropathing.ivy.Command
+import com.pedropathing.ivy.commands.Commands
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.DcMotorSimple
@@ -27,6 +29,24 @@ class DriveUtil (
     fun setDrivePowers(leftPower: Double, rightPower: Double) {
         MathUtil.setMotorVelocityFromPseudoPower(lDrive, leftPower, velocityPowerScale, pidf)
         MathUtil.setMotorVelocityFromPseudoPower(rDrive, rightPower, velocityPowerScale, pidf)
+    }
+    fun setDrivePowerForTicksCommand(leftPower: Double, rightPower: Double, ticks: Int): Command = Commands.instant {
+        if (lDrive.currentPosition >= ticks) {
+            MathUtil.setMotorVelocityFromPseudoPower(lDrive, leftPower, velocityPowerScale, pidf)
+            MathUtil.setMotorVelocityFromPseudoPower(rDrive, rightPower, velocityPowerScale, pidf)
+        } else {
+            MathUtil.setMotorVelocityFromPseudoPower(lDrive, 0.0, velocityPowerScale, pidf)
+            MathUtil.setMotorVelocityFromPseudoPower(rDrive, 0.0, velocityPowerScale, pidf)
+        }
+    }
+    fun setDrivePowersForPositiveTicksCommand(leftPower: Double, rightPower: Double, ticks: Int): Command = Commands.instant {
+        if (lDrive.currentPosition <= ticks) {
+            MathUtil.setMotorVelocityFromPseudoPower(lDrive, leftPower, velocityPowerScale, pidf)
+            MathUtil.setMotorVelocityFromPseudoPower(rDrive, rightPower, velocityPowerScale, pidf)
+        } else {
+            MathUtil.setMotorVelocityFromPseudoPower(lDrive, 0.0, velocityPowerScale, pidf)
+            MathUtil.setMotorVelocityFromPseudoPower(rDrive, 0.0, velocityPowerScale, pidf)
+        }
     }
     fun setDrivePowersForTicks(leftPower: Double, rightPower: Double, ticks: Int) {
         if (lDrive.currentPosition >= ticks) {
