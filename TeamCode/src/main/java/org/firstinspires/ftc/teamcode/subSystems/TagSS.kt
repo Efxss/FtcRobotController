@@ -27,8 +27,8 @@ class TagSS(
         if (tags != null) {
             for (detections in tags) {
                 if (detections?.metadata != null) {
-                    if (VariableStateUtil.tagList.add(detections.id))
-                   return detections.id
+                    if (VariableStateUtil.tagList.add(detections.id)) {}
+                    return detections.id
                 }
             }
         }

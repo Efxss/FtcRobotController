@@ -4,7 +4,6 @@ import com.bylazar.telemetry.TelemetryManager
 import com.qualcomm.robotcore.hardware.Gamepad
 import org.firstinspires.ftc.teamcode.subSystems.CamSS
 import org.firstinspires.ftc.teamcode.subSystems.SpinDexerSS
-import org.firstinspires.ftc.teamcode.subSystems.TagSS
 
 /** A utility script to made display everything related to the robot in one file */
 class PanelsDebugUtil (
@@ -13,13 +12,9 @@ class PanelsDebugUtil (
 
     fun showTempDebug(
         // Input anything need for temp debug
-        tagSS: TagSS
+        vararg data: String
     ) {
-        panels?.apply {
-            debug("Current Tag", tagSS.currentTag())
-            debug("Tag List Data", tagSS.tagListDat())
-            debug("Tag List Size", tagSS.tagListSize())
-        }
+        panels?.debug(data)
     }
 
     /** Calling this function will display all the telemetry related to the robot */

@@ -23,7 +23,9 @@ class CardProgOP: OutReachOpMode() {
 
     override fun onLoop() {
         getDebugUtil().showTempDebug(
-           tagSS
+            "Current Tag: ${tagSS.currentTag()}",
+            "Tag List Data: ${tagSS.tagListDat()}",
+            "Tag List Size: ${tagSS.tagListSize()}"
         )
         getDebugUtil().update(telemetry)
         while (VariableStateUtil.tagList.size > 6) VariableStateUtil.tagList.remove(6)
