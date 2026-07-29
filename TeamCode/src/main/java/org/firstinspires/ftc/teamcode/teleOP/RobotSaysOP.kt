@@ -26,16 +26,16 @@ class RobotSaysOP : OutReachOpMode() {
     }
     override fun onLoop() {
         if (gamepad1.dpad_up) {
-            driveUtil.setDrivePowersForTicks(-0.4,-0.4, -500)
+            driveUtil.setDrivePowerForTicks(-0.4,-0.4, -500)
         } else if (gamepad1.dpadUpWasReleased()) driveUtil.resetTicks()
         if (gamepad1.dpad_down) {
-            driveUtil.setDrivePowersForPositiveTicks(0.4,0.4, 500)
+            driveUtil.setDrivePowerForPositiveTicks(0.4,0.4, 500)
         } else if (gamepad1.dpadDownWasReleased()) driveUtil.resetTicks()
         if (gamepad1.dpad_left) {
-            driveUtil.setDrivePowersForPositiveTicks(0.4,-0.4, 500)
+            driveUtil.setDrivePowerForPositiveTicks(0.4,-0.4, 500)
         } else if (gamepad1.dpadLeftWasReleased()) driveUtil.resetTicks()
         if (gamepad1.dpad_right) {
-            driveUtil.setDrivePowersForTicks(-0.4,0.4, -500)
+            driveUtil.setDrivePowerForTicks(-0.4,0.4, -500)
         } else if (gamepad1.dpadRightWasReleased()) driveUtil.resetTicks()
         if (gamepad1.crossWasReleased()) {
             driveUtil.resetTicks()

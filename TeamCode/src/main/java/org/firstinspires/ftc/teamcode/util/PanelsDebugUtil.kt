@@ -10,12 +10,8 @@ class PanelsDebugUtil (
     private val panels : TelemetryManager?
 ) {
 
-    fun showTempDebug(
-        // Input anything need for temp debug
-        vararg data: String
-    ) {
-        panels?.debug(data)
-    }
+    /** Calling this function will display any temporary telemetry related to the robot or such things */
+    fun showTempDebug(vararg data: String) { panels?.debug(data) }
 
     /** Calling this function will display all the telemetry related to the robot */
     fun showAllDebug(

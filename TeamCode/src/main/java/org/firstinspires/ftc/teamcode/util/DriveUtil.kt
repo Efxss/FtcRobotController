@@ -39,7 +39,7 @@ class DriveUtil (
             MathUtil.setMotorVelocityFromPseudoPower(rDrive, 0.0, velocityPowerScale, pidf)
         }
     }
-    fun setDrivePowersForPositiveTicksCommand(leftPower: Double, rightPower: Double, ticks: Int): Command = Commands.instant {
+    fun setDrivePowerForPositiveTicksCommand(leftPower: Double, rightPower: Double, ticks: Int): Command = Commands.instant {
         if (lDrive.currentPosition <= ticks) {
             MathUtil.setMotorVelocityFromPseudoPower(lDrive, leftPower, velocityPowerScale, pidf)
             MathUtil.setMotorVelocityFromPseudoPower(rDrive, rightPower, velocityPowerScale, pidf)
@@ -48,7 +48,7 @@ class DriveUtil (
             MathUtil.setMotorVelocityFromPseudoPower(rDrive, 0.0, velocityPowerScale, pidf)
         }
     }
-    fun setDrivePowersForTicks(leftPower: Double, rightPower: Double, ticks: Int) {
+    fun setDrivePowerForTicks(leftPower: Double, rightPower: Double, ticks: Int) {
         if (lDrive.currentPosition >= ticks) {
             MathUtil.setMotorVelocityFromPseudoPower(lDrive, leftPower, velocityPowerScale, pidf)
             MathUtil.setMotorVelocityFromPseudoPower(rDrive, rightPower, velocityPowerScale, pidf)
@@ -57,7 +57,7 @@ class DriveUtil (
             MathUtil.setMotorVelocityFromPseudoPower(rDrive, 0.0, velocityPowerScale, pidf)
         }
     }
-    fun setDrivePowersForPositiveTicks(leftPower: Double, rightPower: Double, ticks: Int) {
+    fun setDrivePowerForPositiveTicks(leftPower: Double, rightPower: Double, ticks: Int) {
         if (lDrive.currentPosition <= ticks) {
             MathUtil.setMotorVelocityFromPseudoPower(lDrive, leftPower, velocityPowerScale, pidf)
             MathUtil.setMotorVelocityFromPseudoPower(rDrive, rightPower, velocityPowerScale, pidf)

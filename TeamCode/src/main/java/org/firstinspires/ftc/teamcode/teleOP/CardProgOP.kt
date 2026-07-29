@@ -20,7 +20,6 @@ class CardProgOP: OutReachOpMode() {
         tagSS = TagSS(hardwareMap)
         driveUtil = DriveUtil(hardwareMap, 0.3, 1.0, movingPidf)
     }
-
     override fun onLoop() {
         getDebugUtil().showTempDebug(
             "Current Tag: ${tagSS.currentTag()}",
@@ -28,16 +27,16 @@ class CardProgOP: OutReachOpMode() {
             "Tag List Size: ${tagSS.tagListSize()}"
         )
         getDebugUtil().update(telemetry)
-        while (VariableStateUtil.tagList.size > 6) VariableStateUtil.tagList.remove(6)
+        while (VariableStateUtil.tagList.size > 6){VariableStateUtil.tagList.remove(6)}
         val idCase = LinkedHashMap<BooleanSupplier, Command>()
         handleTags = Commands.branch(idCase)
         for (tags in VariableStateUtil.tagList) {
-            idCase[BooleanSupplier {tags == 21}] = driveUtil.setDrivePowersForPositiveTicksCommand(-0.4,-0.4, -500)
-            idCase[BooleanSupplier {tags == 22}] = driveUtil.setDrivePowersForPositiveTicksCommand(-0.4,-0.4, -500)
-            idCase[BooleanSupplier {tags == 23}] = driveUtil.setDrivePowersForPositiveTicksCommand(-0.4,-0.4, -500)
-            idCase[BooleanSupplier {tags == 24}] = driveUtil.setDrivePowersForPositiveTicksCommand(-0.4,-0.4, -500)
+            idCase[BooleanSupplier {tags == 21}] = driveUtil.setDrivePowerForTicksCommand(-0.4,-0.4, -500) // Up
+            idCase[BooleanSupplier {tags == 22}] = driveUtil.setDrivePowerForTicksCommand(-0.4,0.4, -500) // Right
+            idCase[BooleanSupplier {tags == 23}] = driveUtil.setDrivePowerForPositiveTicksCommand(0.4,-0.4, 500) // Left
+            idCase[BooleanSupplier {tags == 24}] = driveUtil.setDrivePowerForPositiveTicksCommand(0.4,0.4, 500) // Down
         }
         if (gamepad1.psWasReleased()) execCards().schedule()
     }
-    fun execCards(): Command = Groups.parallel(handleTags)
+    fun execCards(): Command = Groups.sequential(handleTags)
 }
