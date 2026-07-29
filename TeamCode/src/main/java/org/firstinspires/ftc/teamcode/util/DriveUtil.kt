@@ -30,24 +30,14 @@ class DriveUtil (
         MathUtil.setMotorVelocityFromPseudoPower(lDrive, leftPower, velocityPowerScale, pidf)
         MathUtil.setMotorVelocityFromPseudoPower(rDrive, rightPower, velocityPowerScale, pidf)
     }
-    fun setDrivePowerForTicksCommand(leftPower: Double, rightPower: Double, ticks: Int): Command = Commands.instant {
-        if (lDrive.currentPosition >= ticks) {
+    fun setDrivePowerForTicksCommand(leftPower: Double, rightPower: Double, ticks: Int): Command = Commands.infinite {
             MathUtil.setMotorVelocityFromPseudoPower(lDrive, leftPower, velocityPowerScale, pidf)
             MathUtil.setMotorVelocityFromPseudoPower(rDrive, rightPower, velocityPowerScale, pidf)
-        } else {
-            MathUtil.setMotorVelocityFromPseudoPower(lDrive, 0.0, velocityPowerScale, pidf)
-            MathUtil.setMotorVelocityFromPseudoPower(rDrive, 0.0, velocityPowerScale, pidf)
-        }
-    }
-    fun setDrivePowerForPositiveTicksCommand(leftPower: Double, rightPower: Double, ticks: Int): Command = Commands.instant {
-        if (lDrive.currentPosition <= ticks) {
+    }.until { lDrive.currentPosition <= ticks }.then(resetTicksCommand())
+    fun setDrivePowerForPositiveTicksCommand(leftPower: Double, rightPower: Double, ticks: Int): Command = Commands.infinite {
             MathUtil.setMotorVelocityFromPseudoPower(lDrive, leftPower, velocityPowerScale, pidf)
             MathUtil.setMotorVelocityFromPseudoPower(rDrive, rightPower, velocityPowerScale, pidf)
-        } else {
-            MathUtil.setMotorVelocityFromPseudoPower(lDrive, 0.0, velocityPowerScale, pidf)
-            MathUtil.setMotorVelocityFromPseudoPower(rDrive, 0.0, velocityPowerScale, pidf)
-        }
-    }
+    }.until { lDrive.currentPosition >= ticks }.then(resetTicksCommand())
     fun setDrivePowerForTicks(leftPower: Double, rightPower: Double, ticks: Int) {
         if (lDrive.currentPosition >= ticks) {
             MathUtil.setMotorVelocityFromPseudoPower(lDrive, leftPower, velocityPowerScale, pidf)
@@ -67,6 +57,12 @@ class DriveUtil (
         }
     }
     fun resetTicks() {
+        lDrive.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        rDrive.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        lDrive.mode = DcMotor.RunMode.RUN_USING_ENCODER
+        rDrive.mode = DcMotor.RunMode.RUN_USING_ENCODER
+    }
+    fun resetTicksCommand(): Command = Commands.instant {
         lDrive.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
         rDrive.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
         lDrive.mode = DcMotor.RunMode.RUN_USING_ENCODER

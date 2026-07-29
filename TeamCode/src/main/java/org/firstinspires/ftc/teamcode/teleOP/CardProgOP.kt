@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.teleOP
 
 import com.pedropathing.ivy.Command
+import com.pedropathing.ivy.Scheduler
 import com.pedropathing.ivy.commands.Commands
 import com.pedropathing.ivy.groups.Groups
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
@@ -9,34 +10,42 @@ import org.firstinspires.ftc.teamcode.customOpMode.OutReachOpMode
 import org.firstinspires.ftc.teamcode.subSystems.TagSS
 import org.firstinspires.ftc.teamcode.util.DriveUtil
 import org.firstinspires.ftc.teamcode.util.VariableStateUtil
-import java.util.function.BooleanSupplier
 
 @TeleOp(name = "Card Programming TeleOP", group = "TeleOP")
 class CardProgOP: OutReachOpMode() {
     lateinit var driveUtil: DriveUtil
     lateinit var handleTags: Command
+    val drivePower = 0.2
     val movingPidf = PIDFCoefficients(10.0, 0.0, 0.05, 0.025)
     override fun onInit() {
         tagSS = TagSS(hardwareMap)
         driveUtil = DriveUtil(hardwareMap, 0.3, 1.0, movingPidf)
     }
     override fun onLoop() {
-        getDebugUtil().showTempDebug(
-            "Current Tag: ${tagSS.currentTag()}",
-            "Tag List Data: ${tagSS.tagListDat()}",
-            "Tag List Size: ${tagSS.tagListSize()}"
-        )
+        Scheduler.execute()
+        tagSS.update(runtime, ledss)
+        getDebugUtil().showTempDebug(tagSS, driveUtil)
         getDebugUtil().update(telemetry)
-        while (VariableStateUtil.tagList.size > 6){VariableStateUtil.tagList.remove(6)}
-        val idCase = LinkedHashMap<BooleanSupplier, Command>()
-        handleTags = Commands.branch(idCase)
-        for (tags in VariableStateUtil.tagList) {
-            idCase[BooleanSupplier {tags == 21}] = driveUtil.setDrivePowerForTicksCommand(-0.4,-0.4, -500) // Up
-            idCase[BooleanSupplier {tags == 22}] = driveUtil.setDrivePowerForTicksCommand(-0.4,0.4, -500) // Right
-            idCase[BooleanSupplier {tags == 23}] = driveUtil.setDrivePowerForPositiveTicksCommand(0.4,-0.4, 500) // Left
-            idCase[BooleanSupplier {tags == 24}] = driveUtil.setDrivePowerForPositiveTicksCommand(0.4,0.4, 500) // Down
+        if (gamepad1.psWasReleased()) {
+            execCards().schedule()
+            if (!Scheduler.isRunning(execCards())) {
+               VariableStateUtil.tagList.clear()
+               tagSS.clearList().schedule()
+            }
         }
-        if (gamepad1.psWasReleased()) execCards().schedule()
     }
-    fun execCards(): Command = Groups.sequential(handleTags)
+    fun cardCommand(id: Int): Command? = when (id) {
+        21 -> driveUtil.setDrivePowerForTicksCommand(-drivePower, -drivePower, -250) // Up
+        22 -> driveUtil.setDrivePowerForTicksCommand(-drivePower, drivePower, -550) // Right
+        23 -> driveUtil.setDrivePowerForPositiveTicksCommand(drivePower, -drivePower, 500) // Left
+        24 -> driveUtil.setDrivePowerForPositiveTicksCommand(drivePower, drivePower, 250) // Down
+        else -> null
+    }
+    fun execCards(): Command = Groups.sequential(*VariableStateUtil.tagList.mapNotNull { cardCommand(it) }.toTypedArray()).then(Commands.instant { tagSS.clearList() })
+    override fun onStop() {
+        VariableStateUtil.tagList.clear()
+        tagSS.clearList().schedule()
+        driveUtil.resetTicks()
+        Scheduler.reset()
+    }
 }

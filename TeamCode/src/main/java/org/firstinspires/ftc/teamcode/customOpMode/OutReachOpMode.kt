@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.customOpMode
 import com.bylazar.telemetry.PanelsTelemetry
 import com.bylazar.telemetry.TelemetryManager
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
+import org.firstinspires.ftc.teamcode.subSystems.LEDSS
 import org.firstinspires.ftc.teamcode.subSystems.TagSS
 import org.firstinspires.ftc.teamcode.util.HubUtil
 import org.firstinspires.ftc.teamcode.util.PanelsDebugUtil
@@ -18,6 +19,7 @@ abstract class OutReachOpMode : OpMode() {
     private lateinit var debugUtil : PanelsDebugUtil
     private lateinit var hubUtil : HubUtil
     protected lateinit var tagSS: TagSS
+    protected lateinit var ledss: LEDSS
 
     // Custom lifecycle hooks
 
@@ -53,6 +55,7 @@ abstract class OutReachOpMode : OpMode() {
 
         // init bulkRead
         hubUtil = HubUtil(hardwareMap)
+        ledss = LEDSS(hardwareMap)
 
         // Show the init message and update panels to display it
         debugUtil.showInit()

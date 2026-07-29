@@ -4,6 +4,7 @@ import com.bylazar.telemetry.TelemetryManager
 import com.qualcomm.robotcore.hardware.Gamepad
 import org.firstinspires.ftc.teamcode.subSystems.CamSS
 import org.firstinspires.ftc.teamcode.subSystems.SpinDexerSS
+import org.firstinspires.ftc.teamcode.subSystems.TagSS
 
 /** A utility script to made display everything related to the robot in one file */
 class PanelsDebugUtil (
@@ -11,7 +12,14 @@ class PanelsDebugUtil (
 ) {
 
     /** Calling this function will display any temporary telemetry related to the robot or such things */
-    fun showTempDebug(vararg data: String) { panels?.debug(data) }
+    fun showTempDebug(tagSS: TagSS, driveUtil: DriveUtil) { panels?.debug(
+        "Tag List Data: ${tagSS.tagListDat()}",
+        "Tag List Size: ${tagSS.tagListSize()}",
+        "Last Runtime: ${tagSS.lastRuntime}",
+        "Reset Runtime: ${tagSS.resetRuntime}",
+        "Left Drive Ticks: ${driveUtil.lDriveTicks()}",
+        "Right Drive Ticks: ${driveUtil.rDriveTicks()}"
+    )}
 
     /** Calling this function will display all the telemetry related to the robot */
     fun showAllDebug(
