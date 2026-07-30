@@ -14,8 +14,6 @@ class PanelsDebugUtil (
 
     /** Calling this function will display any temporary telemetry related to the robot or such things */
     fun showTempDebug(tagSS: TagSS, driveUtil: DriveUtil, ledss: LEDSS, runtime: Double) { panels?.debug(
-        "Status LED Green State ${ledss.ledGState()}",
-        "Status LED Red State ${ledss.ledRState()}",
         "Tag List Data: ${tagSS.tagListDat()}",
         "Tag List Size: ${tagSS.tagListSize()}",
         "Last Runtime: ${tagSS.lastRuntimeDat()}",

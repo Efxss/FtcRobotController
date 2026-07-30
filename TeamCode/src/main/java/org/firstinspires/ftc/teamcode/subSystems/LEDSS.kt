@@ -10,6 +10,4 @@ class LEDSS(hardwareMap: HardwareMap) {
         listOf(statusLEDR,statusLEDG).forEach{it.state=true}}
     fun ledOn(){listOf(statusLEDR,statusLEDG).forEach{it.state=false}}
     fun ledOff(){listOf(statusLEDR,statusLEDG).forEach{it.state=true}}
-    fun ledGState():Boolean=statusLEDG.state
-    fun ledRState():Boolean=statusLEDR.state
 }
