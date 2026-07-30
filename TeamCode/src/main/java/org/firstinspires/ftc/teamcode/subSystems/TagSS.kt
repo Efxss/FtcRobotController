@@ -17,6 +17,7 @@ class TagSS(
     hardwareMap : HardwareMap,
     webcamName: String = "Webcam 1"
 ) {
+    companion object { const val MAX_TAGS = 6 }
     private var aprilTag: AprilTagProcessor? = null
     private var visionPortal: VisionPortal? = null
     private val cameraPosition: Position = Position(DistanceUnit.INCH, 0.0, 0.0, 0.0, 0)
@@ -28,7 +29,7 @@ class TagSS(
     private var firstTime = true
     var lastRuntime: Double = 0.0
     var resetRuntime = false
-    fun update(runtime: Double, ledss: LEDSS) {
+    fun update(runtime: Double) {
         val seen = aprilTag?.detections?.firstOrNull { it?.metadata != null }
         if (seen != null && !wasSeen && VariableStateUtil.tagList.size < MAX_TAGS) {
             if (lastRuntime != runtime && !resetRuntime) {
@@ -39,10 +40,7 @@ class TagSS(
                 VariableStateUtil.tagList.add(seen.id)
                 resetRuntime = false
                 firstTime = false
-                ledss.ledOff()
             }
-        } else {
-            ledss.ledOn()
         }
         wasSeen = seen != null
         lastSeenId = seen?.id ?: 0
@@ -51,11 +49,11 @@ class TagSS(
         wasSeen = false
         resetRuntime = false
         firstTime = true }
-    companion object { const val MAX_TAGS = 6 }
     fun tagListDat(): MutableList<Int> = VariableStateUtil.tagList
     fun tagListSize(): Int = VariableStateUtil.tagList.size
     fun lastRuntimeDat(): Double = lastRuntime
     fun resetRuntimeDat(): Boolean = resetRuntime
+    fun firstTimeDat(): Boolean = firstTime
     private fun initAprilTag(hardwareMap: HardwareMap, webcamName: String) {
         aprilTag = AprilTagProcessor.Builder()
             .setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)

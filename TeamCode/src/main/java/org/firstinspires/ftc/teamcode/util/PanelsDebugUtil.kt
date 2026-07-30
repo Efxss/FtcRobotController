@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.util
 import com.bylazar.telemetry.TelemetryManager
 import com.qualcomm.robotcore.hardware.Gamepad
 import org.firstinspires.ftc.teamcode.subSystems.CamSS
+import org.firstinspires.ftc.teamcode.subSystems.LEDSS
 import org.firstinspires.ftc.teamcode.subSystems.SpinDexerSS
 import org.firstinspires.ftc.teamcode.subSystems.TagSS
 
@@ -12,13 +13,17 @@ class PanelsDebugUtil (
 ) {
 
     /** Calling this function will display any temporary telemetry related to the robot or such things */
-    fun showTempDebug(tagSS: TagSS, driveUtil: DriveUtil) { panels?.debug(
+    fun showTempDebug(tagSS: TagSS, driveUtil: DriveUtil, ledss: LEDSS, runtime: Double) { panels?.debug(
+        "Status LED Green State ${ledss.ledGState()}",
+        "Status LED Red State ${ledss.ledRState()}",
         "Tag List Data: ${tagSS.tagListDat()}",
         "Tag List Size: ${tagSS.tagListSize()}",
-        "Last Runtime: ${tagSS.lastRuntime}",
-        "Reset Runtime: ${tagSS.resetRuntime}",
+        "Last Runtime: ${tagSS.lastRuntimeDat()}",
+        "Runtime: $runtime",
+        "Reset Runtime: ${tagSS.resetRuntimeDat()}",
+        "First Time Seen: ${tagSS.firstTimeDat()}",
         "Left Drive Ticks: ${driveUtil.lDriveTicks()}",
-        "Right Drive Ticks: ${driveUtil.rDriveTicks()}"
+        "Right Drive Ticks: ${driveUtil.rDriveTicks()}",
     )}
 
     /** Calling this function will display all the telemetry related to the robot */

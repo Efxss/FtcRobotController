@@ -20,11 +20,15 @@ class CardProgOP: OutReachOpMode() {
     override fun onInit() {
         tagSS = TagSS(hardwareMap)
         driveUtil = DriveUtil(hardwareMap, 0.3, 1.0, movingPidf)
+        Scheduler.schedule(runLED())
+    }
+    override fun onStart() {
+       ledss.ledOff()
     }
     override fun onLoop() {
         Scheduler.execute()
-        tagSS.update(runtime, ledss)
-        getDebugUtil().showTempDebug(tagSS, driveUtil)
+        tagSS.update(runtime)
+        getDebugUtil().showTempDebug(tagSS, driveUtil, ledss, runtime)
         getDebugUtil().update(telemetry)
         if (gamepad1.psWasReleased()) {
             execCards().schedule()
@@ -42,6 +46,9 @@ class CardProgOP: OutReachOpMode() {
         else -> null
     }
     fun execCards(): Command = Groups.sequential(*VariableStateUtil.tagList.mapNotNull { cardCommand(it) }.toTypedArray()).then(Commands.instant { tagSS.clearList() })
+    fun runLED(): Command = Commands.infinite {
+        if (runtime-tagSS.lastRuntimeDat()<2.0){ledss.ledOff()}else{ledss.ledOn()}
+    }
     override fun onStop() {
         VariableStateUtil.tagList.clear()
         tagSS.clearList().schedule()
