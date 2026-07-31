@@ -40,6 +40,7 @@ class TagSS(
                 VariableStateUtil.tagList.add(seen.id)
                 resetRuntime = false
                 firstTime = false
+                return
             }
         }
         wasSeen = seen != null
