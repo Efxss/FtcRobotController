@@ -16,6 +16,7 @@ class CardProgOP: OutReachOpMode() {
     lateinit var driveUtil: DriveUtil
     lateinit var handleTags: Command
     val drivePower = 0.2
+    val turnPower = 0.4
     val movingPidf = PIDFCoefficients(10.0, 0.0, 0.05, 0.025)
     override fun onInit() {
         tagSS = TagSS(hardwareMap)
@@ -37,21 +38,17 @@ class CardProgOP: OutReachOpMode() {
                tagSS.clearList().schedule()
             }
         }
-        if (gamepad1.crossWasReleased()) {
-            driveUtil.resetTicks()
-        }
+        if (gamepad1.crossWasReleased()) { driveUtil.resetTicks() }
     }
     fun cardCommand(id: Int): Command? = when (id) {
         21 -> driveUtil.setDrivePowerForTicksCommand(-drivePower, -drivePower, -250) // Up
-        22 -> driveUtil.setDrivePowerForTicksCommand(-drivePower, drivePower, -440) // Right
-        23 -> driveUtil.setDrivePowerForPositiveTicksCommand(drivePower, -drivePower, 440) // Left
+        22 -> driveUtil.setDrivePowerForTicksCommand(-turnPower, turnPower, -440) // Right
+        23 -> driveUtil.setDrivePowerForPositiveTicksCommand(turnPower, -turnPower, 440) // Left
         24 -> driveUtil.setDrivePowerForPositiveTicksCommand(drivePower, drivePower, 250) // Down
         else -> null
     }
     fun execCards(): Command = Groups.sequential(*VariableStateUtil.tagList.mapNotNull { cardCommand(it) }.toTypedArray()).then(Commands.instant { tagSS.clearList() })
-    fun runLED(): Command = Commands.infinite {
-        if (runtime-tagSS.lastRuntimeDat()<2.0){ledss.ledOff()}else{ledss.ledOn()}
-    }
+    fun runLED(): Command = Commands.infinite { if (runtime-tagSS.lastRuntimeDat()<2.0){ledss.ledOff()}else{ledss.ledOn()} }
     override fun onStop() {
         VariableStateUtil.tagList.clear()
         tagSS.clearList().schedule()
