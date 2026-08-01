@@ -37,11 +37,14 @@ class CardProgOP: OutReachOpMode() {
                tagSS.clearList().schedule()
             }
         }
+        if (gamepad1.crossWasReleased()) {
+            driveUtil.resetTicks()
+        }
     }
     fun cardCommand(id: Int): Command? = when (id) {
         21 -> driveUtil.setDrivePowerForTicksCommand(-drivePower, -drivePower, -250) // Up
-        22 -> driveUtil.setDrivePowerForTicksCommand(-drivePower, drivePower, -550) // Right
-        23 -> driveUtil.setDrivePowerForPositiveTicksCommand(drivePower, -drivePower, 500) // Left
+        22 -> driveUtil.setDrivePowerForTicksCommand(-drivePower, drivePower, -440) // Right
+        23 -> driveUtil.setDrivePowerForPositiveTicksCommand(drivePower, -drivePower, 440) // Left
         24 -> driveUtil.setDrivePowerForPositiveTicksCommand(drivePower, drivePower, 250) // Down
         else -> null
     }
