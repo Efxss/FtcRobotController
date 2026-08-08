@@ -1,3 +1,13 @@
+buildscript {
+    repositories {
+        maven { url = uri("${rootDir}/localRepo") }
+        mavenCentral()
+        maven { url = "https://repo.dairy.foundation/releases" }
+    }
+    dependencies {
+        classpath "dev.frozenmilk:Load:SNAPSHOT-fea55d8"
+    }
+}
 apply plugin: 'com.android.application'
 
 //
@@ -13,8 +23,8 @@ apply plugin: 'com.android.application'
 // Custom definitions may go here
 
 // Include common definitions from above.
-
-buildscript {
+// Old remote build
+/*buildscript {
     repositories {
         mavenCentral()
         maven {
@@ -24,7 +34,7 @@ buildscript {
     dependencies {
         classpath "dev.frozenmilk:Load:0.2.4"
     }
-}
+}*/
 
 apply from: '../build.common.gradle'
 apply from: '../build.dependencies.gradle'
@@ -38,7 +48,7 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
-    compileSdk 34
+    compileSdk 36
     defaultConfig {
         minSdk 24
     }
@@ -50,4 +60,11 @@ android {
 
 dependencies {
     implementation project(':FtcRobotController')
+    implementation("dev.frozenmilk.sinister:Sloth:SNAPSHOT-fea55d8")
+    implementation("com.bylazar.sloth:fullpanels:0.2.4+1.0.12")
+}
+configurations.all {
+    resolutionStrategy {
+        force "dev.frozenmilk.sinister:Sloth:SNAPSHOT-fea55d8"
+    }
 }

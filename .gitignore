@@ -1,3 +1,5 @@
+!localRepo/
+!localRepo/**
 # Built application files
 *.apk
 *.aar

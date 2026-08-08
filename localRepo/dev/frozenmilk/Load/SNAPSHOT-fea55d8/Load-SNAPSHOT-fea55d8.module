@@ -1,0 +1,80 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "dev.frozenmilk",
+    "module": "Load",
+    "version": "SNAPSHOT-fea55d8",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.9"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 17,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "files": [
+        {
+          "name": "Load-SNAPSHOT-fea55d8.jar",
+          "url": "Load-SNAPSHOT-fea55d8.jar",
+          "size": 14671,
+          "sha512": "6caee28450abfde1abc1708f00254b978339c53cf2a11b58a29629588836384b87631fe733544bbf3e1389f1a0ec4380b399d53ec56e061c2d1b477626963211",
+          "sha256": "c6246c2c352bd1523534d3bdfbde9f7935a85924f5e4f25b03dd3ee6cb82b081",
+          "sha1": "4c142d4ade9861b68485f8d19a354510127f88e1",
+          "md5": "b5cabb5bc5b4fd4f6e08c38811c7f4c2"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 17,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "1.9.24"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-gradle-plugin",
+          "version": {
+            "requires": "2.0.21"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "Load-SNAPSHOT-fea55d8.jar",
+          "url": "Load-SNAPSHOT-fea55d8.jar",
+          "size": 14671,
+          "sha512": "6caee28450abfde1abc1708f00254b978339c53cf2a11b58a29629588836384b87631fe733544bbf3e1389f1a0ec4380b399d53ec56e061c2d1b477626963211",
+          "sha256": "c6246c2c352bd1523534d3bdfbde9f7935a85924f5e4f25b03dd3ee6cb82b081",
+          "sha1": "4c142d4ade9861b68485f8d19a354510127f88e1",
+          "md5": "b5cabb5bc5b4fd4f6e08c38811c7f4c2"
+        }
+      ]
+    }
+  ]
+}
