@@ -6,12 +6,8 @@ import com.pedropathing.follower.Follower
 import com.pedropathing.geometry.Pose
 import com.pedropathing.ivy.Scheduler
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
-import org.firstinspires.ftc.teamcode.config.subSystem.FiringSS
 import org.firstinspires.ftc.teamcode.config.subSystem.IntakeSS
 import org.firstinspires.ftc.teamcode.config.subSystem.LLSS
-import org.firstinspires.ftc.teamcode.config.subSystem.PushServoSS
-import org.firstinspires.ftc.teamcode.config.subSystem.RampSS
-import org.firstinspires.ftc.teamcode.config.subSystem.SweepSS
 import org.firstinspires.ftc.teamcode.config.util.Alliance
 import org.firstinspires.ftc.teamcode.config.util.DrawingUtil
 import org.firstinspires.ftc.teamcode.config.util.HubUtil
@@ -28,10 +24,6 @@ abstract class TeleOpMode : OpMode() {
     protected lateinit var hubUtil: HubUtil
     protected lateinit var debugUtil: PanelsDebugUtil
     protected lateinit var intakeSS: IntakeSS
-    protected lateinit var rampSS: RampSS
-    protected lateinit var pushServoSS: PushServoSS
-    protected lateinit var sweepSS: SweepSS
-    protected lateinit var firingSS: FiringSS
     protected lateinit var llss: LLSS
     protected lateinit var follower: Follower
     protected var resetPose = Pose(8.0, 8.0, Math.toRadians(90.0))
@@ -93,10 +85,6 @@ abstract class TeleOpMode : OpMode() {
         // Init all utils and SS
         debugUtil.update(telemetry)
         intakeSS = IntakeSS(hardwareMap)
-        rampSS = RampSS(hardwareMap)
-        pushServoSS = PushServoSS(hardwareMap)
-        sweepSS = SweepSS(hardwareMap)
-        firingSS = FiringSS()
         llss = LLSS(hardwareMap)
         hubUtil = HubUtil(hardwareMap)
         onInit()
@@ -144,11 +132,9 @@ abstract class TeleOpMode : OpMode() {
 
         if (gamepad1.rightBumperWasPressed()) {
             intakeSS.runIntakeCommand.schedule()
-            pushServoSS.runPush.schedule()
         }
         if (gamepad1.rightBumperWasReleased()) {
             intakeSS.runIntakeCommand.cancel()
-            pushServoSS.runPush.cancel()
         }
         if (gamepad1.cross) follower.pose = resetPose
 
@@ -156,7 +142,7 @@ abstract class TeleOpMode : OpMode() {
         Scheduler.execute()
 
         //Show and update debug
-        debugUtil.showAllDebugTeleop(follower, alliance, runtime, gamepad1, llss, autoTurnPixel, sweepSS)
+        debugUtil.showAllDebugTeleop(follower, alliance, runtime, gamepad1, llss, autoTurnPixel)
         debugUtil.update(telemetry)
         onLoop()
     }
@@ -164,7 +150,6 @@ abstract class TeleOpMode : OpMode() {
     final override fun stop() {
         llss.stop()
         if (intakeSS.runIntakeCommand.isScheduled) intakeSS.runIntakeCommand.cancel()
-        if (pushServoSS.runPush.isScheduled) pushServoSS.runPush.cancel()
         onStop()
     }
 

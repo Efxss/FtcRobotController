@@ -4,7 +4,6 @@ import com.bylazar.telemetry.TelemetryManager
 import com.pedropathing.follower.Follower
 import com.qualcomm.robotcore.hardware.Gamepad
 import org.firstinspires.ftc.teamcode.config.subSystem.LLSS
-import org.firstinspires.ftc.teamcode.config.subSystem.SweepSS
 
 class PanelsDebugUtil(
     private val panels: TelemetryManager?
@@ -39,11 +38,9 @@ class PanelsDebugUtil(
         runtime: Double,
         gamepad: Gamepad,
         limelight: LLSS,
-        llDeadZone: Double,
-        sweepSS: SweepSS
+        llDeadZone: Double
     ) {
         panels?.apply {
-            debug("sweep position", sweepSS.position())
             debug("=== PedroPathing ===")
             debug("Follower Pose X", follower.pose.x)
             debug("Follower Pose Y", follower.pose.y)

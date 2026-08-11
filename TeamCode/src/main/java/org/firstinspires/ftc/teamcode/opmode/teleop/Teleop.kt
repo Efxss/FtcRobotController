@@ -1,22 +1,15 @@
 package org.firstinspires.ftc.teamcode.opmode.teleop
 
 import com.bylazar.configurables.annotations.Configurable
-import com.bylazar.configurables.annotations.Sorter
 import com.pedropathing.geometry.Pose
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import org.firstinspires.ftc.teamcode.config.customOpMode.TeleOpMode
 import org.firstinspires.ftc.teamcode.config.pedroPathing.Constants
-import org.firstinspires.ftc.teamcode.config.subSystem.RampSS
 import org.firstinspires.ftc.teamcode.config.util.VariableStateUtil
 
 @Configurable
 @TeleOp
 class Teleop : TeleOpMode() {
-    companion object {
-        @JvmField
-        @Sorter(sort = 0) var sweepPos: Double = 0.5
-        @Sorter(sort = 1) var rampState: RampSS.STATE = RampSS.STATE.INTAKE
-    }
     override val alliance = VariableStateUtil.alliance
 
     override fun onInit() {
@@ -24,12 +17,12 @@ class Teleop : TeleOpMode() {
     }
 
     override fun onStart() {
-        //follower.startTeleopDrive()
+        follower.startTeleopDrive()
     }
 
     override fun onLoop() {
         follower.update()
-        /*if (gamepad1.leftBumperWasPressed() && llss.isTagSeen(alliance) && !isAutoTurning) {
+        if (gamepad1.leftBumperWasPressed() && llss.isTagSeen(alliance) && !isAutoTurning) {
             follower.turn(llss.currentTagXRad(alliance, autoTurnPixel))
             isAutoTurning = true
             autoTurnStartTime = runtime
@@ -45,10 +38,7 @@ class Teleop : TeleOpMode() {
             }
         } else {
             follower.setTeleOpDrive(forward, strafe, rotate, false)
-        }*/
-        rampSS.update(rampState)
-        if (gamepad1.leftBumperWasReleased()) sweepSS.execSweepServo().schedule()
-        //if (gamepad1.crossWasReleased()) firingSS.execFiring(sweepSS, rampSS).schedule()
+        }
     }
 
     fun initializePedroPathing() {

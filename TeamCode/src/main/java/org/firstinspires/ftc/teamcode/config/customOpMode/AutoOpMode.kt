@@ -9,18 +9,13 @@ import com.pedropathing.ivy.commands.Commands
 import com.pedropathing.ivy.groups.Groups
 import com.pedropathing.ivy.pedro.PedroCommands.follow
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
-import org.firstinspires.ftc.teamcode.config.subSystem.FiringSS
 import org.firstinspires.ftc.teamcode.config.subSystem.IntakeSS
-import org.firstinspires.ftc.teamcode.config.subSystem.PushServoSS
-import org.firstinspires.ftc.teamcode.config.subSystem.RampSS
-import org.firstinspires.ftc.teamcode.config.subSystem.SweepSS
 import org.firstinspires.ftc.teamcode.config.util.Alliance
 import org.firstinspires.ftc.teamcode.config.util.AutoPoseUtil
 import org.firstinspires.ftc.teamcode.config.util.DrawingUtil
 import org.firstinspires.ftc.teamcode.config.util.HubUtil
 import org.firstinspires.ftc.teamcode.config.util.PanelsDebugUtil
 import org.firstinspires.ftc.teamcode.config.util.VariableStateUtil
-import java.util.function.BooleanSupplier
 
 /**
  * Custom-made OpMode to copy and make a real OpMode
@@ -33,10 +28,6 @@ abstract class AutoOpMode : OpMode() {
     protected lateinit var hubUtil: HubUtil
     protected lateinit var debugUtil: PanelsDebugUtil
     protected lateinit var intakeSS: IntakeSS
-    protected lateinit var sweepSS: SweepSS
-    protected lateinit var rampSS: RampSS
-    protected lateinit var pushServoSS: PushServoSS
-    protected lateinit var firingSS: FiringSS
     protected lateinit var follower: Follower
 
     // Custom lifecycle hooks
@@ -87,10 +78,6 @@ abstract class AutoOpMode : OpMode() {
         // Init bulkRead
         debugUtil.update(telemetry)
         intakeSS = IntakeSS(hardwareMap)
-        rampSS = RampSS(hardwareMap)
-        sweepSS = SweepSS(hardwareMap)
-        pushServoSS = PushServoSS(hardwareMap)
-        firingSS = FiringSS()
         hubUtil = HubUtil(hardwareMap)
         onInit()
     }
@@ -115,7 +102,6 @@ abstract class AutoOpMode : OpMode() {
         if (::follower.isInitialized) {
             DrawingUtil.drawDebug(follower)
         }
-        rampSS.update(VariableStateUtil.rampState)
 
         // Run the Ivy Scheduler to actually update Commands
         Scheduler.execute()
@@ -132,34 +118,20 @@ abstract class AutoOpMode : OpMode() {
         }
         VariableStateUtil.alliance = alliance
         if (intakeSS.runIntakeCommand.isScheduled) intakeSS.runIntakeCommand.cancel()
-        if (pushServoSS.runPush.isScheduled) pushServoSS.runPush.cancel()
         onStop()
     }
 
     // Custom functions
     fun runAuto(): Command {
-        fun runLTS(): Command { return Groups.sequential(follow(follower, AutoPoseUtil.bottomLeftCornerToLeftSpike,true, 0.5)) }
-        /*var ids = LinkedHashMap<BooleanSupplier, Command>()
-        ids[{ follower.pose == AutoPoseUtil.startPose } as BooleanSupplier] = runLTS()
-        ids[{ follower.pose == AutoPoseUtil.startPose } as BooleanSupplier] = follow(follower,AutoPoseUtil.startToLeftCorner,true)*/
-        var cases = LinkedHashMap<BooleanSupplier, Command>()
-        cases[BooleanSupplier {follower.distanceRemaining <= 15.0}] = rampSS.rampIntake()
-        val handlePos: Command = Commands.branch(cases)
+        // Example for PedroPathing branch in Kotlin
+        //var cases = LinkedHashMap<BooleanSupplier, Command>()
+        //cases[BooleanSupplier {follower.distanceRemaining <= 15.0}] = rampSS.rampIntake()
+        //val handlePos: Command = Commands.branch(cases)
         return Groups.sequential(
-            rampSS.rampIntake(),
             follow(follower,AutoPoseUtil.startToLeftCorner,true, 0.5),
             Commands.waitMs(750.0),
-            rampSS.rampHold(),
-            Groups.parallel(
-                runLTS(),
-                Groups.deadline(
-                    runLTS(),
-                    Groups.loop(handlePos)
-                ),
-            ),
-            rampSS.rampHold(),
+            follow(follower, AutoPoseUtil.bottomLeftCornerToLeftSpike,true, 0.5),
             follow(follower, AutoPoseUtil.leftSpikeToHiveFour,true,0.5),
-            firingSS.execFiring(sweepSS, rampSS, pushServoSS)
         )
     }
 }
