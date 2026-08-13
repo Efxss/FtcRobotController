@@ -101,13 +101,8 @@ abstract class TeleOpMode : OpMode() {
     final override fun start() {
         resetRuntime()
         resetPose = when (alliance) {
-            Alliance.BLUE -> {
-                Pose(8.0, 8.0, Math.toRadians(90.0))
-            }
-
-            Alliance.RED -> {
-                Pose(134.0, 7.0, Math.toRadians(90.0))
-            }
+            Alliance.BLUE -> { Pose(8.0, 8.0, Math.toRadians(90.0)) }
+            Alliance.RED -> { Pose(134.0, 7.0, Math.toRadians(90.0)) }
         }
         onStart()
     }
@@ -116,10 +111,7 @@ abstract class TeleOpMode : OpMode() {
         // Clear the bulk read cache
         hubUtil.clearCache()
         // Draw on Panels
-        if (::follower.isInitialized) {
-            DrawingUtil.drawDebug(follower)
-        }
-        //rampSS.update(VariableStateUtil.rampState)
+        if (::follower.isInitialized) { DrawingUtil.drawDebug(follower) }
         rotate = gamepad1.right_stick_x.toDouble()
         forward = when (alliance) {
             Alliance.BLUE -> gamepad1.left_stick_y.toDouble()
@@ -130,12 +122,8 @@ abstract class TeleOpMode : OpMode() {
             Alliance.RED -> -gamepad1.left_stick_x.toDouble()
         }
 
-        if (gamepad1.rightBumperWasPressed()) {
-            intakeSS.runIntakeCommand.schedule()
-        }
-        if (gamepad1.rightBumperWasReleased()) {
-            intakeSS.runIntakeCommand.cancel()
-        }
+        if (gamepad1.rightBumperWasPressed()) { intakeSS.runIntakeCommand.schedule() }
+        if (gamepad1.rightBumperWasReleased()) { intakeSS.runIntakeCommand.cancel() }
         if (gamepad1.cross) follower.pose = resetPose
 
         // Run the Ivy Scheduler to actually update Commands

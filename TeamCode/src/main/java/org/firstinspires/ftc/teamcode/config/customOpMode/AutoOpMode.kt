@@ -99,9 +99,7 @@ abstract class AutoOpMode : OpMode() {
         // Clear the bulk read cache
         hubUtil.clearCache()
         // Draw on Panels
-        if (::follower.isInitialized) {
-            DrawingUtil.drawDebug(follower)
-        }
+        if (::follower.isInitialized) { DrawingUtil.drawDebug(follower) }
 
         // Run the Ivy Scheduler to actually update Commands
         Scheduler.execute()
@@ -113,9 +111,7 @@ abstract class AutoOpMode : OpMode() {
     }
 
     final override fun stop() {
-        if (::follower.isInitialized) {
-            VariableStateUtil.endOfAutoPose = follower.pose
-        }
+        if (::follower.isInitialized) { VariableStateUtil.endOfAutoPose = follower.pose }
         VariableStateUtil.alliance = alliance
         if (intakeSS.runIntakeCommand.isScheduled) intakeSS.runIntakeCommand.cancel()
         onStop()

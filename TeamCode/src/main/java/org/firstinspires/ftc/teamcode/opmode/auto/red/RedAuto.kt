@@ -15,13 +15,6 @@ class RedAuto : AutoOpMode() {
     }
 
     override fun onStart() {
-        /*Scheduler.schedule(
-            Groups.sequential(
-                Commands.waitMs(250.0),
-                intakeSS.runIntakeCommand.start()
-            )
-        )*/
-        //Scheduler.schedule(AutoPoseUtil.allSpikeAutoRed())
     }
 
     override fun onLoop() {
@@ -30,7 +23,6 @@ class RedAuto : AutoOpMode() {
 
     fun initializePedroPathing() {
         follower = Constants.createFollower(hardwareMap)
-        //follower.setStartingPose(AutoPoseUtil.startPoseRedDepoPose)
         AutoPoseUtil.follower = follower
     }
 }
