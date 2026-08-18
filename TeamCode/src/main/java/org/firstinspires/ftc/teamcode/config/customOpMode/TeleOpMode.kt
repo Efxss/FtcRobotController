@@ -8,6 +8,7 @@ import com.pedropathing.ivy.Scheduler
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import org.firstinspires.ftc.teamcode.config.subSystem.IntakeSS
 import org.firstinspires.ftc.teamcode.config.subSystem.LLSS
+import org.firstinspires.ftc.teamcode.config.subSystem.WaterWheelSS
 import org.firstinspires.ftc.teamcode.config.util.Alliance
 import org.firstinspires.ftc.teamcode.config.util.DrawingUtil
 import org.firstinspires.ftc.teamcode.config.util.HubUtil
@@ -25,6 +26,7 @@ abstract class TeleOpMode : OpMode() {
     protected lateinit var debugUtil: PanelsDebugUtil
     protected lateinit var intakeSS: IntakeSS
     protected lateinit var llss: LLSS
+    protected lateinit var wheelSS: WaterWheelSS
     protected lateinit var follower: Follower
     protected var resetPose = Pose(8.0, 8.0, Math.toRadians(90.0))
     protected var rotate = 0.0
@@ -86,6 +88,7 @@ abstract class TeleOpMode : OpMode() {
         debugUtil.update(telemetry)
         intakeSS = IntakeSS(hardwareMap)
         llss = LLSS(hardwareMap)
+        wheelSS = WaterWheelSS(hardwareMap)
         hubUtil = HubUtil(hardwareMap)
         onInit()
     }
@@ -122,15 +125,21 @@ abstract class TeleOpMode : OpMode() {
             Alliance.RED -> -gamepad1.left_stick_x.toDouble()
         }
 
-        if (gamepad1.rightBumperWasPressed()) { intakeSS.runIntakeCommand.schedule() }
-        if (gamepad1.rightBumperWasReleased()) { intakeSS.runIntakeCommand.cancel() }
+        if (gamepad1.rightBumperWasPressed()) {
+            intakeSS.runIntakeCommand.schedule()
+            wheelSS.runWheel.schedule()
+        }
+        if (gamepad1.rightBumperWasReleased()) {
+            intakeSS.runIntakeCommand.cancel()
+            wheelSS.runWheel.cancel()
+        }
         if (gamepad1.cross) follower.pose = resetPose
 
         // Run the Ivy Scheduler to actually update Commands
         Scheduler.execute()
 
         //Show and update debug
-        debugUtil.showAllDebugTeleop(follower, alliance, runtime, gamepad1, llss, autoTurnPixel)
+        debugUtil.showAllDebugTeleop(follower,alliance,runtime,gamepad1,llss,autoTurnPixel)
         debugUtil.update(telemetry)
         onLoop()
     }
