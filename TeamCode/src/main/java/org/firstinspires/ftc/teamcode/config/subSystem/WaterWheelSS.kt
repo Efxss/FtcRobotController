@@ -9,6 +9,6 @@ class WaterWheelSS(
 ) {
     private val wheelServo: CRServo = hardwareMap.get(CRServo::class.java, "wheel")
     val runWheel: Command = Command.build()
-        .setStart { wheelServo.power = -0.75 }
+        .setStart { wheelServo.power = -0.50 }
         .setEnd { wheelServo.power = 0.0 }
 }
