@@ -61,6 +61,7 @@ class PanelsDebugUtil(
             debug("Alliance", alliance.name)
         }
     }
+
     fun showInit() {
         panels?.debug("Init Started")
     }

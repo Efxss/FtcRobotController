@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.config.util.PanelsDebugUtil
 import org.firstinspires.ftc.teamcode.config.util.VariableStateUtil
 
 /**
- * Custom-made OpMode to copy and make a real OpMode
+ * Custom-made OpMode for making an Auto that has needed code for a OpMode
  * @author Jonny Todd - 29403 PiBytes
  */
 abstract class AutoOpMode : OpMode() {

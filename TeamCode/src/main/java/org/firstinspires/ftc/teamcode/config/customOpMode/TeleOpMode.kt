@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.config.util.HubUtil
 import org.firstinspires.ftc.teamcode.config.util.PanelsDebugUtil
 
 /**
- * Custom-made OpMode to copy and make a real OpMode
+ * Custom-made OpMode for making a TeleOP that has needed code for a OpMode
  * @author Jonny Todd - 29403 PiBytes
  */
 abstract class TeleOpMode : OpMode() {
@@ -133,7 +133,7 @@ abstract class TeleOpMode : OpMode() {
             intakeSS.runIntakeCommand.cancel()
             wheelSS.runWheel.cancel()
         }
-        if (gamepad1.cross) follower.pose = resetPose
+        if (gamepad1.crossWasReleased()) follower.pose = resetPose
 
         // Run the Ivy Scheduler to actually update Commands
         Scheduler.execute()
