@@ -107,6 +107,7 @@ abstract class TeleOpMode : OpMode() {
             Alliance.BLUE -> { Pose(8.0, 8.0, Math.toRadians(90.0)) }
             Alliance.RED -> { Pose(134.0, 7.0, Math.toRadians(90.0)) }
         }
+        follower.activateAllPIDFs()
         onStart()
     }
 
