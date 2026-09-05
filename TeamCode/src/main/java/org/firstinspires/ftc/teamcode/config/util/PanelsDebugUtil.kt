@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.config.util
 import com.bylazar.telemetry.TelemetryManager
 import com.pedropathing.follower.Follower
 import com.qualcomm.robotcore.hardware.Gamepad
+import org.firstinspires.ftc.teamcode.config.Robot
 import org.firstinspires.ftc.teamcode.config.subSystem.LLSS
 
 class PanelsDebugUtil(
@@ -11,7 +12,7 @@ class PanelsDebugUtil(
     fun showAllDebugAuto(
         follower: Follower,
         hubUtil: HubUtil,
-        alliance: Alliance,
+        alliance: Robot.Alliance,
         runtime: Double
     ) {
         panels?.apply {
@@ -34,11 +35,12 @@ class PanelsDebugUtil(
 
     fun showAllDebugTeleop(
         follower: Follower,
-        alliance: Alliance,
+        alliance: Robot.Alliance,
         runtime: Double,
         gamepad: Gamepad,
         limelight: LLSS,
-        llDeadZone: Double
+        llDeadZone: Double,
+        robot: Robot
     ) {
         panels?.apply {
             debug("=== PedroPathing ===")
@@ -48,7 +50,7 @@ class PanelsDebugUtil(
             debug("Total Heading", Math.toDegrees(follower.totalHeading))
             debug("")
             debug("=== Vision ===")
-            debug("Target X Deg", limelight.currentTagXDeg(alliance, llDeadZone))
+            debug("Target X Deg", limelight.currentTagXDeg(alliance, llDeadZone, robot))
             debug("")
             debug("=== Gamepad ===")
             debug("Left Stick X", gamepad.left_stick_x)

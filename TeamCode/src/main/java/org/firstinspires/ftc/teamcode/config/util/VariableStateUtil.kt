@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.config.util
 
 import com.pedropathing.geometry.Pose
+import org.firstinspires.ftc.teamcode.config.Robot
 
 /**
  * Holds state that needs to persist between OpModes (Auto -> TeleOp).
@@ -13,5 +14,5 @@ object VariableStateUtil {
     var endOfAutoPose: Pose? = null
 
     // Alliance var to pass from auto to TeleOP
-    var alliance: Alliance = Alliance.BLUE
+    var alliance: Robot.Alliance = Robot.Alliance.BLUE
 }

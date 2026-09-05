@@ -1,28 +1,25 @@
 package org.firstinspires.ftc.teamcode.config.subSystem
 
 import com.qualcomm.hardware.limelightvision.LLResult
-import com.qualcomm.hardware.limelightvision.Limelight3A
-import com.qualcomm.robotcore.hardware.HardwareMap
-import org.firstinspires.ftc.teamcode.config.util.Alliance
+import org.firstinspires.ftc.teamcode.config.Robot
 import kotlin.math.abs
 import kotlin.math.sign
 
 class LLSS(
-    hardwareMap: HardwareMap
+    robot: Robot
 ) {
-    private val ll: Limelight3A = hardwareMap.get(Limelight3A::class.java, "LL")
-    init {ll.start()}
+    init {robot.ll.start()}
 
-    fun getRotationPowerFromTag(alliance: Alliance): Double {
+    fun getRotationPowerFromTag(alliance: Robot.Alliance, robot: Robot): Double {
         var kP = 0.025
         var minPower = 0.05
         var maxPower = 1.0
         var deadzone = 1.0
         val targetId = when (alliance) {
-            Alliance.BLUE -> 20
-            Alliance.RED -> 24
+            Robot.Alliance.BLUE -> 20
+            Robot.Alliance.RED -> 24
         }
-        val result: LLResult? = ll.latestResult
+        val result: LLResult? = robot.ll.latestResult
         if (result == null || !result.isValid) return 0.0
         val targetTag = result.fiducialResults.firstOrNull { it.fiducialId == targetId }
         if (targetTag == null) return 0.0
@@ -34,12 +31,12 @@ class LLSS(
         return -power
     }
 
-    fun currentTagXDeg(alliance: Alliance, deadzone: Double): Double {
+    fun currentTagXDeg(alliance: Robot.Alliance, deadzone: Double, robot: Robot): Double {
         val targetId = when (alliance) {
-            Alliance.BLUE -> 20
-            Alliance.RED -> 24
+            Robot.Alliance.BLUE -> 20
+            Robot.Alliance.RED -> 24
         }
-        val result: LLResult? = ll.latestResult
+        val result: LLResult? = robot.ll.latestResult
         if (result == null || !result.isValid) return 0.0
         val targetTag = result.fiducialResults.firstOrNull { it.fiducialId == targetId }
         if (targetTag == null) return 0.0
@@ -47,12 +44,12 @@ class LLSS(
         return if (td in 0.0 .. abs(deadzone)) 0.0 else -td
     }
 
-    fun currentTagXRad(alliance: Alliance, deadzone: Double): Double {
+    fun currentTagXRad(alliance: Robot.Alliance, deadzone: Double, robot: Robot): Double {
         val targetId = when (alliance) {
-            Alliance.BLUE -> 20
-            Alliance.RED -> 24
+            Robot.Alliance.BLUE -> 20
+            Robot.Alliance.RED -> 24
         }
-        val result: LLResult? = ll.latestResult
+        val result: LLResult? = robot.ll.latestResult
         if (result == null || !result.isValid) return 0.0
         val targetTag = result.fiducialResults.firstOrNull { it.fiducialId == targetId }
         if (targetTag == null) return 0.0
@@ -60,18 +57,18 @@ class LLSS(
         return if (tr in 0.0 .. abs(deadzone)) 0.0 else Math.toRadians(-tr)
     }
 
-    fun isTagSeen(alliance: Alliance): Boolean {
+    fun isTagSeen(alliance: Robot.Alliance, robot: Robot): Boolean {
         val targetId = when (alliance) {
-            Alliance.BLUE -> 20
-            Alliance.RED -> 24
+            Robot.Alliance.BLUE -> 20
+            Robot.Alliance.RED -> 24
         }
-        val result: LLResult? = ll.latestResult
+        val result: LLResult? = robot.ll.latestResult
         if (result == null || !result.isValid) return false
         val targetTag = result.fiducialResults.firstOrNull { it.fiducialId == targetId }
         return targetTag != null
     }
 
-    fun stop() {
-        ll.stop()
+    fun stop(robot: Robot) {
+        robot.ll.stop()
     }
 }

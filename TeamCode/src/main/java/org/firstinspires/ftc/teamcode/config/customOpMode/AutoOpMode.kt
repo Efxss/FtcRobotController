@@ -9,9 +9,8 @@ import com.pedropathing.ivy.commands.Commands
 import com.pedropathing.ivy.groups.Groups
 import com.pedropathing.ivy.pedro.PedroCommands.follow
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
+import org.firstinspires.ftc.teamcode.config.Robot
 import org.firstinspires.ftc.teamcode.config.subSystem.IntakeSS
-import org.firstinspires.ftc.teamcode.config.util.Alliance
-import org.firstinspires.ftc.teamcode.config.util.AutoPoseUtil
 import org.firstinspires.ftc.teamcode.config.util.DrawingUtil
 import org.firstinspires.ftc.teamcode.config.util.HubUtil
 import org.firstinspires.ftc.teamcode.config.util.PanelsDebugUtil
@@ -25,6 +24,7 @@ abstract class AutoOpMode : OpMode() {
 
     // Shared resources
     private var panels: TelemetryManager? = null
+    protected lateinit var robot: Robot
     protected lateinit var hubUtil: HubUtil
     protected lateinit var debugUtil: PanelsDebugUtil
     protected lateinit var intakeSS: IntakeSS
@@ -36,7 +36,7 @@ abstract class AutoOpMode : OpMode() {
      * Mandatory property that defines which alliance this auto runs for.
      * Must be overridden by the subclass (e.g. `override val alliance = Alliance.BLUE`)
      */
-    abstract val alliance: Alliance
+    abstract val alliance: Robot.Alliance
 
     /**
      * Mandatory function that will run all code inside one time upon pressing the initialization button
@@ -77,7 +77,8 @@ abstract class AutoOpMode : OpMode() {
 
         // Init bulkRead
         debugUtil.update(telemetry)
-        intakeSS = IntakeSS(hardwareMap)
+        robot = Robot(hardwareMap)
+        intakeSS = IntakeSS(robot)
         hubUtil = HubUtil(hardwareMap)
         onInit()
     }
@@ -124,10 +125,10 @@ abstract class AutoOpMode : OpMode() {
         //cases[BooleanSupplier {follower.distanceRemaining <= 15.0}] = rampSS.rampIntake()
         //val handlePos: Command = Commands.branch(cases)
         return Groups.sequential(
-            follow(follower,AutoPoseUtil.startToLeftCorner,true, 0.5),
+            follow(follower, Robot.AutoPoseUtil.startToLeftCorner,true, 0.5),
             Commands.waitMs(750.0),
-            follow(follower, AutoPoseUtil.bottomLeftCornerToLeftSpike,true, 0.5),
-            follow(follower, AutoPoseUtil.leftSpikeToHiveFour,true,0.5),
+            follow(follower,Robot.AutoPoseUtil.bottomLeftCornerToLeftSpike,true, 0.5),
+            follow(follower, Robot.AutoPoseUtil.leftSpikeToHiveFour,true,0.5),
         )
     }
 }

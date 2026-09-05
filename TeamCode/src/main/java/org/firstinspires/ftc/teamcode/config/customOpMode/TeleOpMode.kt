@@ -6,10 +6,9 @@ import com.pedropathing.follower.Follower
 import com.pedropathing.geometry.Pose
 import com.pedropathing.ivy.Scheduler
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
+import org.firstinspires.ftc.teamcode.config.Robot
 import org.firstinspires.ftc.teamcode.config.subSystem.IntakeSS
 import org.firstinspires.ftc.teamcode.config.subSystem.LLSS
-import org.firstinspires.ftc.teamcode.config.subSystem.WaterWheelSS
-import org.firstinspires.ftc.teamcode.config.util.Alliance
 import org.firstinspires.ftc.teamcode.config.util.DrawingUtil
 import org.firstinspires.ftc.teamcode.config.util.HubUtil
 import org.firstinspires.ftc.teamcode.config.util.PanelsDebugUtil
@@ -22,11 +21,11 @@ abstract class TeleOpMode : OpMode() {
 
     // Shared resources
     private var panels: TelemetryManager? = null
+    protected lateinit var robot: Robot
     protected lateinit var hubUtil: HubUtil
     protected lateinit var debugUtil: PanelsDebugUtil
     protected lateinit var intakeSS: IntakeSS
     protected lateinit var llss: LLSS
-    protected lateinit var wheelSS: WaterWheelSS
     protected lateinit var follower: Follower
     protected var resetPose = Pose(8.0, 8.0, Math.toRadians(90.0))
     protected var rotate = 0.0
@@ -45,7 +44,7 @@ abstract class TeleOpMode : OpMode() {
      * Mandatory property that defines which alliance this teleop runs for.
      * Must be overridden by the subclass (e.g. `override val alliance = Alliance.BLUE`)
      */
-    abstract val alliance: Alliance
+    abstract val alliance: Robot.Alliance
 
     /**
      * Mandatory function that will run all code inside one time upon pressing the initialization button
@@ -85,10 +84,10 @@ abstract class TeleOpMode : OpMode() {
         Scheduler.reset()
 
         // Init all utils and SS
+        robot = Robot(hardwareMap)
         debugUtil.update(telemetry)
-        intakeSS = IntakeSS(hardwareMap)
-        llss = LLSS(hardwareMap)
-        wheelSS = WaterWheelSS(hardwareMap)
+        intakeSS = IntakeSS(robot)
+        llss = LLSS(robot)
         hubUtil = HubUtil(hardwareMap)
         onInit()
     }
@@ -104,8 +103,8 @@ abstract class TeleOpMode : OpMode() {
     final override fun start() {
         resetRuntime()
         resetPose = when (alliance) {
-            Alliance.BLUE -> { Pose(8.0, 8.0, Math.toRadians(90.0)) }
-            Alliance.RED -> { Pose(134.0, 7.0, Math.toRadians(90.0)) }
+            Robot.Alliance.BLUE -> { Pose(8.0, 8.0, Math.toRadians(90.0)) }
+            Robot.Alliance.RED -> { Pose(134.0, 7.0, Math.toRadians(90.0)) }
         }
         follower.activateAllPIDFs()
         onStart()
@@ -118,35 +117,29 @@ abstract class TeleOpMode : OpMode() {
         if (::follower.isInitialized) { DrawingUtil.drawDebug(follower) }
         rotate = gamepad1.right_stick_x.toDouble()
         forward = when (alliance) {
-            Alliance.BLUE -> gamepad1.left_stick_y.toDouble()
-            Alliance.RED -> -gamepad1.left_stick_y.toDouble()
+            Robot.Alliance.BLUE -> gamepad1.left_stick_y.toDouble()
+            Robot.Alliance.RED -> -gamepad1.left_stick_y.toDouble()
         }
         strafe  = when (alliance) {
-            Alliance.BLUE -> gamepad1.left_stick_x.toDouble()
-            Alliance.RED -> -gamepad1.left_stick_x.toDouble()
+            Robot.Alliance.BLUE -> gamepad1.left_stick_x.toDouble()
+            Robot.Alliance.RED -> -gamepad1.left_stick_x.toDouble()
         }
 
-        if (gamepad1.rightBumperWasPressed()) {
-            intakeSS.runIntakeCommand.schedule()
-            wheelSS.runWheel.schedule()
-        }
-        if (gamepad1.rightBumperWasReleased()) {
-            intakeSS.runIntakeCommand.cancel()
-            wheelSS.runWheel.cancel()
-        }
+        if (gamepad1.rightBumperWasPressed()) { intakeSS.runIntakeCommand.schedule() }
+        if (gamepad1.rightBumperWasReleased()) { intakeSS.runIntakeCommand.cancel() }
         if (gamepad1.crossWasReleased()) follower.pose = resetPose
 
         // Run the Ivy Scheduler to actually update Commands
         Scheduler.execute()
 
         //Show and update debug
-        debugUtil.showAllDebugTeleop(follower,alliance,runtime,gamepad1,llss,autoTurnPixel)
+        debugUtil.showAllDebugTeleop(follower,alliance,runtime,gamepad1,llss,autoTurnPixel, robot)
         debugUtil.update(telemetry)
         onLoop()
     }
 
     final override fun stop() {
-        llss.stop()
+        llss.stop(robot)
         if (intakeSS.runIntakeCommand.isScheduled) intakeSS.runIntakeCommand.cancel()
         onStop()
     }
