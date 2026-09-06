@@ -22,7 +22,7 @@ class Teleop : TeleOpMode() {
 
     override fun onLoop() {
         follower.update()
-        if (gamepad1.leftBumperWasPressed() && llss.isTagSeen(alliance, robot) && !isAutoTurning) {
+        if (gp.gamepad.leftBumperWasPressed() && llss.isTagSeen(alliance, robot) && !isAutoTurning) {
             follower.turn(llss.currentTagXRad(alliance, autoTurnPixel, robot))
             isAutoTurning = true
             autoTurnStartTime = runtime
@@ -31,8 +31,8 @@ class Teleop : TeleOpMode() {
         if (isAutoTurning) {
             val timedOut = (runtime - autoTurnStartTime) >= autoTurnTimeoutSec
             if (!follower.isTurning || timedOut) {
-                gamepad1.rumble(1.0, 1.0, 150)
-                gamepad1.setLedColor(0.0, 255.0, 0.0, 1000)
+                gp.gamepad.rumble(1.0, 1.0, 150)
+                gp.gamepad.setLedColor(0.0, 255.0, 0.0, 1000)
                 follower.startTeleopDrive()
                 isAutoTurning = false
             }

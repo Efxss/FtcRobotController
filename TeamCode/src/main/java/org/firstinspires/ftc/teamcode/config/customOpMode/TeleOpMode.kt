@@ -6,6 +6,7 @@ import com.pedropathing.follower.Follower
 import com.pedropathing.geometry.Pose
 import com.pedropathing.ivy.Scheduler
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
+import com.seattlesolvers.solverslib.gamepad.GamepadEx
 import org.firstinspires.ftc.teamcode.config.Robot
 import org.firstinspires.ftc.teamcode.config.subSystem.IntakeSS
 import org.firstinspires.ftc.teamcode.config.subSystem.LLSS
@@ -34,6 +35,7 @@ abstract class TeleOpMode : OpMode() {
     protected val autoTurnPixel = 2.0
     protected val autoTurnRad = Math.toRadians(1.0)
     protected val autoTurnTimeoutSec = 0.5
+    protected var gp: GamepadEx = GamepadEx(gamepad1)
     open var autoTurnStartTime = 0.0
     open var isAutoTurning = false
 
@@ -115,25 +117,33 @@ abstract class TeleOpMode : OpMode() {
         hubUtil.clearCache()
         // Draw on Panels
         if (::follower.isInitialized) { DrawingUtil.drawDebug(follower) }
-        rotate = gamepad1.right_stick_x.toDouble()
+        //rotate = gamepad1.right_stick_x.toDouble()
+        rotate = gp.rightX
         forward = when (alliance) {
-            Robot.Alliance.BLUE -> gamepad1.left_stick_y.toDouble()
-            Robot.Alliance.RED -> -gamepad1.left_stick_y.toDouble()
+            //Robot.Alliance.BLUE -> gamepad1.left_stick_y.toDouble()
+            //Robot.Alliance.RED -> -gamepad1.left_stick_y.toDouble()
+            Robot.Alliance.BLUE -> gp.leftY
+            Robot.Alliance.RED -> -gp.leftY
         }
         strafe  = when (alliance) {
-            Robot.Alliance.BLUE -> gamepad1.left_stick_x.toDouble()
-            Robot.Alliance.RED -> -gamepad1.left_stick_x.toDouble()
+            //Robot.Alliance.BLUE -> gamepad1.left_stick_x.toDouble()
+            //Robot.Alliance.RED -> -gamepad1.left_stick_x.toDouble()
+            Robot.Alliance.BLUE -> gp.leftX
+            Robot.Alliance.RED -> -gp.leftX
         }
 
-        if (gamepad1.rightBumperWasPressed()) { intakeSS.runIntakeCommand.schedule() }
-        if (gamepad1.rightBumperWasReleased()) { intakeSS.runIntakeCommand.cancel() }
-        if (gamepad1.crossWasReleased()) follower.pose = resetPose
+        //if (gamepad1.rightBumperWasPressed()) { intakeSS.runIntakeCommand.schedule() }
+        //if (gamepad1.rightBumperWasReleased()) { intakeSS.runIntakeCommand.cancel() }
+        //if (gamepad1.crossWasReleased()) follower.pose = resetPose
+        if (gp.gamepad.rightBumperWasPressed()) { intakeSS.runIntakeCommand.schedule() } else { intakeSS.runIntakeCommand.cancel() }
+        //if (gp.gamepad.rightBumperWasReleased()) { intakeSS.runIntakeCommand.cancel() }
+        if (gp.gamepad.crossWasPressed()) follower.pose = resetPose
 
         // Run the Ivy Scheduler to actually update Commands
         Scheduler.execute()
 
         //Show and update debug
-        debugUtil.showAllDebugTeleop(follower,alliance,runtime,gamepad1,llss,autoTurnPixel, robot)
+        debugUtil.showAllDebugTeleop(follower,alliance,runtime,gp,llss,autoTurnPixel, robot)
         debugUtil.update(telemetry)
         onLoop()
     }

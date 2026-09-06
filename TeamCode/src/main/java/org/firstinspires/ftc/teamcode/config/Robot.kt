@@ -7,8 +7,10 @@ import com.pedropathing.geometry.Pose
 import com.pedropathing.paths.HeadingInterpolator
 import com.pedropathing.paths.PathChain
 import com.qualcomm.hardware.limelightvision.Limelight3A
-import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.HardwareMap
+import com.seattlesolvers.solverslib.hardware.SensorRevColorV3
+import com.seattlesolvers.solverslib.hardware.motors.Motor
+import com.seattlesolvers.solverslib.hardware.motors.MotorEx
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
@@ -21,8 +23,12 @@ class Robot(
     hardwareMap: HardwareMap,
 ) {
     enum class Alliance {BLUE, RED}
-    val intakeMotor: DcMotorEx = hardwareMap.get(DcMotorEx::class.java, "intake")
+    // Hardware
+    // val intakeMotor: DcMotorEx = hardwareMap.get(DcMotorEx::class.java, "intake")
+    val intakeMotor: MotorEx = MotorEx(hardwareMap, "intake", Motor.GoBILDA.BARE).setCachingTolerance(0.2)
+    val colorSen: SensorRevColorV3 = SensorRevColorV3(hardwareMap, "c")
     val ll: Limelight3A = hardwareMap.get(Limelight3A::class.java, "LL")
+    // Vision stuff
     var aprilTag: AprilTagProcessor? = null
     var visionPortal: VisionPortal? = null
     val cameraPosition: Position = Position(DistanceUnit.INCH, 0.0, 0.0, 0.0, 0)
@@ -41,6 +47,7 @@ class Robot(
         builder.addProcessor(aprilTag)
         visionPortal = builder.build()
     }
+    // Objects and needed classes
     object AutoPoseUtil {
         lateinit var follower: Follower
         val startPose = Pose(31.7, 8.0, Math.toRadians(180.0))

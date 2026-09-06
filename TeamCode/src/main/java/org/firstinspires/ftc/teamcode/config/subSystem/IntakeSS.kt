@@ -1,24 +1,29 @@
 package org.firstinspires.ftc.teamcode.config.subSystem
 
 import com.pedropathing.ivy.Command
-import com.qualcomm.robotcore.hardware.DcMotor
+import com.seattlesolvers.solverslib.hardware.motors.Motor
 import org.firstinspires.ftc.teamcode.config.Robot
 
 class IntakeSS(
     robot: Robot
 ) {
     init {
-        robot.intakeMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
-        robot.intakeMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+        robot.intakeMotor.setRunMode(Motor.RunMode.VelocityControl)
+        robot.intakeMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE)
+        robot.intakeMotor.inverted = true
     }
-    private val intakeVelocity = -980.0 // -980.0
-    private var lastVelocity: Double = Double.NaN
-    private fun setVelocity(velocity: Double, robot: Robot) { if (velocity != lastVelocity) { robot.intakeMotor.velocity = velocity
-            lastVelocity = velocity } }
+    private val intakeVelocity = 0.35 // -980.0
+    //private fun setVelocity(velocity: Double, robot: Robot) {
+    //    robot.intakeMotor.set(velocity)
+    //}
     val runIntakeCommand: Command = Command.build()
-        .setStart { setVelocity(intakeVelocity, robot) }
-        .setEnd { setVelocity(0.0, robot) }
+        //.setStart { setVelocity(intakeVelocity, robot) }
+        //.setEnd { setVelocity(0.0, robot) }
+        .setStart { robot.intakeMotor.set(intakeVelocity) }
+        .setEnd { robot.intakeMotor.set(0.0) }
     val reverseIntakeCommand: Command = Command.build()
-        .setStart { setVelocity(-intakeVelocity, robot) }
-        .setEnd { setVelocity(0.0, robot) }
+        //.setStart { setVelocity(-intakeVelocity, robot) }
+        //.setEnd { setVelocity(0.0, robot) }
+        .setStart { robot.intakeMotor.set(-intakeVelocity) }
+        .setEnd { robot.intakeMotor.set(0.0) }
 }
