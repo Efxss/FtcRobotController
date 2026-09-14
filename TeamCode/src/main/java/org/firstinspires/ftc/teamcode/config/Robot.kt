@@ -8,8 +8,6 @@ import com.pedropathing.paths.HeadingInterpolator
 import com.pedropathing.paths.PathChain
 import com.qualcomm.hardware.limelightvision.Limelight3A
 import com.qualcomm.robotcore.hardware.HardwareMap
-import com.seattlesolvers.solverslib.hardware.SensorRevColorV3
-import com.seattlesolvers.solverslib.hardware.motors.Motor
 import com.seattlesolvers.solverslib.hardware.motors.MotorEx
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
@@ -25,8 +23,7 @@ class Robot(
     enum class Alliance {BLUE, RED}
     // Hardware
     // val intakeMotor: DcMotorEx = hardwareMap.get(DcMotorEx::class.java, "intake")
-    val intakeMotor: MotorEx = MotorEx(hardwareMap, "intake", Motor.GoBILDA.BARE).setCachingTolerance(0.2)
-    val colorSen: SensorRevColorV3 = SensorRevColorV3(hardwareMap, "c")
+    val intakeMotor: MotorEx = MotorEx(hardwareMap, "intake", 28.0, 6000.0).setCachingTolerance(0.2)
     val ll: Limelight3A = hardwareMap.get(Limelight3A::class.java, "LL")
     // Vision stuff
     var aprilTag: AprilTagProcessor? = null

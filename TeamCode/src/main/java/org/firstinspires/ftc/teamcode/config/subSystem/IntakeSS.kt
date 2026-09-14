@@ -12,18 +12,11 @@ class IntakeSS(
         robot.intakeMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE)
         robot.intakeMotor.inverted = true
     }
-    private val intakeVelocity = 0.35 // -980.0
-    //private fun setVelocity(velocity: Double, robot: Robot) {
-    //    robot.intakeMotor.set(velocity)
-    //}
+    private val intakeVelocity = 0.3
     val runIntakeCommand: Command = Command.build()
-        //.setStart { setVelocity(intakeVelocity, robot) }
-        //.setEnd { setVelocity(0.0, robot) }
         .setStart { robot.intakeMotor.set(intakeVelocity) }
-        .setEnd { robot.intakeMotor.set(0.0) }
+        .setEnd { robot.intakeMotor.motorEx.power = 0.0 }
     val reverseIntakeCommand: Command = Command.build()
-        //.setStart { setVelocity(-intakeVelocity, robot) }
-        //.setEnd { setVelocity(0.0, robot) }
         .setStart { robot.intakeMotor.set(-intakeVelocity) }
-        .setEnd { robot.intakeMotor.set(0.0) }
+        .setEnd { robot.intakeMotor.motorEx.power = 0.0 }
 }

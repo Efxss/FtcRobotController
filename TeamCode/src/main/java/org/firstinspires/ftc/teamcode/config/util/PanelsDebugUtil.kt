@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.config.util
 
 import com.bylazar.telemetry.TelemetryManager
 import com.pedropathing.follower.Follower
-import com.seattlesolvers.solverslib.gamepad.GamepadEx
+import com.qualcomm.robotcore.hardware.Gamepad
 import org.firstinspires.ftc.teamcode.config.Robot
 import org.firstinspires.ftc.teamcode.config.subSystem.LLSS
 
@@ -37,10 +37,10 @@ class PanelsDebugUtil(
         follower: Follower,
         alliance: Robot.Alliance,
         runtime: Double,
-        gp: GamepadEx,
+        gamepad: Gamepad,
         limelight: LLSS,
         llDeadZone: Double,
-        robot: Robot
+        robot: Robot,
     ) {
         panels?.apply {
             debug("=== PedroPathing ===")
@@ -53,10 +53,11 @@ class PanelsDebugUtil(
             debug("Target X Deg", limelight.currentTagXDeg(alliance, llDeadZone, robot))
             debug("")
             debug("=== Gamepad ===")
-            debug("Left Stick X", gp.gamepad.left_stick_x)
-            debug("Left Stick Y", gp.gamepad.left_stick_y)
-            debug("Right Stick X", gp.gamepad.right_stick_x)
-            debug("Right Bumper", gp.gamepad.right_bumper)
+            debug("Left Stick X", gamepad.left_stick_x)
+            debug("Left Stick Y", gamepad.left_stick_y)
+            debug("Right Stick X", gamepad.right_stick_x)
+            debug("Right Bumper", gamepad.right_bumper)
+            debug("Intake velocity", robot.intakeMotor.velocity)
             debug("")
             debug("=== OpMode ===")
             debug("runtime", runtime)
