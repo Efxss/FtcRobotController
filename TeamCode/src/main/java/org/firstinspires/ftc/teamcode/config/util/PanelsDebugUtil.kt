@@ -4,7 +4,6 @@ import com.bylazar.telemetry.TelemetryManager
 import com.pedropathing.follower.Follower
 import com.qualcomm.robotcore.hardware.Gamepad
 import org.firstinspires.ftc.teamcode.config.Robot
-import org.firstinspires.ftc.teamcode.config.subSystem.LLSS
 
 class PanelsDebugUtil(
     private val panels: TelemetryManager?
@@ -38,8 +37,6 @@ class PanelsDebugUtil(
         alliance: Robot.Alliance,
         runtime: Double,
         gamepad: Gamepad,
-        limelight: LLSS,
-        llDeadZone: Double,
         robot: Robot,
     ) {
         panels?.apply {
@@ -48,9 +45,6 @@ class PanelsDebugUtil(
             debug("Follower Pose Y", follower.pose.y)
             debug("Follower Heading", Math.toDegrees(follower.pose.heading))
             debug("Total Heading", Math.toDegrees(follower.totalHeading))
-            debug("")
-            debug("=== Vision ===")
-            debug("Target X Deg", limelight.currentTagXDeg(alliance, llDeadZone, robot))
             debug("")
             debug("=== Gamepad ===")
             debug("Left Stick X", gamepad.left_stick_x)

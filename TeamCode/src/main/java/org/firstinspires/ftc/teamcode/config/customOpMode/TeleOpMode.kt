@@ -8,7 +8,6 @@ import com.pedropathing.ivy.Scheduler
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import org.firstinspires.ftc.teamcode.config.Robot
 import org.firstinspires.ftc.teamcode.config.subSystem.IntakeSS
-import org.firstinspires.ftc.teamcode.config.subSystem.LLSS
 import org.firstinspires.ftc.teamcode.config.util.DrawingUtil
 import org.firstinspires.ftc.teamcode.config.util.HubUtil
 import org.firstinspires.ftc.teamcode.config.util.PanelsDebugUtil
@@ -25,17 +24,11 @@ abstract class TeleOpMode : OpMode() {
     protected lateinit var hubUtil: HubUtil
     protected lateinit var debugUtil: PanelsDebugUtil
     protected lateinit var intakeSS: IntakeSS
-    protected lateinit var llss: LLSS
     protected lateinit var follower: Follower
     protected var resetPose = Pose(8.0, 8.0, Math.toRadians(90.0))
     protected var rotate = 0.0
     protected var strafe = 0.0
     protected var forward = 0.0
-    protected val autoTurnPixel = 2.0
-    protected val autoTurnRad = Math.toRadians(1.0)
-    protected val autoTurnTimeoutSec = 0.5
-    open var autoTurnStartTime = 0.0
-    open var isAutoTurning = false
 
 
     // Custom lifecycle hooks
@@ -87,7 +80,6 @@ abstract class TeleOpMode : OpMode() {
         robot = Robot(hardwareMap)
         debugUtil.update(telemetry)
         intakeSS = IntakeSS(robot)
-        llss = LLSS(robot)
         hubUtil = HubUtil(hardwareMap)
         onInit()
     }
@@ -125,25 +117,20 @@ abstract class TeleOpMode : OpMode() {
             Robot.Alliance.RED -> -gamepad1.left_stick_x.toDouble()
         }
 
-        //if (gamepad1.rightBumperWasPressed()) { intakeSS.runIntakeCommand.schedule() }
-        //if (gamepad1.rightBumperWasReleased()) { intakeSS.runIntakeCommand.cancel() }
-        //if (gamepad1.crossWasReleased()) follower.pose = resetPose
         if (gamepad1.rightBumperWasPressed()) { intakeSS.runIntakeCommand.schedule() }
         else if (gamepad1.rightBumperWasReleased()) { intakeSS.runIntakeCommand.cancel() }
-        //if (gamepad1.rightBumperWasReleased()) { intakeSS.runIntakeCommand.cancel() }
         if (gamepad1.crossWasPressed()) follower.pose = resetPose
 
         // Run the Ivy Scheduler to actually update Commands
         Scheduler.execute()
 
         //Show and update debug
-        debugUtil.showAllDebugTeleop(follower,alliance,runtime,gamepad1,llss,autoTurnPixel, robot)
+        debugUtil.showAllDebugTeleop(follower,alliance,runtime,gamepad1,robot)
         debugUtil.update(telemetry)
         onLoop()
     }
 
     final override fun stop() {
-        llss.stop(robot)
         if (intakeSS.runIntakeCommand.isScheduled) intakeSS.runIntakeCommand.cancel()
         onStop()
     }
