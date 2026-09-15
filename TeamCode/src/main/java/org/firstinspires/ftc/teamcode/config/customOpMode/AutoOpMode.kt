@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.config.customOpMode
 
 import com.bylazar.telemetry.PanelsTelemetry
 import com.bylazar.telemetry.TelemetryManager
-import com.pedropathing.follower.Follower
 import com.pedropathing.ivy.Command
 import com.pedropathing.ivy.Scheduler
 import com.pedropathing.ivy.commands.Commands
@@ -28,7 +27,6 @@ abstract class AutoOpMode : OpMode() {
     protected lateinit var hubUtil: HubUtil
     protected lateinit var debugUtil: PanelsDebugUtil
     protected lateinit var intakeSS: IntakeSS
-    protected lateinit var follower: Follower
 
     // Custom lifecycle hooks
 
@@ -37,6 +35,12 @@ abstract class AutoOpMode : OpMode() {
      * Must be overridden by the subclass (e.g. `override val alliance = Alliance.BLUE`)
      */
     abstract val alliance: Robot.Alliance
+
+    /**
+     * Mandatory property that defines What kind of OpMode is running
+     * Must be overridden by the subclass (e.g. `override val alliance = Alliance.BLUE`)
+     */
+    abstract val opmode: Robot.OpMode
 
     /**
      * Mandatory function that will run all code inside one time upon pressing the initialization button
@@ -87,12 +91,13 @@ abstract class AutoOpMode : OpMode() {
         // Clear the bulk read cache
         hubUtil.clearCache()
         // Draw on Panels
-        DrawingUtil.drawOnlyCurrent(follower)
+        DrawingUtil.drawOnlyCurrent(robot.follower)
         onInitLoop()
     }
 
     final override fun start() {
         resetRuntime()
+        robot.genTab()
         onStart()
     }
 
@@ -100,19 +105,19 @@ abstract class AutoOpMode : OpMode() {
         // Clear the bulk read cache
         hubUtil.clearCache()
         // Draw on Panels
-        if (::follower.isInitialized) { DrawingUtil.drawDebug(follower) }
+        DrawingUtil.drawDebug(robot.follower)
 
         // Run the Ivy Scheduler to actually update Commands
         Scheduler.execute()
 
         //Show and update debug
-        debugUtil.showAllDebugAuto(follower, hubUtil, alliance, runtime)
+        debugUtil.showAllDebugAuto(robot.follower, hubUtil, alliance, runtime)
         debugUtil.update(telemetry)
         onLoop()
     }
 
     final override fun stop() {
-        if (::follower.isInitialized) { VariableStateUtil.endOfAutoPose = follower.pose }
+        VariableStateUtil.endOfAutoPose = robot.follower.pose
         VariableStateUtil.alliance = alliance
         if (intakeSS.runIntakeCommand.isScheduled) intakeSS.runIntakeCommand.cancel()
         onStop()
@@ -122,13 +127,13 @@ abstract class AutoOpMode : OpMode() {
     fun runAuto(): Command {
         // Example for PedroPathing branch in Kotlin
         //var cases = LinkedHashMap<BooleanSupplier, Command>()
-        //cases[BooleanSupplier {follower.distanceRemaining <= 15.0}] = rampSS.rampIntake()
+        //cases[BooleanSupplier {robot.follower.distanceRemaining <= 15.0}] = rampSS.rampIntake()
         //val handlePos: Command = Commands.branch(cases)
         return Groups.sequential(
-            follow(follower, Robot.AutoPoseUtil.startToLeftCorner,true, 0.5),
+            follow(robot.follower, Robot.AutoPoseUtil.startToLeftCorner,true, 0.5),
             Commands.waitMs(750.0),
-            follow(follower,Robot.AutoPoseUtil.bottomLeftCornerToLeftSpike,true, 0.5),
-            follow(follower, Robot.AutoPoseUtil.leftSpikeToHiveFour,true,0.5),
+            follow(robot.follower,Robot.AutoPoseUtil.bottomLeftCornerToLeftSpike,true, 0.5),
+            follow(robot.follower, Robot.AutoPoseUtil.leftSpikeToHiveFour,true,0.5),
         )
     }
 }

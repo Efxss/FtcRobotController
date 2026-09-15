@@ -15,12 +15,22 @@ class Robot(
     hardwareMap: HardwareMap,
 ) {
     enum class Alliance {BLUE, RED}
+    enum class OpMode {AUTO, TELEOP}
     // PedroPathing
     lateinit var follower: Follower
-    fun initializePedroPathing(hardwareMap: HardwareMap) {
-        val startPose = VariableStateUtil.endOfAutoPose ?: Pose()
-        follower = Constants.createFollower(hardwareMap)
-        follower.setStartingPose(startPose)
+    fun initPedro(hardwareMap: HardwareMap, opmode: Robot.OpMode) {
+        when (opmode) {
+            OpMode.AUTO -> {
+                follower = Constants.createFollower(hardwareMap)
+                follower.setStartingPose(Robot.AutoPoseUtil.startPose)
+                Robot.AutoPoseUtil.follower = follower
+            }
+            OpMode.TELEOP -> {
+                val startPose = VariableStateUtil.endOfAutoPose ?: Pose()
+                follower = Constants.createFollower(hardwareMap)
+                follower.setStartingPose(startPose)
+            }
+        }
     }
     // Hardware
     val intakeM: MotorEx = MotorEx(hardwareMap, "intake", 28.0, 6000.0).setCachingTolerance(0.2)
@@ -35,7 +45,7 @@ class Robot(
     val downFireHeadBlueTab = InterpLUT()
     val upFireHeadRedTab = InterpLUT()
     val downFireHeadRedTab = InterpLUT()
-    // Objects and needed classes
+    // Objects, Classes and Functions
     fun genTab() {
         // Fire Power
         upFireBlueTab.apply {
@@ -56,7 +66,7 @@ class Robot(
 
         // Turn Heading
         upFireHeadBlueTab.apply {
-            add(Pose().distanceFrom(refPose), 0.1)
+            add(Pose(85.8, 133.2).distanceFrom(refPose), 270.0)
         }.createLUT()
 
         downFireHeadBlueTab.apply {
@@ -68,7 +78,12 @@ class Robot(
         }.createLUT()
 
         downFireHeadRedTab.apply {
+            add(Pose(16.4,12.0).distanceFrom(refPose), 44.0)
+            add(Pose(33.7,12.0).distanceFrom(refPose), 56.0)
             add(Pose(62.2,8.0).distanceFrom(refPose), 90.0)
+            add(Pose(80.0,12.0).distanceFrom(refPose), 124.0)
+            add(Pose(96.5,17.5).distanceFrom(refPose), 137.0)
+            add(Pose(110.4,12.0).distanceFrom(refPose), 141.0)
         }.createLUT()
     }
     object AutoPoseUtil {

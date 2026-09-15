@@ -5,13 +5,14 @@ import com.pedropathing.ivy.groups.Groups
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import org.firstinspires.ftc.teamcode.config.Robot
 import org.firstinspires.ftc.teamcode.config.customOpMode.AutoOpMode
-import org.firstinspires.ftc.teamcode.config.pedroPathing.Constants
 
 @Autonomous(group = "Auto", name = "Auto")
 class BlueAuto : AutoOpMode() {
     override val alliance = Robot.Alliance.BLUE
+    override val opmode = Robot.OpMode.AUTO
+
     override fun onInit() {
-        initializePedroPathing()
+        robot.initPedro(hardwareMap, opmode)
     }
 
     override fun onStart() {
@@ -24,12 +25,6 @@ class BlueAuto : AutoOpMode() {
     }
 
     override fun onLoop() {
-        follower.update()
-    }
-
-    fun initializePedroPathing() {
-        follower = Constants.createFollower(hardwareMap)
-        follower.setStartingPose(Robot.AutoPoseUtil.startPose)
-        Robot.AutoPoseUtil.follower = follower
+        robot.follower.update()
     }
 }

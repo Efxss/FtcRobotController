@@ -38,6 +38,12 @@ abstract class TeleOpMode : OpMode() {
     abstract val alliance: Robot.Alliance
 
     /**
+     * Mandatory property that defines What kind of OpMode is running
+     * Must be overridden by the subclass (e.g. `override val alliance = Alliance.BLUE`)
+     */
+    abstract val opmode: Robot.OpMode
+
+    /**
      * Mandatory function that will run all code inside one time upon pressing the initialization button
      */
     abstract fun onInit()
@@ -96,6 +102,7 @@ abstract class TeleOpMode : OpMode() {
             Robot.Alliance.BLUE -> { Pose(8.0, 8.0, Math.toRadians(90.0)) }
             Robot.Alliance.RED -> { Pose(134.0, 7.0, Math.toRadians(90.0)) }
         }
+        robot.genTab()
         robot.follower.activateAllPIDFs()
         onStart()
     }
