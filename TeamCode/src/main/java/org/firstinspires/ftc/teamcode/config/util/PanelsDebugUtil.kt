@@ -51,7 +51,7 @@ class PanelsDebugUtil(
             debug("Left Stick Y", gamepad.left_stick_y)
             debug("Right Stick X", gamepad.right_stick_x)
             debug("Right Bumper", gamepad.right_bumper)
-            debug("Intake velocity", robot.intakeMotor.velocity)
+            debug("Intake velocity", robot.intakeM.velocity)
             debug("")
             debug("=== OpMode ===")
             debug("runtime", runtime)

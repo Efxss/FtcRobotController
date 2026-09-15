@@ -7,14 +7,53 @@ import com.pedropathing.paths.HeadingInterpolator
 import com.pedropathing.paths.PathChain
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.seattlesolvers.solverslib.hardware.motors.MotorEx
+import com.seattlesolvers.solverslib.util.InterpLUT
 
 class Robot(
     hardwareMap: HardwareMap,
 ) {
     enum class Alliance {BLUE, RED}
     // Hardware
-    val intakeMotor: MotorEx = MotorEx(hardwareMap, "intake", 28.0, 6000.0).setCachingTolerance(0.2)
+    val intakeM: MotorEx = MotorEx(hardwareMap, "intake", 28.0, 6000.0).setCachingTolerance(0.2)
+    val fireM: MotorEx = MotorEx(hardwareMap, "fire", 28.0, 6000.0).setCachingTolerance(0.05)
+    val upFireBlueTab = InterpLUT()
+    val downFireBlueTab = InterpLUT()
+    val upFireRedTab = InterpLUT()
+    val downFireRedTab = InterpLUT()
+    val upFireHeadBlueTab = InterpLUT()
+    val downFireHeadBlueTab = InterpLUT()
+    val upFireHeadRedTab = InterpLUT()
+    val downFireHeadRedTab = InterpLUT()
     // Objects and needed classes
+    fun genTab() {
+        val refPose = Pose(0.0,0.0)
+        // Fire Power
+        upFireBlueTab.apply {
+            add(Pose().distanceFrom(refPose), 0.1)
+        }.createLUT()
+        downFireBlueTab.apply {
+            add(Pose().distanceFrom(refPose), 0.1)
+        }.createLUT()
+        upFireRedTab.apply {
+            add(Pose().distanceFrom(refPose), 0.1)
+        }.createLUT()
+        downFireRedTab.apply {
+            add(Pose().distanceFrom(refPose), 0.1)
+        }.createLUT()
+        // Turn Heading
+        upFireHeadBlueTab.apply {
+            add(Pose().distanceFrom(refPose), 0.1)
+        }.createLUT()
+        downFireHeadBlueTab.apply {
+            add(Pose().distanceFrom(refPose), 0.1)
+        }.createLUT()
+        upFireHeadRedTab.apply {
+            add(Pose().distanceFrom(refPose), 0.1)
+        }.createLUT()
+        downFireHeadRedTab.apply {
+            add(Pose().distanceFrom(refPose), 0.1)
+        }.createLUT()
+    }
     object AutoPoseUtil {
         lateinit var follower: Follower
         val startPose = Pose(31.7, 8.0, Math.toRadians(180.0))

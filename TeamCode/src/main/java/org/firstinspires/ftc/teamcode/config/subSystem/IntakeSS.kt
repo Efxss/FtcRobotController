@@ -8,15 +8,15 @@ class IntakeSS(
     robot: Robot
 ) {
     init {
-        robot.intakeMotor.setRunMode(Motor.RunMode.VelocityControl)
-        robot.intakeMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE)
-        robot.intakeMotor.inverted = true
+        robot.intakeM.setRunMode(Motor.RunMode.VelocityControl)
+        robot.intakeM.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE)
+        robot.intakeM.inverted = true
     }
     private val intakeVelocity = 0.3
     val runIntakeCommand: Command = Command.build()
-        .setStart { robot.intakeMotor.set(intakeVelocity) }
-        .setEnd { robot.intakeMotor.motorEx.power = 0.0 }
+        .setStart { robot.intakeM.set(intakeVelocity) }
+        .setEnd { robot.intakeM.motorEx.power = 0.0 }
     val reverseIntakeCommand: Command = Command.build()
-        .setStart { robot.intakeMotor.set(-intakeVelocity) }
-        .setEnd { robot.intakeMotor.motorEx.power = 0.0 }
+        .setStart { robot.intakeM.set(-intakeVelocity) }
+        .setEnd { robot.intakeM.motorEx.power = 0.0 }
 }
