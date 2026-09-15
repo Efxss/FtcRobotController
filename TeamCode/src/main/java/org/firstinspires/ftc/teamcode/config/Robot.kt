@@ -8,14 +8,25 @@ import com.pedropathing.paths.PathChain
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.seattlesolvers.solverslib.hardware.motors.MotorEx
 import com.seattlesolvers.solverslib.util.InterpLUT
+import org.firstinspires.ftc.teamcode.config.pedroPathing.Constants
+import org.firstinspires.ftc.teamcode.config.util.VariableStateUtil
 
 class Robot(
     hardwareMap: HardwareMap,
 ) {
     enum class Alliance {BLUE, RED}
+    // PedroPathing
+    lateinit var follower: Follower
+    fun initializePedroPathing(hardwareMap: HardwareMap) {
+        val startPose = VariableStateUtil.endOfAutoPose ?: Pose()
+        follower = Constants.createFollower(hardwareMap)
+        follower.setStartingPose(startPose)
+    }
     // Hardware
     val intakeM: MotorEx = MotorEx(hardwareMap, "intake", 28.0, 6000.0).setCachingTolerance(0.2)
     val fireM: MotorEx = MotorEx(hardwareMap, "fire", 28.0, 6000.0).setCachingTolerance(0.05)
+    // Tables and refs
+    val refPose = Pose(0.0,0.0)
     val upFireBlueTab = InterpLUT()
     val downFireBlueTab = InterpLUT()
     val upFireRedTab = InterpLUT()
@@ -26,32 +37,38 @@ class Robot(
     val downFireHeadRedTab = InterpLUT()
     // Objects and needed classes
     fun genTab() {
-        val refPose = Pose(0.0,0.0)
         // Fire Power
         upFireBlueTab.apply {
             add(Pose().distanceFrom(refPose), 0.1)
         }.createLUT()
+
         downFireBlueTab.apply {
             add(Pose().distanceFrom(refPose), 0.1)
         }.createLUT()
+
         upFireRedTab.apply {
             add(Pose().distanceFrom(refPose), 0.1)
         }.createLUT()
+
         downFireRedTab.apply {
             add(Pose().distanceFrom(refPose), 0.1)
         }.createLUT()
+
         // Turn Heading
         upFireHeadBlueTab.apply {
             add(Pose().distanceFrom(refPose), 0.1)
         }.createLUT()
+
         downFireHeadBlueTab.apply {
             add(Pose().distanceFrom(refPose), 0.1)
         }.createLUT()
+
         upFireHeadRedTab.apply {
             add(Pose().distanceFrom(refPose), 0.1)
         }.createLUT()
+
         downFireHeadRedTab.apply {
-            add(Pose().distanceFrom(refPose), 0.1)
+            add(Pose(62.2,8.0).distanceFrom(refPose), 90.0)
         }.createLUT()
     }
     object AutoPoseUtil {

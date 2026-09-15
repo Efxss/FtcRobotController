@@ -45,6 +45,7 @@ class PanelsDebugUtil(
             debug("Follower Pose Y", follower.pose.y)
             debug("Follower Heading", Math.toDegrees(follower.pose.heading))
             debug("Total Heading", Math.toDegrees(follower.totalHeading))
+            debug("Dist From Ref Pose", follower.pose.distanceFrom(robot.refPose))
             debug("")
             debug("=== Gamepad ===")
             debug("Left Stick X", gamepad.left_stick_x)

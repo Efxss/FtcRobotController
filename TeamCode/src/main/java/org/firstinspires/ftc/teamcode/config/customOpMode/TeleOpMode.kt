@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.config.customOpMode
 
 import com.bylazar.telemetry.PanelsTelemetry
 import com.bylazar.telemetry.TelemetryManager
-import com.pedropathing.follower.Follower
 import com.pedropathing.geometry.Pose
 import com.pedropathing.ivy.Scheduler
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
@@ -24,7 +23,6 @@ abstract class TeleOpMode : OpMode() {
     protected lateinit var hubUtil: HubUtil
     protected lateinit var debugUtil: PanelsDebugUtil
     protected lateinit var intakeSS: IntakeSS
-    protected lateinit var follower: Follower
     protected var resetPose = Pose(8.0, 8.0, Math.toRadians(90.0))
     protected var rotate = 0.0
     protected var strafe = 0.0
@@ -88,7 +86,7 @@ abstract class TeleOpMode : OpMode() {
         // Clear the bulk read cache
         hubUtil.clearCache()
         // Draw on Panels
-        DrawingUtil.drawOnlyCurrent(follower)
+        DrawingUtil.drawOnlyCurrent(robot.follower)
         onInitLoop()
     }
 
@@ -98,7 +96,7 @@ abstract class TeleOpMode : OpMode() {
             Robot.Alliance.BLUE -> { Pose(8.0, 8.0, Math.toRadians(90.0)) }
             Robot.Alliance.RED -> { Pose(134.0, 7.0, Math.toRadians(90.0)) }
         }
-        follower.activateAllPIDFs()
+        robot.follower.activateAllPIDFs()
         onStart()
     }
 
@@ -106,7 +104,7 @@ abstract class TeleOpMode : OpMode() {
         // Clear the bulk read cache
         hubUtil.clearCache()
         // Draw on Panels
-        if (::follower.isInitialized) { DrawingUtil.drawDebug(follower) }
+        DrawingUtil.drawDebug(robot.follower)
         rotate = gamepad1.right_stick_x.toDouble()
         forward = when (alliance) {
             Robot.Alliance.BLUE -> gamepad1.left_stick_y.toDouble()
@@ -119,13 +117,13 @@ abstract class TeleOpMode : OpMode() {
 
         if (gamepad1.rightBumperWasPressed()) { intakeSS.runIntakeCommand.schedule() }
         else if (gamepad1.rightBumperWasReleased()) { intakeSS.runIntakeCommand.cancel() }
-        if (gamepad1.crossWasPressed()) follower.pose = resetPose
+        if (gamepad1.crossWasPressed()) robot.follower.pose = resetPose
 
         // Run the Ivy Scheduler to actually update Commands
         Scheduler.execute()
 
         //Show and update debug
-        debugUtil.showAllDebugTeleop(follower,alliance,runtime,gamepad1,robot)
+        debugUtil.showAllDebugTeleop(robot.follower,alliance,runtime,gamepad1,robot)
         debugUtil.update(telemetry)
         onLoop()
     }
