@@ -1,5 +1,5 @@
 repositories {
-    maven { url = uri("${rootDir}/localRepo") }
+    //maven { url = uri("${rootDir}/localRepo") }
     mavenCentral()
     google() // Needed for androidx
     maven {url = 'https://mymaven.bylazar.com/releases' }
@@ -19,6 +19,6 @@ dependencies {
     implementation 'com.pedropathing:ftc:2.1.2'
     implementation 'com.pedropathing:ivy:1.0.0'
     implementation 'com.pedropathing:telemetry:1.0.0'
-    //implementation 'dev.frozenmilk.sinister:Sloth:0.2.4'
-    implementation 'com.bylazar.sloth:fullpanels:0.2.4+1.0.12'
+    implementation 'dev.frozenmilk.sinister:Sloth:0.3.2'
+    implementation 'com.bylazar.sloth:fullpanels:0.3.2+1.0.13'
 }
