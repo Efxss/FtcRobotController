@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.config.subSystem.IntakeSS
 import org.firstinspires.ftc.teamcode.config.util.DrawingUtil
 import org.firstinspires.ftc.teamcode.config.util.HubUtil
 import org.firstinspires.ftc.teamcode.config.util.PanelsDebugUtil
+import org.firstinspires.ftc.teamcode.config.util.PoseUtil
 import org.firstinspires.ftc.teamcode.config.util.VariableStateUtil
 
 /**
@@ -119,7 +120,7 @@ abstract class AutoOpMode : OpMode() {
     final override fun stop() {
         VariableStateUtil.endOfAutoPose = robot.follower.pose
         VariableStateUtil.alliance = alliance
-        if (intakeSS.runIntake.isScheduled) intakeSS.runIntake.cancel()
+        intakeSS.runIntake(robot).cancel()
         onStop()
     }
 
@@ -130,10 +131,10 @@ abstract class AutoOpMode : OpMode() {
         //cases[BooleanSupplier {robot.follower.distanceRemaining <= 15.0}] = rampSS.rampIntake()
         //val handlePos: Command = Commands.branch(cases)
         return Groups.sequential(
-            follow(robot.follower, Robot.AutoPoseUtil.startToLeftCorner,true, 0.5),
+            follow(robot.follower, PoseUtil.startToLeftCorner,true, 0.5),
             Commands.waitMs(750.0),
-            follow(robot.follower,Robot.AutoPoseUtil.bottomLeftCornerToLeftSpike,true, 0.5),
-            follow(robot.follower, Robot.AutoPoseUtil.leftSpikeToHiveFour,true,0.5),
+            follow(robot.follower,PoseUtil.bottomLeftCornerToLeftSpike,true, 0.5),
+            follow(robot.follower, PoseUtil.leftSpikeToHiveFour,true,0.5),
         )
     }
 }

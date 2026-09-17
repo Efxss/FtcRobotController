@@ -6,6 +6,7 @@ import com.pedropathing.geometry.Pose
 import com.pedropathing.ivy.Scheduler
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import org.firstinspires.ftc.teamcode.config.Robot
+import org.firstinspires.ftc.teamcode.config.subSystem.FlowerSS
 import org.firstinspires.ftc.teamcode.config.subSystem.IntakeSS
 import org.firstinspires.ftc.teamcode.config.util.DrawingUtil
 import org.firstinspires.ftc.teamcode.config.util.HubUtil
@@ -23,6 +24,7 @@ abstract class TeleOpMode : OpMode() {
     protected lateinit var hubUtil: HubUtil
     protected lateinit var debugUtil: PanelsDebugUtil
     protected lateinit var intakeSS: IntakeSS
+    protected lateinit var flowerSS: FlowerSS
     protected var resetPose = Pose(8.0, 8.0, Math.toRadians(90.0))
     protected var rotate = 0.0
     protected var strafe = 0.0
@@ -84,6 +86,7 @@ abstract class TeleOpMode : OpMode() {
         robot = Robot(hardwareMap)
         debugUtil.update(telemetry)
         intakeSS = IntakeSS(robot)
+        flowerSS = FlowerSS(robot)
         hubUtil = HubUtil(hardwareMap)
         onInit()
     }
@@ -99,8 +102,8 @@ abstract class TeleOpMode : OpMode() {
     final override fun start() {
         resetRuntime()
         resetPose = when (alliance) {
-            Robot.Alliance.BLUE -> { Pose(8.0, 8.0, Math.toRadians(90.0)) }
-            Robot.Alliance.RED -> { Pose(134.0, 7.0, Math.toRadians(90.0)) }
+            Robot.Alliance.BLUE -> { Pose(8.0, 9.0, Math.toRadians(90.0)) }
+            Robot.Alliance.RED -> { Pose(134.0, 9.0, Math.toRadians(90.0)) }
         }
         //robot.genTab()
         robot.follower.activateAllPIDFs()
@@ -122,8 +125,9 @@ abstract class TeleOpMode : OpMode() {
             Robot.Alliance.RED -> -gamepad1.left_stick_x.toDouble()
         }
 
-        if (gamepad1.rightBumperWasPressed()) { intakeSS.runIntake.schedule() }
-        else if (gamepad1.rightBumperWasReleased()) { intakeSS.runIntake.cancel() }
+        if (gamepad1.rightBumperWasPressed()) { intakeSS.runIntake(robot).also { it.schedule() } }
+        else if (gamepad1.rightBumperWasReleased()) { intakeSS.runIntake(robot).cancel() }
+        if (gamepad1.leftBumperWasPressed()) { flowerSS.deFlower(robot).schedule() }
         if (gamepad1.crossWasPressed()) robot.follower.pose = resetPose
 
         // Run the Ivy Scheduler to actually update Commands
@@ -136,7 +140,7 @@ abstract class TeleOpMode : OpMode() {
     }
 
     final override fun stop() {
-        if (intakeSS.runIntake.isScheduled) intakeSS.runIntake.cancel()
+        intakeSS.runIntake(robot).cancel()
         onStop()
     }
 

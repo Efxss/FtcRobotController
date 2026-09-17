@@ -4,10 +4,9 @@ import com.pedropathing.geometry.Pose
 import org.firstinspires.ftc.teamcode.config.Robot
 
 /**
- * Holds state that needs to persist between OpModes (Auto -> TeleOp).
- * Because this is a Kotlin `object`, it lives in the JVM for the entire
- * Robot Controller process it survives the OpMode lifecycle but resets
- * on a Robot Controller restart.
+ * Holds state that needs to persist between OpModes.
+ * Because this is a Kotlin `object`, it lives in the JVM for the entire so
+ * It survives the OpMode lifecycles
  */
 object VariableStateUtil {
     // Null means "no auto ran" -> TeleOp should fall back to a default pose.

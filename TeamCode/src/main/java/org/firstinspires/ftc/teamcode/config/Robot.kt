@@ -1,15 +1,14 @@
 package org.firstinspires.ftc.teamcode.config
 
 import com.pedropathing.follower.Follower
-import com.pedropathing.geometry.BezierLine
 import com.pedropathing.geometry.Pose
-import com.pedropathing.paths.HeadingInterpolator
-import com.pedropathing.paths.PathChain
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.seattlesolvers.solverslib.hardware.motors.Motor
 import com.seattlesolvers.solverslib.hardware.motors.MotorEx
+import com.seattlesolvers.solverslib.hardware.servos.ServoEx
 import com.seattlesolvers.solverslib.util.InterpLUT
 import org.firstinspires.ftc.teamcode.config.pedroPathing.Constants
+import org.firstinspires.ftc.teamcode.config.util.PoseUtil
 import org.firstinspires.ftc.teamcode.config.util.VariableStateUtil
 
 class Robot(
@@ -23,8 +22,8 @@ class Robot(
         when (opmode) {
             OpMode.AUTO -> {
                 follower = Constants.createFollower(hardwareMap)
-                follower.setStartingPose(AutoPoseUtil.startPose)
-                AutoPoseUtil.follower = follower
+                follower.setStartingPose(PoseUtil.startPose)
+                PoseUtil.follower = follower
             }
             OpMode.TELEOP -> {
                 val startPose = VariableStateUtil.endOfAutoPose ?: Pose()
@@ -34,8 +33,11 @@ class Robot(
         }
     }
     // Hardware
+
     val intakeM: MotorEx = MotorEx(hardwareMap,"intake",Motor.GoBILDA.BARE).setCachingTolerance(0.2)
     //val fireM: MotorEx = MotorEx(hardwareMap,"fire",Motor.GoBILDA.BARE).setCachingTolerance(0.05)
+    val flowerS: ServoEx = ServoEx(hardwareMap, "flower", 0.0, 70.0).setCachingTolerance(0.1);val flowerLoop = 4
+
     // Tables and refs
     val refPose = Pose(0.0,0.0)
     val upFireBlueTab = InterpLUT()
@@ -93,50 +95,4 @@ class Robot(
             add(Pose(110.4,12.0).distanceFrom(refPose), 141.0)
         }.createLUT()
     }*/
-    object AutoPoseUtil {
-        lateinit var follower: Follower
-        val startPose = Pose(31.7, 8.0, Math.toRadians(180.0))
-        val bottomLeftCorner = Pose(10.0, 8.0, Math.toRadians(180.0))
-        val bottomRightCorner = bottomLeftCorner.mirror()!!
-        val topLeftCorner = Pose(10.0, 132.0, Math.toRadians(180.0))
-        val topRightCorner = topLeftCorner.mirror()!!
-        val leftSpike = Pose(23.7, 85.0, Math.toRadians(90.0))
-        val rightSpike = leftSpike.mirror()!!
-        val hiveFourLeftSide = Pose(56.0, 132.0, Math.toRadians(0.0))
-        val startToLeftCorner: PathChain by lazy { follower.pathBuilder()
-            .addPath((BezierLine(startPose, bottomLeftCorner)))
-            .setConstantHeadingInterpolation(bottomLeftCorner.heading)
-            .build() }
-        val bottomLeftCornerToLeftSpike: PathChain by lazy { follower.pathBuilder()
-            .addPath((BezierLine(bottomLeftCorner, leftSpike)))
-            //.setLinearHeadingInterpolation(leftSpike.heading, leftSpike.heading)
-            .setHeadingInterpolation ( HeadingInterpolator.piecewise(
-                HeadingInterpolator.PiecewiseNode(
-                    0.0,
-                    0.1,
-                    HeadingInterpolator.constant(bottomLeftCorner.heading)
-                ),
-                HeadingInterpolator.PiecewiseNode(
-                    0.1,
-                    1.0,
-                    HeadingInterpolator.constant(leftSpike.heading)
-                )
-            ) )
-            .build()}
-        val leftSpikeToHiveFour: PathChain by lazy { follower.pathBuilder()
-            .addPath((BezierLine(leftSpike, hiveFourLeftSide)))
-            .setConstantHeadingInterpolation(hiveFourLeftSide.heading)
-            .build() }
-        // Example to go off of
-        /*val startPoseBlueDepoPose = Pose(32.7, 135.3, Math.toRadians(90.0))
-        val startPoseRedDepoPose = startPoseBlueDepoPose.mirror()!!
-        val BlueDepoStartScore: PathChain by lazy { follower.pathBuilder()
-            .addPath((BezierLine(startPoseBlueDepoPose, startPoseRedDepoPose)))
-            .setLinearHeadingInterpolation(startPoseBlueDepoPose.heading, startPoseRedDepoPose.heading)
-            .build() }
-        val BlueDepoMiddleSpikeGrabCurve: PathChain by lazy { follower.pathBuilder()
-            .addPath(BezierCurve(BlueDepoScorePose, BlueDepoMiddleSpikeAlignmentPose, BlueDepoMiddleSpikeGrabPose))
-            .setConstantHeadingInterpolation(BlueDepoMiddleSpikeGrabPose.heading)
-            .build() }*/
-    }
 }
