@@ -97,7 +97,7 @@ abstract class AutoOpMode : OpMode() {
 
     final override fun start() {
         resetRuntime()
-        robot.genTab()
+        //robot.genTab()
         onStart()
     }
 
@@ -119,7 +119,7 @@ abstract class AutoOpMode : OpMode() {
     final override fun stop() {
         VariableStateUtil.endOfAutoPose = robot.follower.pose
         VariableStateUtil.alliance = alliance
-        if (intakeSS.runIntakeCommand.isScheduled) intakeSS.runIntakeCommand.cancel()
+        if (intakeSS.runIntake.isScheduled) intakeSS.runIntake.cancel()
         onStop()
     }
 

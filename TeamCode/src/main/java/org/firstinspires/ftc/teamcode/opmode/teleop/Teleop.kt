@@ -17,10 +17,10 @@ class Teleop : TeleOpMode() {
     }
 
     override fun onStart() {
-        robot.follower.startTeleopDrive()
+        //robot.follower.startTeleopDrive()
     }
 
     override fun onLoop() {
-        robot.follower.update()
+        //robot.follower.update()
     }
 }

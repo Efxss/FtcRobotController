@@ -6,6 +6,7 @@ import com.pedropathing.geometry.Pose
 import com.pedropathing.paths.HeadingInterpolator
 import com.pedropathing.paths.PathChain
 import com.qualcomm.robotcore.hardware.HardwareMap
+import com.seattlesolvers.solverslib.hardware.motors.Motor
 import com.seattlesolvers.solverslib.hardware.motors.MotorEx
 import com.seattlesolvers.solverslib.util.InterpLUT
 import org.firstinspires.ftc.teamcode.config.pedroPathing.Constants
@@ -18,12 +19,12 @@ class Robot(
     enum class OpMode {AUTO, TELEOP}
     // PedroPathing
     lateinit var follower: Follower
-    fun initPedro(hardwareMap: HardwareMap, opmode: Robot.OpMode) {
+    fun initPedro(hardwareMap: HardwareMap,opmode: OpMode) {
         when (opmode) {
             OpMode.AUTO -> {
                 follower = Constants.createFollower(hardwareMap)
-                follower.setStartingPose(Robot.AutoPoseUtil.startPose)
-                Robot.AutoPoseUtil.follower = follower
+                follower.setStartingPose(AutoPoseUtil.startPose)
+                AutoPoseUtil.follower = follower
             }
             OpMode.TELEOP -> {
                 val startPose = VariableStateUtil.endOfAutoPose ?: Pose()
@@ -33,8 +34,8 @@ class Robot(
         }
     }
     // Hardware
-    val intakeM: MotorEx = MotorEx(hardwareMap, "intake", 28.0, 6000.0).setCachingTolerance(0.2)
-    val fireM: MotorEx = MotorEx(hardwareMap, "fire", 28.0, 6000.0).setCachingTolerance(0.05)
+    val intakeM: MotorEx = MotorEx(hardwareMap,"intake",Motor.GoBILDA.BARE).setCachingTolerance(0.2)
+    //val fireM: MotorEx = MotorEx(hardwareMap,"fire",Motor.GoBILDA.BARE).setCachingTolerance(0.05)
     // Tables and refs
     val refPose = Pose(0.0,0.0)
     val upFireBlueTab = InterpLUT()
@@ -46,21 +47,25 @@ class Robot(
     val upFireHeadRedTab = InterpLUT()
     val downFireHeadRedTab = InterpLUT()
     // Objects, Classes and Functions
-    fun genTab() {
+    /*fun genTab() {
         // Fire Power
         upFireBlueTab.apply {
+            add(Pose().distanceFrom(refPose), 0.1)
             add(Pose().distanceFrom(refPose), 0.1)
         }.createLUT()
 
         downFireBlueTab.apply {
             add(Pose().distanceFrom(refPose), 0.1)
+            add(Pose().distanceFrom(refPose), 0.1)
         }.createLUT()
 
         upFireRedTab.apply {
             add(Pose().distanceFrom(refPose), 0.1)
+            add(Pose().distanceFrom(refPose), 0.1)
         }.createLUT()
 
         downFireRedTab.apply {
+            add(Pose().distanceFrom(refPose), 0.1)
             add(Pose().distanceFrom(refPose), 0.1)
         }.createLUT()
 
@@ -71,9 +76,11 @@ class Robot(
 
         downFireHeadBlueTab.apply {
             add(Pose().distanceFrom(refPose), 0.1)
+            add(Pose().distanceFrom(refPose), 0.1)
         }.createLUT()
 
         upFireHeadRedTab.apply {
+            add(Pose().distanceFrom(refPose), 0.1)
             add(Pose().distanceFrom(refPose), 0.1)
         }.createLUT()
 
@@ -85,7 +92,7 @@ class Robot(
             add(Pose(96.5,17.5).distanceFrom(refPose), 137.0)
             add(Pose(110.4,12.0).distanceFrom(refPose), 141.0)
         }.createLUT()
-    }
+    }*/
     object AutoPoseUtil {
         lateinit var follower: Follower
         val startPose = Pose(31.7, 8.0, Math.toRadians(180.0))

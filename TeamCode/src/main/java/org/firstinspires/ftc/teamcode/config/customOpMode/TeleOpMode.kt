@@ -102,7 +102,7 @@ abstract class TeleOpMode : OpMode() {
             Robot.Alliance.BLUE -> { Pose(8.0, 8.0, Math.toRadians(90.0)) }
             Robot.Alliance.RED -> { Pose(134.0, 7.0, Math.toRadians(90.0)) }
         }
-        robot.genTab()
+        //robot.genTab()
         robot.follower.activateAllPIDFs()
         onStart()
     }
@@ -122,8 +122,8 @@ abstract class TeleOpMode : OpMode() {
             Robot.Alliance.RED -> -gamepad1.left_stick_x.toDouble()
         }
 
-        if (gamepad1.rightBumperWasPressed()) { intakeSS.runIntakeCommand.schedule() }
-        else if (gamepad1.rightBumperWasReleased()) { intakeSS.runIntakeCommand.cancel() }
+        if (gamepad1.rightBumperWasPressed()) { intakeSS.runIntake.schedule() }
+        else if (gamepad1.rightBumperWasReleased()) { intakeSS.runIntake.cancel() }
         if (gamepad1.crossWasPressed()) robot.follower.pose = resetPose
 
         // Run the Ivy Scheduler to actually update Commands
@@ -136,7 +136,7 @@ abstract class TeleOpMode : OpMode() {
     }
 
     final override fun stop() {
-        if (intakeSS.runIntakeCommand.isScheduled) intakeSS.runIntakeCommand.cancel()
+        if (intakeSS.runIntake.isScheduled) intakeSS.runIntake.cancel()
         onStop()
     }
 

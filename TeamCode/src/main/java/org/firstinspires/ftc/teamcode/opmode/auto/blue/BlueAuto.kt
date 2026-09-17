@@ -16,7 +16,7 @@ class BlueAuto : AutoOpMode() {
     }
 
     override fun onStart() {
-        intakeSS.runIntakeCommand.schedule()
+        intakeSS.runIntake.schedule()
         Scheduler.schedule(
             Groups.sequential(
                 runAuto()
