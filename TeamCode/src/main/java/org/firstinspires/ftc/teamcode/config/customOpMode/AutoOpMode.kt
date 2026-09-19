@@ -2,18 +2,13 @@ package org.firstinspires.ftc.teamcode.config.customOpMode
 
 import com.bylazar.telemetry.PanelsTelemetry
 import com.bylazar.telemetry.TelemetryManager
-import com.pedropathing.ivy.Command
 import com.pedropathing.ivy.Scheduler
-import com.pedropathing.ivy.commands.Commands
-import com.pedropathing.ivy.groups.Groups
-import com.pedropathing.ivy.pedro.PedroCommands.follow
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import org.firstinspires.ftc.teamcode.config.Robot
 import org.firstinspires.ftc.teamcode.config.subSystem.IntakeSS
 import org.firstinspires.ftc.teamcode.config.util.DrawingUtil
 import org.firstinspires.ftc.teamcode.config.util.HubUtil
 import org.firstinspires.ftc.teamcode.config.util.PanelsDebugUtil
-import org.firstinspires.ftc.teamcode.config.util.PoseUtil
 import org.firstinspires.ftc.teamcode.config.util.VariableStateUtil
 
 /**
@@ -120,21 +115,21 @@ abstract class AutoOpMode : OpMode() {
     final override fun stop() {
         VariableStateUtil.endOfAutoPose = robot.follower.pose
         VariableStateUtil.alliance = alliance
-        intakeSS.runIntake(robot).cancel()
+        intakeSS.runIntake().cancel()
         onStop()
     }
 
     // Custom functions
-    fun runAuto(): Command {
-        // Example for PedroPathing branch in Kotlin
-        //var cases = LinkedHashMap<BooleanSupplier, Command>()
-        //cases[BooleanSupplier {robot.follower.distanceRemaining <= 15.0}] = rampSS.rampIntake()
-        //val handlePos: Command = Commands.branch(cases)
-        return Groups.sequential(
-            follow(robot.follower, PoseUtil.startToLeftCorner,true, 0.5),
-            Commands.waitMs(750.0),
-            follow(robot.follower,PoseUtil.bottomLeftCornerToLeftSpike,true, 0.5),
-            follow(robot.follower, PoseUtil.leftSpikeToHiveFour,true,0.5),
-        )
-    }
+    //fun runAuto(): Command {
+    //    // Example for PedroPathing branch in Kotlin
+    //    //var cases = LinkedHashMap<BooleanSupplier, Command>()
+    //    //cases[BooleanSupplier {robot.follower.distanceRemaining <= 15.0}] = rampSS.rampIntake()
+    //    //val handlePos: Command = Commands.branch(cases)
+    //    return Groups.sequential(
+    //        follow(robot.follower, PoseUtil.startToLeftCorner,true, 0.5),
+    //        Commands.waitMs(750.0),
+    //        follow(robot.follower,PoseUtil.bottomLeftCornerToLeftSpike,true, 0.5),
+    //        follow(robot.follower, PoseUtil.leftSpikeToHiveFour,true,0.5),
+    //    )
+    //}
 }

@@ -125,9 +125,9 @@ abstract class TeleOpMode : OpMode() {
             Robot.Alliance.RED -> -gamepad1.left_stick_x.toDouble()
         }
 
-        if (gamepad1.rightBumperWasPressed()) { intakeSS.runIntake(robot).also { it.schedule() } }
-        else if (gamepad1.rightBumperWasReleased()) { intakeSS.runIntake(robot).cancel() }
-        if (gamepad1.leftBumperWasPressed()) { flowerSS.deFlower(robot).schedule() }
+        if (gamepad1.rightBumperWasPressed()) { intakeSS.runIntake().also { it.schedule() } }
+        else if (gamepad1.rightBumperWasReleased()) { intakeSS.runIntake().cancel() }
+        if (gamepad1.leftBumperWasPressed()) { flowerSS.deFlower().schedule() }
         if (gamepad1.crossWasPressed()) robot.follower.pose = resetPose
 
         // Run the Ivy Scheduler to actually update Commands
@@ -140,7 +140,7 @@ abstract class TeleOpMode : OpMode() {
     }
 
     final override fun stop() {
-        intakeSS.runIntake(robot).cancel()
+        intakeSS.runIntake().cancel()
         onStop()
     }
 

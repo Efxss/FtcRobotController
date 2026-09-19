@@ -5,7 +5,7 @@ import com.seattlesolvers.solverslib.hardware.motors.Motor
 import org.firstinspires.ftc.teamcode.config.Robot
 
 class IntakeSS(
-    robot: Robot
+    private val robot: Robot
 ) {
     init {
         robot.intakeM.setRunMode(Motor.RunMode.VelocityControl)
@@ -13,12 +13,12 @@ class IntakeSS(
         robot.intakeM.inverted = true
     }
     private val intakeVelocity = 0.3
-    fun runIntake(robot: Robot): Command = Command.build()
+    fun runIntake(): Command = Command.build()
         .setExecute { robot.intakeM.set(intakeVelocity) }
         .setEnd { robot.intakeM.stopMotor() }
         .setPriority(1)
         .requiring(robot.intakeM)
-    fun reverseIntake(robot: Robot): Command = Command.build()
+    fun reverseIntake(): Command = Command.build()
         .setExecute { robot.intakeM.set(-intakeVelocity) }
         .setEnd { robot.intakeM.stopMotor() }
         .setPriority(1)

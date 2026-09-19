@@ -1,13 +1,14 @@
 package org.firstinspires.ftc.teamcode.config.subSystem
 
 /*class FiringSS(
-    robot: Robot
+    private val robot: Robot
 ) {
-    fun execFiring(robot: Robot,alliance: Robot.Alliance): Command {
-        return Groups.sequential(
+    fun execFiring(alliance: Robot.Alliance): Command {
+        return sequential(
             turnTo(robot.follower, Math.toRadians(robot.downFireRedTab.get(robot.follower.pose.distanceFrom(robot.refPose))))
-    )}
-    fun calcFiring(robot: Robot,alliance: Robot.Alliance,follower: Follower) {
+    )
+    }
+    fun calcFiring(alliance: Robot.Alliance,follower: Follower) {
         when (alliance) {
             Robot.Alliance.BLUE -> {
                 if (follower.pose.y >= 72) robot.fireM.set(robot.upFireBlueTab.get(follower.pose.distanceFrom(robot.refPose)))
