@@ -134,7 +134,7 @@ abstract class TeleOpMode : OpMode() {
         Scheduler.execute()
 
         //Show and update debug
-        debugUtil.showAllDebugTeleop(robot.follower,alliance,runtime,gamepad1,robot)
+        debugUtil.showAllDebugTeleop(robot.follower,alliance,runtime,gamepad1,flowerSS,robot)
         debugUtil.update(telemetry)
         onLoop()
     }

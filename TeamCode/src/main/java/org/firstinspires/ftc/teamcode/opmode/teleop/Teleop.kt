@@ -14,6 +14,7 @@ class Teleop : TeleOpMode() {
 
     override fun onInit() {
         robot.initPedro(hardwareMap, opmode)
+        flowerSS.reset(robot)
     }
 
     override fun onStart() {

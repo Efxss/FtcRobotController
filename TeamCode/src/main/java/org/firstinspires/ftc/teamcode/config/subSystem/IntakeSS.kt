@@ -14,12 +14,12 @@ class IntakeSS(
     }
     private val intakeVelocity = 0.3
     fun runIntake(robot: Robot): Command = Command.build()
-        .setStart { robot.intakeM.set(intakeVelocity) }
+        .setExecute { robot.intakeM.set(intakeVelocity) }
         .setEnd { robot.intakeM.stopMotor() }
         .setPriority(1)
         .requiring(robot.intakeM)
     fun reverseIntake(robot: Robot): Command = Command.build()
-        .setStart { robot.intakeM.set(-intakeVelocity) }
+        .setExecute { robot.intakeM.set(-intakeVelocity) }
         .setEnd { robot.intakeM.stopMotor() }
         .setPriority(1)
         .requiring(robot.intakeM)

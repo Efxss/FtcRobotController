@@ -4,6 +4,7 @@ import com.bylazar.telemetry.TelemetryManager
 import com.pedropathing.follower.Follower
 import com.qualcomm.robotcore.hardware.Gamepad
 import org.firstinspires.ftc.teamcode.config.Robot
+import org.firstinspires.ftc.teamcode.config.subSystem.FlowerSS
 
 class PanelsDebugUtil(
     private val panels: TelemetryManager?
@@ -37,6 +38,7 @@ class PanelsDebugUtil(
         alliance: Robot.Alliance,
         runtime: Double,
         gamepad: Gamepad,
+        flowerSS: FlowerSS,
         robot: Robot,
     ) {
         panels?.apply {
@@ -51,8 +53,10 @@ class PanelsDebugUtil(
             debug("Left Stick X", gamepad.left_stick_x)
             debug("Left Stick Y", gamepad.left_stick_y)
             debug("Right Stick X", gamepad.right_stick_x)
+            debug("Left Bumper", gamepad.left_bumper)
             debug("Right Bumper", gamepad.right_bumper)
-            debug("Intake velocity", robot.intakeM.velocity)
+            debug("flower is running", flowerSS.deFlower(robot).isScheduled)
+            debug("Flower position", robot.flowerS.rawPosition)
             debug("")
             debug("=== OpMode ===")
             debug("runtime", runtime)

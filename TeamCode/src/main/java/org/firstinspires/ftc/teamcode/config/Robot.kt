@@ -36,7 +36,7 @@ class Robot(
 
     val intakeM: MotorEx = MotorEx(hardwareMap,"intake",Motor.GoBILDA.BARE).setCachingTolerance(0.2)
     //val fireM: MotorEx = MotorEx(hardwareMap,"fire",Motor.GoBILDA.BARE).setCachingTolerance(0.05)
-    val flowerS: ServoEx = ServoEx(hardwareMap, "flower", 0.0, 70.0).setCachingTolerance(0.1);val flowerLoop = 4
+    val flowerS: ServoEx = ServoEx(hardwareMap, "flower").setCachingTolerance(0.1);val flowerLoop = 4
 
     // Tables and refs
     val refPose = Pose(0.0,0.0)
