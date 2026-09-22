@@ -16,10 +16,10 @@ class BlueAuto : AutoOpMode() {
     }
 
     override fun onStart() {
-        intakeSS.runIntake(robot).schedule()
+        intakeSS.runIntake().schedule()
         Scheduler.schedule(
             Groups.sequential(
-                runAuto()
+                //runAuto()
             )
         )
     }

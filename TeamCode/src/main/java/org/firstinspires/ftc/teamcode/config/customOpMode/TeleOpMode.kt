@@ -105,6 +105,7 @@ abstract class TeleOpMode : OpMode() {
             Robot.Alliance.BLUE -> { Pose(8.0, 9.0, Math.toRadians(90.0)) }
             Robot.Alliance.RED -> { Pose(134.0, 9.0, Math.toRadians(90.0)) }
         }
+        Scheduler.schedule(intakeSS.runIntake())
         //robot.genTab()
         robot.follower.activateAllPIDFs()
         onStart()
@@ -125,8 +126,8 @@ abstract class TeleOpMode : OpMode() {
             Robot.Alliance.RED -> -gamepad1.left_stick_x.toDouble()
         }
 
-        if (gamepad1.rightBumperWasPressed()) { intakeSS.runIntake().also { it.schedule() } }
-        else if (gamepad1.rightBumperWasReleased()) { intakeSS.runIntake().cancel() }
+        if (gamepad1.rightBumperWasPressed()) { intakeSS.reverseIntake(true) }
+        if (gamepad1.rightBumperWasReleased()) { intakeSS.reverseIntake(false) }
         if (gamepad1.leftBumperWasPressed()) { flowerSS.deFlower().schedule() }
         if (gamepad1.crossWasPressed()) robot.follower.pose = resetPose
 

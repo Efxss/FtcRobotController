@@ -7,11 +7,11 @@ import org.firstinspires.ftc.teamcode.config.Robot
 
 class FlowerSS(private val robot: Robot) {
     private fun exe(): Command = Groups.sequential(
-        Commands.instant { robot.flowerS.set(0.4) },
-        Commands.waitMs(250.0).setPriority(10),
-        Commands.instant { robot.flowerS.set(0.0) },
-        Commands.waitMs(250.0).setPriority(10)
+        Commands.instant { robot.flowerS.set(0.3) },
+        Commands.waitMs(200.0).setPriority(10),
+        Commands.instant { robot.flowerS.set(0.13) },
+        Commands.waitMs(350.0).setPriority(10)
     )
-    fun deFlower(): Command = Groups.repeat(exe(),3)
-    fun reset() = robot.flowerS.set(0.0)
+    fun deFlower(): Command = Groups.repeat(exe(),4)
+    fun reset() = robot.flowerS.set(0.13)
 }

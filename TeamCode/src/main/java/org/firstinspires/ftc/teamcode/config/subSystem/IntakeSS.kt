@@ -12,15 +12,12 @@ class IntakeSS(
         robot.intakeM.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE)
         robot.intakeM.inverted = true
     }
-    private val intakeVelocity = 0.3
+    private val intakeVelocity = 0.6
     fun runIntake(): Command = Command.build()
         .setExecute { robot.intakeM.set(intakeVelocity) }
         .setEnd { robot.intakeM.stopMotor() }
-        .setPriority(1)
         .requiring(robot.intakeM)
-    fun reverseIntake(): Command = Command.build()
-        .setExecute { robot.intakeM.set(-intakeVelocity) }
-        .setEnd { robot.intakeM.stopMotor() }
-        .setPriority(1)
-        .requiring(robot.intakeM)
+    fun reverseIntake(rev: Boolean) {
+        robot.intakeM.inverted = !rev
+    }
 }
