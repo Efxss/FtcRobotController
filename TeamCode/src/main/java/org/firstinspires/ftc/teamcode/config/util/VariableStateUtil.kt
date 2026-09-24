@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.config.util
 
-import com.pedropathing.geometry.Pose
+import com.pedropathing.math.Pose
 import org.firstinspires.ftc.teamcode.config.Robot
 
 /**
@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.config.Robot
  */
 object VariableStateUtil {
     // Null means "no auto ran" -> TeleOp should fall back to a default pose.
-    var endOfAutoPose: Pose? = null
+    var endOfAutoPose: Pose = Pose(0.0,0.0)
 
     // Alliance var to pass from auto to TeleOP
     var alliance: Robot.Alliance = Robot.Alliance.BLUE

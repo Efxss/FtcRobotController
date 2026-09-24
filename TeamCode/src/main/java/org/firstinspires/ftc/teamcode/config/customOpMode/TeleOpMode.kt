@@ -2,8 +2,10 @@ package org.firstinspires.ftc.teamcode.config.customOpMode
 
 import com.bylazar.telemetry.PanelsTelemetry
 import com.bylazar.telemetry.TelemetryManager
-import com.pedropathing.geometry.Pose
+import com.pedropathing.drivetrain.DrivePowers
+import com.pedropathing.follower.ManualDrive
 import com.pedropathing.ivy.Scheduler
+import com.pedropathing.math.Pose
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import org.firstinspires.ftc.teamcode.config.Robot
 import org.firstinspires.ftc.teamcode.config.subSystem.FlowerSS
@@ -26,9 +28,7 @@ abstract class TeleOpMode : OpMode() {
     protected lateinit var intakeSS: IntakeSS
     protected lateinit var flowerSS: FlowerSS
     protected var resetPose = Pose(8.0, 8.0, Math.toRadians(90.0))
-    protected var rotate = 0.0
-    protected var strafe = 0.0
-    protected var forward = 0.0
+    protected lateinit var dp: DrivePowers
 
 
     // Custom lifecycle hooks
@@ -75,10 +75,6 @@ abstract class TeleOpMode : OpMode() {
         panels = PanelsTelemetry.telemetry
         debugUtil = PanelsDebugUtil(panels)
         debugUtil.showInit()
-
-        // Init the drawing util for panels and PedroPathing
-        DrawingUtil.init()
-
         // Reset Ivy scheduler so commands from a previous OpMode don't carry over
         Scheduler.reset()
 
@@ -95,7 +91,6 @@ abstract class TeleOpMode : OpMode() {
         // Clear the bulk read cache
         hubUtil.clearCache()
         // Draw on Panels
-        DrawingUtil.drawOnlyCurrent(robot.follower)
         onInitLoop()
     }
 
@@ -107,7 +102,6 @@ abstract class TeleOpMode : OpMode() {
         }
         Scheduler.schedule(intakeSS.runIntake())
         //robot.genTab()
-        robot.follower.activateAllPIDFs()
         onStart()
     }
 
@@ -115,21 +109,30 @@ abstract class TeleOpMode : OpMode() {
         // Clear the bulk read cache
         hubUtil.clearCache()
         // Draw on Panels
-        DrawingUtil.drawDebug(robot.follower)
-        rotate = gamepad1.right_stick_x.toDouble()
-        forward = when (alliance) {
-            Robot.Alliance.BLUE -> gamepad1.left_stick_y.toDouble()
-            Robot.Alliance.RED -> -gamepad1.left_stick_y.toDouble()
-        }
-        strafe  = when (alliance) {
-            Robot.Alliance.BLUE -> gamepad1.left_stick_x.toDouble()
-            Robot.Alliance.RED -> -gamepad1.left_stick_x.toDouble()
+        DrawingUtil.drawPose(robot.follower)
+        when (alliance) {
+            Robot.Alliance.BLUE -> {
+                dp = ManualDrive.fieldCentric(
+                    gamepad1.left_stick_y.toDouble(),
+                    gamepad1.left_stick_x.toDouble(),
+                    gamepad1.right_stick_x.toDouble(),
+                    robot.follower.pose().heading()
+                )
+            }
+            Robot.Alliance.RED -> {
+                dp = ManualDrive.fieldCentric(
+                    -gamepad1.left_stick_y.toDouble(),
+                    -gamepad1.left_stick_x.toDouble(),
+                    gamepad1.right_stick_x.toDouble(),
+                    robot.follower.pose().heading()
+                )
+            }
         }
 
         if (gamepad1.rightBumperWasPressed()) { intakeSS.reverseIntake(true) }
         if (gamepad1.rightBumperWasReleased()) { intakeSS.reverseIntake(false) }
         if (gamepad1.leftBumperWasPressed()) { flowerSS.deFlower().schedule() }
-        if (gamepad1.crossWasPressed()) robot.follower.pose = resetPose
+        if (gamepad1.crossWasPressed()) robot.follower.setPose(resetPose)
 
         // Run the Ivy Scheduler to actually update Commands
         Scheduler.execute()

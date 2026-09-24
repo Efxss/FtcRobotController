@@ -11,21 +11,16 @@ class PanelsDebugUtil(
 ) {
     fun showAllDebugAuto(
         follower: Follower,
-        hubUtil: HubUtil,
         alliance: Robot.Alliance,
         runtime: Double
     ) {
         panels?.apply {
             debug("=== PedroPathing ===")
-            debug("Follower Pose X", follower.pose.x)
-            debug("Follower Pose Y", follower.pose.y)
-            debug("Follower Distance Traveled On Path", follower.distanceTraveledOnPath)
-            debug("Follower Distance Remaining", follower.distanceRemaining)
-            debug("Follower Heading", Math.toDegrees(follower.pose.heading))
-            debug("Follower Total Heading", Math.toDegrees(follower.totalHeading))
+            debug("Follower Pose X", follower.pose().x())
+            debug("Follower Pose Y", follower.pose().y())
+            debug("Follower Heading", Math.toDegrees(follower.pose().heading()))
+            debug("Follower Distance Remaining", follower.remainingDistance())
             debug("Follower IsBusy", follower.isBusy)
-            debug("Follower IsStuck", follower.isRobotStuck)
-            debug("follower IsTurning", follower.isTurning)
             debug("")
             debug("=== OpMode ===")
             debug("runtime", runtime)
@@ -43,11 +38,10 @@ class PanelsDebugUtil(
     ) {
         panels?.apply {
             debug("=== PedroPathing ===")
-            debug("Follower Pose X", follower.pose.x)
-            debug("Follower Pose Y", follower.pose.y)
-            debug("Follower Heading", Math.toDegrees(follower.pose.heading))
-            debug("Total Heading", Math.toDegrees(follower.totalHeading))
-            debug("Dist From Ref Pose", follower.pose.distanceFrom(robot.refPose))
+            debug("Follower Pose X", follower.pose().x())
+            debug("Follower Pose Y", follower.pose().y())
+            debug("Follower Heading", Math.toDegrees(follower.pose().heading()))
+            debug("Dist From Ref Pose", follower.pose().distance(robot.refPose))
             debug("")
             debug("=== HardWare ===")
             debug("flower is running", flowerSS.deFlower().isScheduled)

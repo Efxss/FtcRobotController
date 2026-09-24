@@ -69,9 +69,6 @@ abstract class AutoOpMode : OpMode() {
         debugUtil = PanelsDebugUtil(panels)
         debugUtil.showInit()
 
-        // Init the drawing util for panels and PedroPathing
-        DrawingUtil.init()
-
         // Reset Ivy scheduler so commands from a previous OpMode don't carry over
         Scheduler.reset()
 
@@ -86,8 +83,6 @@ abstract class AutoOpMode : OpMode() {
     final override fun init_loop() {
         // Clear the bulk read cache
         hubUtil.clearCache()
-        // Draw on Panels
-        DrawingUtil.drawOnlyCurrent(robot.follower)
         onInitLoop()
     }
 
@@ -101,19 +96,19 @@ abstract class AutoOpMode : OpMode() {
         // Clear the bulk read cache
         hubUtil.clearCache()
         // Draw on Panels
-        DrawingUtil.drawDebug(robot.follower)
+        DrawingUtil.drawPose(robot.follower)
 
         // Run the Ivy Scheduler to actually update Commands
         Scheduler.execute()
 
         //Show and update debug
-        debugUtil.showAllDebugAuto(robot.follower, hubUtil, alliance, runtime)
+        debugUtil.showAllDebugAuto(robot.follower, alliance, runtime)
         debugUtil.update(telemetry)
         onLoop()
     }
 
     final override fun stop() {
-        VariableStateUtil.endOfAutoPose = robot.follower.pose
+        VariableStateUtil.endOfAutoPose = robot.follower.pose()
         VariableStateUtil.alliance = alliance
         intakeSS.runIntake().cancel()
         onStop()
