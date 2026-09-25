@@ -9,31 +9,16 @@ import com.seattlesolvers.solverslib.hardware.motors.MotorEx
 import com.seattlesolvers.solverslib.hardware.servos.ServoEx
 import com.seattlesolvers.solverslib.util.InterpLUT
 import org.firstinspires.ftc.teamcode.config.pedroPathing.Constants
-import org.firstinspires.ftc.teamcode.config.util.PoseUtil
-import org.firstinspires.ftc.teamcode.config.util.VariableStateUtil
 
 class Robot(
-    hardwareMap: HardwareMap,
+    private val hardwareMap: HardwareMap,
 ) {
     enum class Alliance {BLUE, RED}
-    enum class OpMode {AUTO, TELEOP}
     enum class FieldHalf {TOP,BOTTOM}
     // PedroPathing
     lateinit var follower: Follower
     val p: PoseFactory = PoseFactory.degrees()
-    fun initPedro(hardwareMap: HardwareMap,opmode: OpMode) {
-        when (opmode) {
-            OpMode.AUTO -> {
-                follower = Constants.create(hardwareMap)
-                follower.setPose(PoseUtil.startPose)
-            }
-            OpMode.TELEOP -> {
-                val startPose = VariableStateUtil.endOfAutoPose
-                follower = Constants.create(hardwareMap)
-                follower.setPose(startPose)
-            }
-        }
-    }
+    fun initPedro() { follower = Constants.create(hardwareMap) }
     // Hardware
 
     val intakeM: MotorEx = MotorEx(hardwareMap,"intake",Motor.GoBILDA.BARE).setCachingTolerance(0.2)

@@ -9,10 +9,9 @@ import org.firstinspires.ftc.teamcode.config.customOpMode.AutoOpMode
 @Autonomous(group = "Auto", name = "Auto")
 class BlueAuto : AutoOpMode() {
     override val alliance = Robot.Alliance.BLUE
-    override val opmode = Robot.OpMode.AUTO
 
     override fun onInit() {
-        robot.initPedro(hardwareMap, opmode)
+        robot.initPedro()
     }
 
     override fun onStart() {

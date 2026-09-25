@@ -33,12 +33,6 @@ abstract class AutoOpMode : OpMode() {
     abstract val alliance: Robot.Alliance
 
     /**
-     * Mandatory property that defines What kind of OpMode is running
-     * Must be overridden by the subclass (e.g. `override val alliance = Alliance.BLUE`)
-     */
-    abstract val opmode: Robot.OpMode
-
-    /**
      * Mandatory function that will run all code inside one time upon pressing the initialization button
      */
     abstract fun onInit()

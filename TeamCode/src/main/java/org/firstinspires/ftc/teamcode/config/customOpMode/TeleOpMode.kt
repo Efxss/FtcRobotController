@@ -27,7 +27,7 @@ abstract class TeleOpMode : OpMode() {
     protected lateinit var debugUtil: PanelsDebugUtil
     protected lateinit var intakeSS: IntakeSS
     protected lateinit var flowerSS: FlowerSS
-    protected var resetPose = Pose(8.0, 8.0, Math.toRadians(90.0))
+    protected var resetPose = Pose(9.0, 8.8, Math.toRadians(90.0))
     protected lateinit var dp: DrivePowers
 
 
@@ -38,12 +38,6 @@ abstract class TeleOpMode : OpMode() {
      * Must be overridden by the subclass (e.g. `override val alliance = Alliance.BLUE`)
      */
     abstract val alliance: Robot.Alliance
-
-    /**
-     * Mandatory property that defines What kind of OpMode is running
-     * Must be overridden by the subclass (e.g. `override val alliance = Alliance.BLUE`)
-     */
-    abstract val opmode: Robot.OpMode
 
     /**
      * Mandatory function that will run all code inside one time upon pressing the initialization button
@@ -97,8 +91,8 @@ abstract class TeleOpMode : OpMode() {
     final override fun start() {
         resetRuntime()
         resetPose = when (alliance) {
-            Robot.Alliance.BLUE -> { Pose(8.0, 9.0, Math.toRadians(90.0)) }
-            Robot.Alliance.RED -> { Pose(134.0, 9.0, Math.toRadians(90.0)) }
+            Robot.Alliance.BLUE -> { Pose(9.0, 8.8, Math.toRadians(90.0)) }
+            Robot.Alliance.RED -> { Pose(132.3, 132.7, Math.toRadians(90.0)) }
         }
         Scheduler.schedule(intakeSS.runIntake())
         //robot.genTab()
