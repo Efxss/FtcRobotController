@@ -17,6 +17,7 @@ class Robot(
 ) {
     enum class Alliance {BLUE, RED}
     enum class OpMode {AUTO, TELEOP}
+    enum class FieldHalf {TOP,BOTTOM}
     // PedroPathing
     lateinit var follower: Follower
     val p: PoseFactory = PoseFactory.degrees()
@@ -36,8 +37,9 @@ class Robot(
     // Hardware
 
     val intakeM: MotorEx = MotorEx(hardwareMap,"intake",Motor.GoBILDA.BARE).setCachingTolerance(0.2)
-    //val fireM: MotorEx = MotorEx(hardwareMap,"fire",Motor.GoBILDA.BARE).setCachingTolerance(0.05)
+    val fireM: MotorEx = MotorEx(hardwareMap,"fire",Motor.GoBILDA.BARE).setCachingTolerance(0.05)
     val flowerS: ServoEx = ServoEx(hardwareMap, "flower").setCachingTolerance(0.1);val flowerLoop = 4
+    val pollenBS: ServoEx = ServoEx(hardwareMap, "pollen").setCachingTolerance(0.1)
 
     // Tables and refs
     val refPose: Pose = Pose(0.0,0.0)
