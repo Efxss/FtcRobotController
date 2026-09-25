@@ -18,6 +18,7 @@ class Robot(
     // PedroPathing
     lateinit var follower: Follower
     val p: PoseFactory = PoseFactory.degrees()
+    val refPose: Pose = Pose(0.0,0.0)
     fun initPedro() { follower = Constants.create(hardwareMap) }
     // Hardware
 
@@ -27,7 +28,6 @@ class Robot(
     //val pollenBS: ServoEx = ServoEx(hardwareMap, "pollen").setCachingTolerance(0.1)
 
     // Tables and refs
-    val refPose: Pose = Pose(0.0,0.0)
     val upFireBlueTab = InterpLUT()
     val downFireBlueTab = InterpLUT()
     val upFireRedTab = InterpLUT()
@@ -37,7 +37,7 @@ class Robot(
     val upFireHeadRedTab = InterpLUT()
     val downFireHeadRedTab = InterpLUT()
     // Objects, Classes and Functions
-    fun genTab() {
+    /*fun genTab() {
         // Fire Power
         upFireBlueTab.apply {
             add(Pose(0.0,0.0).distance(refPose), 0.1)
@@ -82,5 +82,5 @@ class Robot(
             add(Pose(96.5,17.5).distance(refPose), 137.0)
             add(Pose(110.4,12.0).distance(refPose), 141.0)
         }.createLUT()
-    }
+    }*/
 }
