@@ -7,6 +7,7 @@ import com.pedropathing.follower.ManualDrive
 import com.pedropathing.ivy.Scheduler
 import com.pedropathing.math.Pose
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
+import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.teamcode.config.Robot
 import org.firstinspires.ftc.teamcode.config.subSystem.FlowerSS
 import org.firstinspires.ftc.teamcode.config.subSystem.IntakeSS
@@ -28,6 +29,7 @@ abstract class TeleOpMode : OpMode() {
     protected lateinit var intakeSS: IntakeSS
     protected lateinit var flowerSS: FlowerSS
     protected var resetPose = Pose(9.0, 8.8, Math.toRadians(90.0))
+    lateinit var elapsedTime: ElapsedTime
     protected var dp: DrivePowers = ManualDrive.fieldCentric(
         0.0,
         0.0,
@@ -69,6 +71,7 @@ abstract class TeleOpMode : OpMode() {
 
     final override fun init() {
         // Any other shared init (hardware caching, subsystems, etc.)
+        elapsedTime = ElapsedTime()
 
         // declare Panels and init the debug util
         panels = PanelsTelemetry.telemetry
@@ -101,6 +104,7 @@ abstract class TeleOpMode : OpMode() {
         }
         //Scheduler.schedule(intakeSS.runIntake())
         //robot.genTab()
+        elapsedTime.reset()
         onStart()
     }
 
@@ -137,7 +141,8 @@ abstract class TeleOpMode : OpMode() {
         Scheduler.execute()
 
         //Show and update debug
-        debugUtil.showAllDebugTeleop(robot.follower,alliance,runtime,gamepad1,flowerSS,robot)
+        debugUtil.showAllDebugTeleop(robot.follower,alliance,runtime,gamepad1,flowerSS,elapsedTime,robot)
+        elapsedTime.reset()
         debugUtil.update(telemetry)
         onLoop()
     }

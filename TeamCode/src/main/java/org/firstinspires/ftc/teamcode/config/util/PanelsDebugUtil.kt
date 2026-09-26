@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.config.util
 import com.bylazar.telemetry.TelemetryManager
 import com.pedropathing.follower.Follower
 import com.qualcomm.robotcore.hardware.Gamepad
+import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.teamcode.config.Robot
 import org.firstinspires.ftc.teamcode.config.subSystem.FlowerSS
 
@@ -34,6 +35,7 @@ class PanelsDebugUtil(
         runtime: Double,
         gamepad: Gamepad,
         flowerSS: FlowerSS,
+        elapsedTime: ElapsedTime,
         robot: Robot,
     ) {
         panels?.apply {
@@ -56,6 +58,7 @@ class PanelsDebugUtil(
             debug("")
             debug("=== OpMode ===")
             debug("runtime", runtime)
+            debug("Loop Times", elapsedTime.milliseconds())
             debug("Alliance", alliance.name)
         }
     }
