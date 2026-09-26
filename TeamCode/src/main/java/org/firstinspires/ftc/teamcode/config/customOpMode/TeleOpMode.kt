@@ -28,7 +28,12 @@ abstract class TeleOpMode : OpMode() {
     protected lateinit var intakeSS: IntakeSS
     protected lateinit var flowerSS: FlowerSS
     protected var resetPose = Pose(9.0, 8.8, Math.toRadians(90.0))
-    protected lateinit var dp: DrivePowers
+    protected var dp: DrivePowers = ManualDrive.fieldCentric(
+        0.0,
+        0.0,
+        0.0,
+        0.0
+    )
 
 
     // Custom lifecycle hooks
@@ -94,7 +99,7 @@ abstract class TeleOpMode : OpMode() {
             Robot.Alliance.BLUE -> { Pose(9.0, 8.8, Math.toRadians(90.0)) }
             Robot.Alliance.RED -> { Pose(132.3, 132.7, Math.toRadians(90.0)) }
         }
-        Scheduler.schedule(intakeSS.runIntake())
+        //Scheduler.schedule(intakeSS.runIntake())
         //robot.genTab()
         onStart()
     }
