@@ -19,7 +19,7 @@ class Teleop : TeleOpMode() {
     }
 
     override fun onLoop() {
-        robot.follower.manual(dp)
+        //robot.follower.manual(dp)
         //ManualDrive.driveOrHold(robot.follower, dp) // Do this to make it so when you stop holding the stick it holds position
         robot.follower.update()
     }

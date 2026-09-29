@@ -99,7 +99,7 @@ abstract class TeleOpMode : OpMode() {
             Robot.Alliance.BLUE -> { Pose(9.0, 8.8, Math.toRadians(90.0)) }
             Robot.Alliance.RED -> { Pose(132.3, 132.7, Math.toRadians(90.0)) }
         }
-        Scheduler.schedule(intakeSS.runIntake())
+        //Scheduler.schedule(intakeSS.runIntake())
         //robot.genTab()
         onStart()
     }
