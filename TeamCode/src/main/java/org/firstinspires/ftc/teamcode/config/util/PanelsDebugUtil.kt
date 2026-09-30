@@ -4,7 +4,6 @@ import com.bylazar.telemetry.TelemetryManager
 import com.pedropathing.follower.Follower
 import com.qualcomm.robotcore.hardware.Gamepad
 import org.firstinspires.ftc.teamcode.config.Robot
-import org.firstinspires.ftc.teamcode.config.subSystem.FlowerSS
 
 class PanelsDebugUtil(
     private val panels: TelemetryManager?
@@ -33,7 +32,6 @@ class PanelsDebugUtil(
         alliance: Robot.Alliance,
         runtime: Double,
         gamepad: Gamepad,
-        flowerSS: FlowerSS,
         robot: Robot,
     ) {
         panels?.apply {
@@ -44,7 +42,6 @@ class PanelsDebugUtil(
             debug("Dist From Ref Pose", follower.pose().distance(robot.refPose))
             debug("")
             debug("=== HardWare ===")
-            debug("Flower position", robot.flowerS.rawPosition)
             debug("Intake Speed", robot.intakeM.velocity)
             debug("")
             debug("=== Gamepad ===")

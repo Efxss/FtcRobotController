@@ -8,7 +8,6 @@ import com.pedropathing.ivy.Scheduler
 import com.pedropathing.math.Pose
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import org.firstinspires.ftc.teamcode.config.Robot
-import org.firstinspires.ftc.teamcode.config.subSystem.FlowerSS
 import org.firstinspires.ftc.teamcode.config.subSystem.IntakeSS
 import org.firstinspires.ftc.teamcode.config.util.DrawingUtil
 import org.firstinspires.ftc.teamcode.config.util.HubUtil
@@ -26,7 +25,6 @@ abstract class TeleOpMode : OpMode() {
     protected lateinit var hubUtil: HubUtil
     protected lateinit var debugUtil: PanelsDebugUtil
     protected lateinit var intakeSS: IntakeSS
-    protected lateinit var flowerSS: FlowerSS
     protected var resetPose = Pose(9.0, 8.8, Math.toRadians(90.0))
     protected var dp: DrivePowers = ManualDrive.fieldCentric(
         0.0,
@@ -81,7 +79,6 @@ abstract class TeleOpMode : OpMode() {
         robot = Robot(hardwareMap)
         debugUtil.update(telemetry)
         intakeSS = IntakeSS(robot)
-        flowerSS = FlowerSS(robot)
         hubUtil = HubUtil(hardwareMap)
         onInit()
     }
@@ -99,7 +96,7 @@ abstract class TeleOpMode : OpMode() {
             Robot.Alliance.BLUE -> { Pose(9.0, 8.8, Math.toRadians(90.0)) }
             Robot.Alliance.RED -> { Pose(132.3, 132.7, Math.toRadians(90.0)) }
         }
-        //Scheduler.schedule(intakeSS.runIntake())
+        Scheduler.schedule(intakeSS.runIntake())
         //robot.genTab()
         onStart()
     }
@@ -130,14 +127,13 @@ abstract class TeleOpMode : OpMode() {
 
         if (gamepad1.rightBumperWasPressed()) { intakeSS.reverseIntake(true) }
         if (gamepad1.rightBumperWasReleased()) { intakeSS.reverseIntake(false) }
-        if (gamepad1.leftBumperWasPressed()) { flowerSS.deFlower().schedule() }
         if (gamepad1.crossWasPressed()) robot.follower.setPose(resetPose)
 
         // Run the Ivy Scheduler to actually update Commands
         Scheduler.execute()
 
         //Show and update debug
-        debugUtil.showAllDebugTeleop(robot.follower,alliance,runtime,gamepad1,flowerSS,robot)
+        debugUtil.showAllDebugTeleop(robot.follower,alliance,runtime,gamepad1,robot)
         debugUtil.update(telemetry)
         onLoop()
     }

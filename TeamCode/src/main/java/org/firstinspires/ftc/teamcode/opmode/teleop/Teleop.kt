@@ -12,7 +12,6 @@ class Teleop : TeleOpMode() {
 
     override fun onInit() {
         robot.initPedro()
-        flowerSS.reset()
     }
 
     override fun onStart() {
