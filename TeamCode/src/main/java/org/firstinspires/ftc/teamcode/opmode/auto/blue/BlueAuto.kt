@@ -16,7 +16,7 @@ class BlueAuto : AutoOpMode() {
 
     override fun onInit() {
         robot.initPedro()
-        robot.follower.setPose(PoseUtil.startPoseTest)
+        robot.follower.setPose(PoseUtil.Poses.Blue.startPoseTest)
         robot.follower.update()
     }
 
@@ -29,16 +29,16 @@ class BlueAuto : AutoOpMode() {
         robot.follower.update()
     }
     fun runAuto(): Command = Groups.sequential(
-        PedroCommands.follow(robot.follower, PoseUtil.testPath()),
+        PedroCommands.follow(robot.follower, PoseUtil.Paths.Blue.testPath()),
         Commands.waitMs(1000.0),
         Groups.repeat(spin(), 5)
     )
     fun spin(): Command {
         fun first(): Command {
-            return PedroCommands.hold(robot.follower, PoseUtil.movePoseTest)
+            return PedroCommands.hold(robot.follower, PoseUtil.Poses.Blue.movePoseTest)
         }
         fun next(): Command {
-            return PedroCommands.hold(robot.follower, PoseUtil.movePoseTestHead)
+            return PedroCommands.hold(robot.follower, PoseUtil.Poses.Blue.movePoseTestHead)
         }
         return Groups.sequential(
             first(),
