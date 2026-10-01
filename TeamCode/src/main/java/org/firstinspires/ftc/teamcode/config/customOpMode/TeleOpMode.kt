@@ -8,6 +8,7 @@ import com.pedropathing.ivy.Scheduler
 import com.pedropathing.math.Pose
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import org.firstinspires.ftc.teamcode.config.Robot
+import org.firstinspires.ftc.teamcode.config.subSystem.FiringSS
 import org.firstinspires.ftc.teamcode.config.subSystem.IntakeSS
 import org.firstinspires.ftc.teamcode.config.util.DrawingUtil
 import org.firstinspires.ftc.teamcode.config.util.HubUtil
@@ -25,6 +26,7 @@ abstract class TeleOpMode : OpMode() {
     protected lateinit var hubUtil: HubUtil
     protected lateinit var debugUtil: PanelsDebugUtil
     protected lateinit var intakeSS: IntakeSS
+    protected lateinit var firingSS: FiringSS
     protected var resetPose = Pose(9.0, 8.8, Math.toRadians(90.0))
     protected var dp: DrivePowers = ManualDrive.fieldCentric(
         0.0,
@@ -41,6 +43,13 @@ abstract class TeleOpMode : OpMode() {
      * Must be overridden by the subclass (e.g. `override val alliance = Alliance.BLUE`)
      */
     abstract val alliance: Robot.Alliance
+
+
+    /**
+     * Mandatory property that defines which alliance this teleop runs for.
+     * Must be overridden by the subclass (e.g. `override val alliance = Alliance.BLUE`)
+     */
+    abstract val half: Robot.FieldHalf
 
     /**
      * Mandatory function that will run all code inside one time upon pressing the initialization button
@@ -79,6 +88,7 @@ abstract class TeleOpMode : OpMode() {
         robot = Robot(hardwareMap)
         debugUtil.update(telemetry)
         intakeSS = IntakeSS(robot)
+        firingSS = FiringSS(robot, robot.follower, alliance, half)
         hubUtil = HubUtil(hardwareMap)
         onInit()
     }
@@ -125,8 +135,9 @@ abstract class TeleOpMode : OpMode() {
             }
         }
 
-        if (gamepad1.rightBumperWasPressed()) { intakeSS.reverseIntake(true) }
-        if (gamepad1.rightBumperWasReleased()) { intakeSS.reverseIntake(false) }
+        if (gamepad1.leftBumperWasPressed()) { intakeSS.reverseIntake(true) }
+        if (gamepad1.leftBumperWasReleased()) { intakeSS.reverseIntake(false) }
+        if (gamepad1.rightBumperWasPressed()) { firingSS.execFiring() }
         if (gamepad1.crossWasPressed()) robot.follower.setPose(resetPose)
 
         // Run the Ivy Scheduler to actually update Commands
