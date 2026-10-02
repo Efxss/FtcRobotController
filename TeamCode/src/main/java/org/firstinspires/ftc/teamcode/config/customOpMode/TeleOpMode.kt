@@ -49,7 +49,7 @@ abstract class TeleOpMode : OpMode() {
      * Mandatory property that defines which alliance this teleop runs for.
      * Must be overridden by the subclass (e.g. `override val alliance = Alliance.BLUE`)
      */
-    abstract val half: Robot.FieldHalf
+    abstract val fieldHalf: Robot.FieldHalf
 
     /**
      * Mandatory function that will run all code inside one time upon pressing the initialization button
@@ -88,7 +88,7 @@ abstract class TeleOpMode : OpMode() {
         robot = Robot(hardwareMap)
         debugUtil.update(telemetry)
         intakeSS = IntakeSS(robot)
-        firingSS = FiringSS(robot, robot.follower, alliance, half)
+        firingSS = FiringSS(robot, robot.follower, alliance, fieldHalf)
         hubUtil = HubUtil(hardwareMap)
         onInit()
     }
@@ -107,6 +107,7 @@ abstract class TeleOpMode : OpMode() {
             Robot.Alliance.RED -> { Pose(132.3, 132.7, Math.toRadians(90.0)) }
         }
         Scheduler.schedule(intakeSS.runIntake())
+        Scheduler.schedule(firingSS.calcHalf())
         //robot.genTab()
         onStart()
     }
@@ -144,7 +145,7 @@ abstract class TeleOpMode : OpMode() {
         Scheduler.execute()
 
         //Show and update debug
-        debugUtil.showAllDebugTeleop(robot.follower,alliance,runtime,gamepad1,robot)
+        debugUtil.showAllDebugTeleop(robot.follower,alliance,fieldHalf,runtime,gamepad1,robot)
         debugUtil.update(telemetry)
         onLoop()
     }

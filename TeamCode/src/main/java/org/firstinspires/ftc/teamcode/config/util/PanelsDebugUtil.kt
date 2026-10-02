@@ -30,6 +30,7 @@ class PanelsDebugUtil(
     fun showAllDebugTeleop(
         follower: Follower,
         alliance: Robot.Alliance,
+        fieldHalf: Robot.FieldHalf,
         runtime: Double,
         gamepad: Gamepad,
         robot: Robot,
@@ -53,6 +54,7 @@ class PanelsDebugUtil(
             debug("")
             debug("=== OpMode ===")
             debug("runtime", runtime)
+            debug("Current Half", fieldHalf.name)
             debug("Alliance", alliance.name)
         }
     }

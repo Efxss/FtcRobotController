@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.config.util.VariableStateUtil
 @TeleOp
 class Teleop : TeleOpMode() {
     override val alliance = VariableStateUtil.alliance
-    override val half = VariableStateUtil.fieldHalf
+    override val fieldHalf = VariableStateUtil.fieldHalf
 
     override fun onInit() {
         robot.initPedro()
