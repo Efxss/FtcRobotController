@@ -12,7 +12,7 @@ class Teleop : TeleOpMode() {
     override val fieldHalf = VariableStateUtil.fieldHalf
 
     override fun onInit() {
-        robot.initPedro()
+        firingSS.reset()
     }
 
     override fun onStart() {

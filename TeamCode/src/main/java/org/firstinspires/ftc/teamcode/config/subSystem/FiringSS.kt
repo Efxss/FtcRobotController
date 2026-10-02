@@ -1,18 +1,26 @@
 package org.firstinspires.ftc.teamcode.config.subSystem
 
-import com.pedropathing.follower.Follower
 import com.pedropathing.ivy.Command
 import com.pedropathing.ivy.commands.Commands
-import com.pedropathing.ivy.groups.Groups
 import com.pedropathing.ivy.groups.Groups.sequential
 import org.firstinspires.ftc.teamcode.config.Robot
 
 class FiringSS(
     private val robot: Robot,
-    private val follower: Follower,
+    //private val follower: Follower,
     private val alliance: Robot.Alliance,
     private var fieldHalf: Robot.FieldHalf
 ) {
+    private val servoBlock = 0.0
+    private val servoGo = 0.33
+    fun letGo(): Command {
+        return sequential(
+            Commands.instant { robot.pollenBS.set(servoGo) },
+            //Commands.waitMs(1250.0),
+            Commands.waitMs(10000.0),
+            Commands.instant { robot.pollenBS.set(servoBlock) }
+        )
+    }
     fun execFiring(): Command {
         //val turnHalf = EnumMap<Robot.FieldHalf, Command>(Robot.FieldHalf::class.java)
         //fun topBlueHive(): Command = PedroCommands.hold(follower,Pose(follower.pose().x(),follower.pose().y(),robot.upFireHeadBlueTab.get(robot.follower.pose().distance(robot.refPose))))
@@ -30,15 +38,7 @@ class FiringSS(
         //    }
         //}
         //fun turnHalfFun(): Command = Commands.match({fieldHalf}, turnHalf)
-        fun letGo(): Command {
-            return Groups.sequential(
-                Commands.instant { robot.pollenBS.set(0.33) },
-                Commands.waitMs(1250.0),
-                Commands.instant { robot.pollenBS.set(0.0) }
-            )
-        }
         return sequential(
-            //turnTo(robot.follower, Math.toRadians(robot.downFireRedTab.get(robot.follower.pose().distance(robot.refPose))))
             //turnHalfFun(),
             letGo()
         )
@@ -57,5 +57,8 @@ class FiringSS(
     //        }
     //    }
     //}
-    fun calcHalf(): Command = Commands.infinite { fieldHalf = if (follower.pose().y() >= 72) Robot.FieldHalf.TOP else Robot.FieldHalf.BOTTOM }
+    //fun calcHalf(): Command = Commands.infinite { fieldHalf = if (follower.pose().y() >= 72) Robot.FieldHalf.TOP else Robot.FieldHalf.BOTTOM }
+    fun reset() {
+        robot.pollenBS.set(servoBlock)
+    }
 }

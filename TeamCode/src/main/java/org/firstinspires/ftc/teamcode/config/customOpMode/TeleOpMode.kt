@@ -86,9 +86,10 @@ abstract class TeleOpMode : OpMode() {
 
         // Init all utils and SS
         robot = Robot(hardwareMap)
+        robot.initPedro()
         debugUtil.update(telemetry)
         intakeSS = IntakeSS(robot)
-        firingSS = FiringSS(robot, robot.follower, alliance, fieldHalf)
+        firingSS = FiringSS(robot, alliance, fieldHalf)
         hubUtil = HubUtil(hardwareMap)
         onInit()
     }
@@ -107,7 +108,7 @@ abstract class TeleOpMode : OpMode() {
             Robot.Alliance.RED -> { Pose(132.3, 132.7, Math.toRadians(90.0)) }
         }
         Scheduler.schedule(intakeSS.runIntake())
-        Scheduler.schedule(firingSS.calcHalf())
+        //Scheduler.schedule(firingSS.calcHalf())
         //robot.genTab()
         onStart()
     }
@@ -138,14 +139,14 @@ abstract class TeleOpMode : OpMode() {
 
         if (gamepad1.leftBumperWasPressed()) { intakeSS.reverseIntake(true) }
         if (gamepad1.leftBumperWasReleased()) { intakeSS.reverseIntake(false) }
-        if (gamepad1.rightBumperWasPressed()) { firingSS.execFiring() }
+        if (gamepad1.rightBumperWasPressed()) { firingSS.execFiring().schedule() }
         if (gamepad1.crossWasPressed()) robot.follower.setPose(resetPose)
 
         // Run the Ivy Scheduler to actually update Commands
         Scheduler.execute()
 
         //Show and update debug
-        debugUtil.showAllDebugTeleop(robot.follower,alliance,fieldHalf,runtime,gamepad1,robot)
+        debugUtil.showAllDebugTeleop(robot.follower,alliance,runtime,gamepad1,robot)
         debugUtil.update(telemetry)
         onLoop()
     }
