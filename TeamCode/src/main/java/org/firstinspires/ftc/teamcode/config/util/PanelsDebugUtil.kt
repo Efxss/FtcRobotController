@@ -32,6 +32,7 @@ class PanelsDebugUtil(
         alliance: Robot.Alliance,
         runtime: Double,
         gamepad: Gamepad,
+        fieldHalf: Robot.FieldHalf,
         robot: Robot,
     ) {
         panels?.apply {
@@ -53,6 +54,7 @@ class PanelsDebugUtil(
             debug("")
             debug("=== OpMode ===")
             debug("runtime", runtime)
+            debug("Field Half", fieldHalf.name)
             debug("Alliance", alliance.name)
         }
     }

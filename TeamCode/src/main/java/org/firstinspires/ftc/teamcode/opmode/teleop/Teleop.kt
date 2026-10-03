@@ -9,10 +9,8 @@ import org.firstinspires.ftc.teamcode.config.util.VariableStateUtil
 @TeleOp
 class Teleop : TeleOpMode() {
     override val alliance = VariableStateUtil.alliance
-    override val fieldHalf = VariableStateUtil.fieldHalf
 
     override fun onInit() {
-        firingSS.reset()
     }
 
     override fun onStart() {

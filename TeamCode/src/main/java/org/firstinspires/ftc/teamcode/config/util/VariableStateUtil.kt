@@ -14,7 +14,4 @@ object VariableStateUtil {
 
     // Alliance var to pass from auto to TeleOP
     var alliance: Robot.Alliance = Robot.Alliance.BLUE
-
-    // Field Half var to pass from auto to TeleOP
-    var fieldHalf: Robot.FieldHalf = Robot.FieldHalf.BOTTOM
 }

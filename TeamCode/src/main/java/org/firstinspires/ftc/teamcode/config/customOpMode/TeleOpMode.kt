@@ -44,13 +44,6 @@ abstract class TeleOpMode : OpMode() {
      */
     abstract val alliance: Robot.Alliance
 
-
-    /**
-     * Mandatory property that defines which alliance this teleop runs for.
-     * Must be overridden by the subclass (e.g. `override val alliance = Alliance.BLUE`)
-     */
-    abstract val fieldHalf: Robot.FieldHalf
-
     /**
      * Mandatory function that will run all code inside one time upon pressing the initialization button
      */
@@ -89,8 +82,9 @@ abstract class TeleOpMode : OpMode() {
         robot.initPedro()
         debugUtil.update(telemetry)
         intakeSS = IntakeSS(robot)
-        firingSS = FiringSS(robot, alliance, fieldHalf)
+        firingSS = FiringSS(robot,robot.follower,alliance)
         hubUtil = HubUtil(hardwareMap)
+        firingSS.reset()
         onInit()
     }
 
@@ -146,7 +140,7 @@ abstract class TeleOpMode : OpMode() {
         Scheduler.execute()
 
         //Show and update debug
-        debugUtil.showAllDebugTeleop(robot.follower,alliance,runtime,gamepad1,robot)
+        debugUtil.showAllDebugTeleop(robot.follower,alliance,runtime,gamepad1,firingSS.getHalf(),robot)
         debugUtil.update(telemetry)
         onLoop()
     }
