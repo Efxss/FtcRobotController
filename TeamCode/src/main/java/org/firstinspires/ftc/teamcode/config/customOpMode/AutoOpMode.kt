@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.config.customOpMode
 
-import com.bylazar.telemetry.PanelsTelemetry
-import com.bylazar.telemetry.TelemetryManager
 import com.pedropathing.ivy.Scheduler
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import org.firstinspires.ftc.teamcode.config.Robot
@@ -18,7 +16,6 @@ import org.firstinspires.ftc.teamcode.config.util.VariableStateUtil
 abstract class AutoOpMode : OpMode() {
 
     // Shared resources
-    private var panels: TelemetryManager? = null
     protected lateinit var robot: Robot
     protected lateinit var hubUtil: HubUtil
     protected lateinit var debugUtil: PanelsDebugUtil
@@ -57,10 +54,11 @@ abstract class AutoOpMode : OpMode() {
 
     final override fun init() {
         // Any other shared init (hardware caching, subsystems, etc.)
+        robot = Robot(hardwareMap)
 
         // declare Panels and init the debug util
-        panels = PanelsTelemetry.telemetry
-        debugUtil = PanelsDebugUtil(panels)
+        robot.initPanels()
+        debugUtil = PanelsDebugUtil(robot.panels)
         debugUtil.showInit()
 
         // Reset Ivy scheduler so commands from a previous OpMode don't carry over
@@ -68,7 +66,6 @@ abstract class AutoOpMode : OpMode() {
 
         // Init bulkRead
         debugUtil.update(telemetry)
-        robot = Robot(hardwareMap)
         intakeSS = IntakeSS(robot)
         hubUtil = HubUtil(hardwareMap)
         onInit()

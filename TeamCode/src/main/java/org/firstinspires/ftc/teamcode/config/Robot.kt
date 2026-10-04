@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.config
 
+import com.bylazar.telemetry.PanelsTelemetry
+import com.bylazar.telemetry.TelemetryManager
 import com.pedropathing.api.PoseFactory
 import com.pedropathing.follower.Follower
 import com.pedropathing.math.Pose
@@ -15,7 +17,9 @@ class Robot(
 ) {
     enum class Alliance {BLUE, RED}
     enum class FieldHalf {TOP,BOTTOM}
-    // PedroPathing
+    // PedroPathing and Panels
+    var panels: TelemetryManager? = null
+    fun initPanels() { panels = PanelsTelemetry.telemetry }
     lateinit var follower: Follower
     val p: PoseFactory = PoseFactory.degrees()
     val refPose: Pose = Pose(0.0,0.0)
