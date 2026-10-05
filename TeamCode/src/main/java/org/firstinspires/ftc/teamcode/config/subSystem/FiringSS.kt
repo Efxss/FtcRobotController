@@ -48,12 +48,24 @@ class FiringSS(
     //    return Commands.infinite {
     //        when (alliance) {
     //            Robot.Alliance.BLUE -> {
-    //                if (fieldHalf == Robot.FieldHalf.TOP) robot.fireM.set(robot.upFireBlueTab.get(follower.pose().distance(robot.refPose)))
-    //                else robot.fireM.set(robot.downFireBlueTab.get(follower.pose().distance(robot.refPose)))
+    //                if (fieldHalf == Robot.FieldHalf.TOP) {
+    //                    robot.fireMSquIDF.setPoint = robot.upFireBlueTab.get(follower.pose().distance(robot.refPose))
+    //                    robot.fireM.set(robot.fireMSquIDF.calculate())
+    //                }
+    //                else {
+    //                    robot.fireMSquIDF.setPoint = robot.downFireBlueTab.get(follower.pose().distance(robot.refPose))
+    //                    robot.fireM.set(robot.fireMSquIDF.calculate())
+    //                }
     //            }
     //            Robot.Alliance.RED -> {
-    //                if (fieldHalf == Robot.FieldHalf.TOP) robot.fireM.set(robot.upFireRedTab.get(follower.pose().distance(robot.refPose)))
-    //                else robot.fireM.set(robot.downFireRedTab.get(follower.pose().distance(robot.refPose)))
+    //                if (fieldHalf == Robot.FieldHalf.TOP) {
+    //                    robot.fireMSquIDF.setPoint = robot.upFireRedTab.get(follower.pose().distance(robot.refPose))
+    //                    robot.fireM.set(robot.fireMSquIDF.calculate())
+    //                }
+    //                else {
+    //                    robot.fireMSquIDF.setPoint = robot.downFireRedTab.get(follower.pose().distance(robot.refPose))
+    //                    robot.fireM.set(robot.fireMSquIDF.calculate())
+    //                }
     //            }
     //        }
     //    }

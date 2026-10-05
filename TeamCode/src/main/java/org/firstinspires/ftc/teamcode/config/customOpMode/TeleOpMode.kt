@@ -139,6 +139,7 @@ abstract class TeleOpMode : OpMode() {
 
     final override fun stop() {
         intakeSS.runIntake().cancel()
+        //listOf(firingSS.calcFiring(), firingSS.calcHalf(), firingSS.execFiring()).forEach { it.cancel() }
         onStop()
     }
 

@@ -28,6 +28,7 @@ class Robot(
 
     val intakeM: MotorEx = MotorEx(hardwareMap,"intake",Motor.GoBILDA.BARE).setCachingTolerance(0.2)
     //val fireM: MotorEx = MotorEx(hardwareMap,"fire",Motor.GoBILDA.BARE).setCachingTolerance(0.05)
+    //var fireMSquIDF = SquIDFController(15.0,0.0,0.0,13.0)
     val pollenBS: ServoEx = ServoEx(hardwareMap, "pollen").setCachingTolerance(0.1)
 
     // Tables and refs

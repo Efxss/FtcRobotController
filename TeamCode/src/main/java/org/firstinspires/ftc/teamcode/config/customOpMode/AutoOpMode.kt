@@ -102,6 +102,7 @@ abstract class AutoOpMode : OpMode() {
         VariableStateUtil.endOfAutoPose = robot.follower.pose()
         VariableStateUtil.alliance = alliance
         intakeSS.runIntake().cancel()
+        //listOf(firingSS.calcFiring(), firingSS.calcHalf(), firingSS.execFiring()).forEach { it.cancel() }
         onStop()
     }
 
