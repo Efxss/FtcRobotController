@@ -27,6 +27,7 @@ abstract class TeleOpMode : OpMode() {
     //protected lateinit var flowerDSS: FlowerDSS
     protected var resetPose = Pose(9.0, 8.8, Math.toRadians(90.0))
     protected var dp: DrivePowers = ManualDrive.fieldCentric(0.0, 0.0, 0.0, 0.0)
+    private var flowerDB = 0
 
 
     // Custom lifecycle hooks
@@ -129,8 +130,21 @@ abstract class TeleOpMode : OpMode() {
         if (gamepad1.leftBumperWasReleased()) { intakeSS.reverseIntake(false) }
         if (gamepad1.rightBumperWasPressed()) { firingSS.execFiring().schedule() }
         if (gamepad1.crossWasPressed()) { robot.follower.setPose(resetPose) }
-        //if (gamepad1.circleWasPressed()) { flowerDSS.go() }
-        //if (gamepad1.circleWasReleased()) { flowerDSS.back() }
+        //if (gamepad1.circleWasReleased()) {
+        //    when (flowerDB) {
+        //        0 -> {
+        //            flowerDSS.go()
+        //            flowerDB = 1
+        //            return
+        //        }
+        //        1 -> {
+        //            flowerDSS.back()
+        //            flowerDB = 0
+        //            return
+        //        }
+        //        else -> throw IllegalStateException("WTF How did you even mess up this much????")
+        //    }
+        //}
 
         // Run the Ivy Scheduler to actually update Commands
         Scheduler.execute()
