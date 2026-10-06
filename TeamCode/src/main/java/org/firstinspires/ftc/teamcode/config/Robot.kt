@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap
 import com.seattlesolvers.solverslib.hardware.motors.Motor
 import com.seattlesolvers.solverslib.hardware.motors.MotorEx
 import com.seattlesolvers.solverslib.hardware.servos.ServoEx
+import com.seattlesolvers.solverslib.hardware.servos.ServoExGroup
 import com.seattlesolvers.solverslib.util.InterpLUT
 import org.firstinspires.ftc.teamcode.config.pedroPathing.Constants
 
@@ -28,8 +29,12 @@ class Robot(
 
     val intakeM: MotorEx = MotorEx(hardwareMap,"intake",Motor.GoBILDA.BARE).setCachingTolerance(0.2)
     //val fireM: MotorEx = MotorEx(hardwareMap,"fire",Motor.GoBILDA.BARE).setCachingTolerance(0.05)
-    //var fireMSquIDF = SquIDFController(15.0,0.0,0.0,13.0)
+    //var fireMSquIDF = SquIDFController(15.0, 0.0, 0.0, 13.0)
+    private val flowerDSC = 0.1
     val pollenBS: ServoEx = ServoEx(hardwareMap, "pollen").setCachingTolerance(0.1)
+    private val flowerDS1: ServoEx = ServoEx(hardwareMap,"FDS1").setCachingTolerance(flowerDSC)
+    private val flowerDS2: ServoEx = ServoEx(hardwareMap,"FDS2").setCachingTolerance(flowerDSC)
+    val flowerDSG: ServoExGroup = ServoExGroup(flowerDS1,flowerDS2)
 
     // Tables and refs
     val upFireBlueTab = InterpLUT()
