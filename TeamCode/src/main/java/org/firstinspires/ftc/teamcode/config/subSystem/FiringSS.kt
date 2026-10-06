@@ -20,7 +20,7 @@ class FiringSS(
             //Commands.waitMs(1250.0),
             Commands.waitMs(10000.0),
             Commands.instant { robot.pollenBS.set(servoBlock) }
-        )
+        ).requiring(robot.pollenBS)
     }
     fun execFiring(): Command {
         //val turnHalf = EnumMap<Robot.FieldHalf, Command>(Robot.FieldHalf::class.java)

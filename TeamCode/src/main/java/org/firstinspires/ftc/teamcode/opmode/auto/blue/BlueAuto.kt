@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.config.Robot
 import org.firstinspires.ftc.teamcode.config.customOpMode.AutoOpMode
 import org.firstinspires.ftc.teamcode.config.util.PoseUtil
 
-@Autonomous(group = "Auto", name = "Test Auto")
+@Autonomous(group = "Auto", name = "Test Auto"/*, preselectTeleOp = "Teleop"*/)
 class BlueAuto : AutoOpMode() {
     override val alliance = Robot.Alliance.BLUE
 

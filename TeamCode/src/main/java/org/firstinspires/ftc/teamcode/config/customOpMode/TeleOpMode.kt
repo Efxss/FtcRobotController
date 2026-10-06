@@ -24,6 +24,7 @@ abstract class TeleOpMode : OpMode() {
     protected lateinit var debugUtil: PanelsDebugUtil
     protected lateinit var intakeSS: IntakeSS
     protected lateinit var firingSS: FiringSS
+    //protected lateinit var flowerDSS: FlowerDSS
     protected var resetPose = Pose(9.0, 8.8, Math.toRadians(90.0))
     protected var dp: DrivePowers = ManualDrive.fieldCentric(0.0, 0.0, 0.0, 0.0)
 
@@ -75,6 +76,7 @@ abstract class TeleOpMode : OpMode() {
         debugUtil.update(telemetry)
         intakeSS = IntakeSS(robot)
         firingSS = FiringSS(robot,robot.follower,alliance)
+        //flowerDSS = FlowerDSS(robot)
         hubUtil = HubUtil(hardwareMap)
         firingSS.reset()
         onInit()
@@ -127,6 +129,8 @@ abstract class TeleOpMode : OpMode() {
         if (gamepad1.leftBumperWasReleased()) { intakeSS.reverseIntake(false) }
         if (gamepad1.rightBumperWasPressed()) { firingSS.execFiring().schedule() }
         if (gamepad1.crossWasPressed()) { robot.follower.setPose(resetPose) }
+        //if (gamepad1.circleWasPressed()) { flowerDSS.go() }
+        //if (gamepad1.circleWasReleased()) { flowerDSS.back() }
 
         // Run the Ivy Scheduler to actually update Commands
         Scheduler.execute()

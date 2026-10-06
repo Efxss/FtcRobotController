@@ -5,7 +5,7 @@ import org.firstinspires.ftc.teamcode.config.Robot
 import org.firstinspires.ftc.teamcode.config.customOpMode.AutoOpMode
 
 @Disabled
-//@Autonomous(group = "Red Auto", name = "Red Auto")
+//@Autonomous(group = "Red Auto", name = "Red Auto"/*, preselectTeleOp = "Teleop"*/)
 class RedAuto : AutoOpMode() {
     override val alliance = Robot.Alliance.RED
     override fun onInit() {
