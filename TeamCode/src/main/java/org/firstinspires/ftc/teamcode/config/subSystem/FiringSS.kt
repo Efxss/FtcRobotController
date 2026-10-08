@@ -4,7 +4,10 @@ import com.pedropathing.follower.Follower
 import com.pedropathing.ivy.Command
 import com.pedropathing.ivy.commands.Commands
 import com.pedropathing.ivy.groups.Groups.sequential
+//import com.pedropathing.ivy.pedro.PedroCommands
+//import com.pedropathing.math.Pose
 import org.firstinspires.ftc.teamcode.config.Robot
+//import java.util.EnumMap
 
 class FiringSS(
     private val robot: Robot,
@@ -25,9 +28,9 @@ class FiringSS(
     fun execFiring(): Command {
         //val turnHalf = EnumMap<Robot.FieldHalf, Command>(Robot.FieldHalf::class.java)
         //fun topBlueCell(): Command = PedroCommands.hold(follower,Pose(follower.pose().x(),follower.pose().y(),Math.toRadians(robot.upFireHeadBlueTab.get(robot.follower.pose().distance(robot.refPose)))))
-        //fun bottomBlueCell(): Command = PedroCommands.hold(follower, Pose(follower.pose().x(), follower.pose().y(), Math.toRadians(robot.downFireHeadBlueTab.get(robot.follower.pose().distance(robot.refPose)))))
+        //fun bottomBlueCell(): Command = PedroCommands.hold(follower, Pose(follower.pose().x(),follower.pose().y(),Math.toRadians(robot.downFireHeadBlueTab.get(robot.follower.pose().distance(robot.refPose)))))
         //fun topRedCell(): Command = PedroCommands.hold(follower,Pose(follower.pose().x(),follower.pose().y(),Math.toRadians(robot.upFireHeadRedTab.get(robot.follower.pose().distance(robot.refPose)))))
-        //fun bottomRedCell(): Command = PedroCommands.hold(follower,Pose(follower.pose().x(),follower.pose().y(), Math.toRadians(robot.downFireHeadRedTab.get(robot.follower.pose().distance(robot.refPose)))))
+        //fun bottomRedCell(): Command = PedroCommands.hold(follower,Pose(follower.pose().x(),follower.pose().y(),Math.toRadians(robot.downFireHeadRedTab.get(robot.follower.pose().distance(robot.refPose)))))
         //when (alliance) {
         //    Robot.Alliance.BLUE -> {
         //        turnHalf[Robot.FieldHalf.TOP] = topBlueCell()
