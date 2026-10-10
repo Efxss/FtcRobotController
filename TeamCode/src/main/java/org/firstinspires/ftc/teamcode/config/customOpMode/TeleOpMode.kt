@@ -97,7 +97,7 @@ abstract class TeleOpMode : OpMode() {
             Robot.Alliance.RED -> { Pose(132.3, 132.4, Math.toRadians(90.0)) }
         }
         Scheduler.schedule(intakeSS.runIntake())
-        Scheduler.schedule(firingSS.calcHalf())
+        //Scheduler.schedule(firingSS.calcHalf())
         //robot.genTab()
         onStart()
     }

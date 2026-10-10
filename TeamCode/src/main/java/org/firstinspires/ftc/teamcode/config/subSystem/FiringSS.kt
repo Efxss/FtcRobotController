@@ -13,15 +13,15 @@ class FiringSS(
     private val robot: Robot,
     private val follower: Follower,
     private val alliance: Robot.Alliance,
+    private val servoBlock: Double = 0.02,
+    private val servoGo: Double = 0.4
 ) {
-    private val servoBlock = 0.0
-    private val servoGo = 0.33
     private var fieldHalf: Robot.FieldHalf = Robot.FieldHalf.TOP
     fun letGo(): Command {
         return sequential(
             Commands.instant { robot.pollenBS.set(servoGo) },
             //Commands.waitMs(1250.0),
-            Commands.waitMs(10000.0),
+            Commands.waitMs(2500.0),
             Commands.instant { robot.pollenBS.set(servoBlock) }
         ).requiring(robot.pollenBS)
     }
@@ -73,7 +73,7 @@ class FiringSS(
     //        }
     //    }
     //}
-    fun calcHalf(): Command = Commands.infinite { fieldHalf = if (follower.pose().y() >= 72) Robot.FieldHalf.TOP else Robot.FieldHalf.BOTTOM }
+    //fun calcHalf(): Command = Commands.infinite { fieldHalf = if (follower.pose().y() >= 72) Robot.FieldHalf.TOP else Robot.FieldHalf.BOTTOM }
     fun getHalf(): Robot.FieldHalf = fieldHalf
     fun reset() {
         robot.pollenBS.set(servoBlock)
