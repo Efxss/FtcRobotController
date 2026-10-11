@@ -12,10 +12,10 @@ class IntakeSS(
         robot.intakeM.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE)
         robot.intakeM.inverted = true
     }
-    private val intakeVelocity = 0.6
+    var velocity: Double = robot.intakeDef
     private var rev = true
     fun runIntake(): Command = Command.build()
-        .setExecute { robot.intakeM.set(intakeVelocity) }
+        .setExecute { robot.intakeM.set(velocity) }
         .setEnd { robot.intakeM.stopMotor() }
         .requiring(robot.intakeM)
     private fun setRev(state: Boolean) {if (rev != state) rev = state; robot.intakeM.inverted = !rev}

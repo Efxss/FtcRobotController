@@ -26,7 +26,7 @@ class Robot(
     fun initPedro() { follower = Constants.create(hardwareMap) }
     // Hardware
 
-    val intakeM: MotorEx = MotorEx(hardwareMap,"intake",Motor.GoBILDA.BARE).setCachingTolerance(0.2)
+    val intakeM: MotorEx = MotorEx(hardwareMap,"intake",Motor.GoBILDA.BARE).setCachingTolerance(0.2); val intakeDef = 0.6
     //val fireM: MotorEx = MotorEx(hardwareMap,"fire",Motor.GoBILDA.BARE).setCachingTolerance(0.05)
     //var fireMSquIDF = SquIDFController(15.0, 0.0, 0.0, 13.0)
     private val flowerDSC = 0.1

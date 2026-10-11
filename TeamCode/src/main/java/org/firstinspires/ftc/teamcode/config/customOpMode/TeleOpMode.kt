@@ -76,7 +76,7 @@ abstract class TeleOpMode : OpMode() {
         robot.initPedro()
         debugUtil.update(telemetry)
         intakeSS = IntakeSS(robot)
-        firingSS = FiringSS(robot,robot.follower,alliance)
+        firingSS = FiringSS(robot,robot.follower,alliance,intakeSS)
         //flowerDSS = FlowerDSS(robot)
         hubUtil = HubUtil(hardwareMap)
         firingSS.reset()
