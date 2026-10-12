@@ -3,12 +3,19 @@ package org.firstinspires.ftc.teamcode.config.subSystem
 //import java.util.EnumMap
 //import com.pedropathing.ivy.pedro.PedroCommands
 //import com.pedropathing.math.Pose
+//import kotlin.math.abs
+//import com.seattlesolvers.solverslib.util.InterpLUT
 import com.pedropathing.follower.Follower
 import com.pedropathing.ivy.Command
 import com.pedropathing.ivy.commands.Commands
 import com.pedropathing.ivy.groups.Groups
 import com.pedropathing.ivy.groups.Groups.sequential
+import com.pedropathing.ivy.pedro.PedroCommands
+import com.pedropathing.math.Pose
+import com.seattlesolvers.solverslib.util.InterpLUT
 import org.firstinspires.ftc.teamcode.config.Robot
+import java.util.EnumMap
+import kotlin.math.abs
 
 class FiringSS(
     private val robot: Robot,
@@ -28,109 +35,58 @@ class FiringSS(
         ).requiring(robot.pollenBS)
     }
     fun execFiring(): Command {
-        //val turnHalf = EnumMap<Robot.FieldHalf, Command>(Robot.FieldHalf::class.java)
-        //val fastFireRange = 0.0..30.0
-        //val fastFire = 1.0
-        //val medFireRange = 30.0..60.0
-        //val medFire = 0.9
-        //val slowFireRange = 60.0..90.0
-        //val slowFire = 0.8
-        //var remain: Double
-        //fun topBlueCell(): Command {
-        //    fun intakeSpd(): Command {
-        //        return Commands.instant {
-        //            remain = robot.upFireHeadBlueTab.get(robot.follower.pose().distance(robot.refPose)) - robot.follower.pose().heading()
-        //            when (abs(remain)) {
-        //                in fastFireRange -> intakeSS.velocity = fastFire
-        //                in medFireRange -> intakeSS.velocity = medFire
-        //                in slowFireRange -> intakeSS.velocity = slowFire
-        //                else -> intakeSS.velocity = robot.intakeDef
-        //            }
-        //        }
-        //    }
-        //    fun turn(): Command {
-        //        return PedroCommands.hold(follower,Pose(
-        //            follower.pose().x(),
-        //            follower.pose().y(),
-        //            Math.toRadians(robot.upFireHeadBlueTab.get(robot.follower.pose().distance(robot.refPose))))
-        //        )
-        //    }
-        //    return Groups.parallel(intakeSpd(),turn())
-        //}
-        //fun bottomBlueCell(): Command {
-        //    fun intakeSpd(): Command {
-        //        return Commands.instant {
-        //            remain = robot.downFireHeadBlueTab.get(robot.follower.pose().distance(robot.refPose)) - robot.follower.pose().heading()
-        //            when (abs(remain)) {
-        //                in fastFireRange -> intakeSS.velocity = fastFire
-        //                in medFireRange -> intakeSS.velocity = medFire
-        //                in slowFireRange -> intakeSS.velocity = slowFire
-        //                else -> intakeSS.velocity = robot.intakeDef
-        //            }
-        //        }
-        //    }
-        //    fun turn(): Command {
-        //        return PedroCommands.hold(follower, Pose(
-        //            follower.pose().x(),
-        //            follower.pose().y(),
-        //            Math.toRadians(robot.downFireHeadBlueTab.get(robot.follower.pose().distance(robot.refPose))))
-        //        )
-        //    }
-        //    return Groups.parallel(intakeSpd(),turn())
-        //}
-        //fun topRedCell(): Command {
-        //    fun intakeSpd(): Command {
-        //        return Commands.instant {
-        //            remain = robot.upFireHeadRedTab.get(robot.follower.pose().distance(robot.refPose)) - robot.follower.pose().heading()
-        //            when (abs(remain)) {
-        //                in fastFireRange -> intakeSS.velocity = fastFire
-        //                in medFireRange -> intakeSS.velocity = medFire
-        //                in slowFireRange -> intakeSS.velocity = slowFire
-        //                else -> intakeSS.velocity = robot.intakeDef
-        //            }
-        //        }
-        //    }
-        //    fun turn(): Command {
-        //        return PedroCommands.hold(follower,Pose(
-        //            follower.pose().x(),
-        //            follower.pose().y(),
-        //            Math.toRadians(robot.upFireHeadRedTab.get(robot.follower.pose().distance(robot.refPose))))
-        //        )
-        //    }
-        //    return Groups.parallel(intakeSpd(),turn())
-        //}
-        //fun bottomRedCell(): Command {
-        //    fun intakeSpd(): Command {
-        //        return Commands.instant {
-        //            remain = robot.downFireHeadRedTab.get(robot.follower.pose().distance(robot.refPose)) - robot.follower.pose().heading()
-        //            when (abs(remain)) {
-        //                in fastFireRange -> intakeSS.velocity = fastFire
-        //                in medFireRange -> intakeSS.velocity = medFire
-        //                in slowFireRange -> intakeSS.velocity = slowFire
-        //                else -> intakeSS.velocity = robot.intakeDef
-        //            }
-        //        }
-        //    }
-        //    fun turn(): Command {
-        //        return PedroCommands.hold(follower,Pose(
-        //            follower.pose().x(),
-        //            follower.pose().y(),
-        //            Math.toRadians(robot.downFireHeadRedTab.get(robot.follower.pose().distance(robot.refPose))))
-        //        )
-        //    }
-        //    return Groups.parallel(intakeSpd(),turn())
-        //}
-        //when (alliance) {
-        //    Robot.Alliance.BLUE -> {
-        //        turnHalf[Robot.FieldHalf.TOP] = topBlueCell()
-        //        turnHalf[Robot.FieldHalf.BOTTOM] = bottomBlueCell()
-        //    }
-        //    Robot.Alliance.RED -> {
-        //        turnHalf[Robot.FieldHalf.TOP] = topRedCell()
-        //        turnHalf[Robot.FieldHalf.BOTTOM] = bottomRedCell()
-        //    }
-        //}
-        //fun turnHalfFun(): Command = Commands.match({fieldHalf}, turnHalf)
+        val turnHalf = EnumMap<Robot.FieldHalf, Command>(Robot.FieldHalf::class.java)
+        fun topBlueCell(): Command {
+            fun turn(): Command {
+                return PedroCommands.hold(follower,Pose(
+                    follower.pose().x(),
+                    follower.pose().y(),
+                    Math.toRadians(robot.upFireHeadBlueTab.get(robot.follower.pose().distance(robot.refPose))))
+                )
+            }
+            return Groups.parallel(intakeSpd(robot.upFireHeadBlueTab),turn())
+        }
+        fun bottomBlueCell(): Command {
+            fun turn(): Command {
+                return PedroCommands.hold(follower, Pose(
+                    follower.pose().x(),
+                    follower.pose().y(),
+                    Math.toRadians(robot.downFireHeadBlueTab.get(robot.follower.pose().distance(robot.refPose))))
+                )
+            }
+            return Groups.parallel(intakeSpd(robot.downFireHeadBlueTab),turn())
+        }
+        fun topRedCell(): Command {
+            fun turn(): Command {
+                return PedroCommands.hold(follower,Pose(
+                    follower.pose().x(),
+                    follower.pose().y(),
+                    Math.toRadians(robot.upFireHeadRedTab.get(robot.follower.pose().distance(robot.refPose))))
+                )
+            }
+            return Groups.parallel(intakeSpd(robot.upFireHeadRedTab),turn())
+        }
+        fun bottomRedCell(): Command {
+            fun turn(): Command {
+                return PedroCommands.hold(follower,Pose(
+                    follower.pose().x(),
+                    follower.pose().y(),
+                    Math.toRadians(robot.downFireHeadRedTab.get(robot.follower.pose().distance(robot.refPose))))
+                )
+            }
+            return Groups.parallel(intakeSpd(robot.downFireHeadRedTab),turn())
+        }
+        when (alliance) {
+            Robot.Alliance.BLUE -> {
+                turnHalf[Robot.FieldHalf.TOP] = topBlueCell()
+                turnHalf[Robot.FieldHalf.BOTTOM] = bottomBlueCell()
+            }
+            Robot.Alliance.RED -> {
+                turnHalf[Robot.FieldHalf.TOP] = topRedCell()
+                turnHalf[Robot.FieldHalf.BOTTOM] = bottomRedCell()
+            }
+        }
+        fun turnHalfFun(): Command = Commands.match({fieldHalf}, turnHalf)
         return Groups.parallel(
             letGo(),
             //turnHalfFun(),
@@ -167,6 +123,24 @@ class FiringSS(
     //    }
     //}
     //fun calcHalf(): Command = Commands.infinite { fieldHalf = if (follower.pose().y() >= 72) Robot.FieldHalf.TOP else Robot.FieldHalf.BOTTOM }
+    fun intakeSpd(tab: InterpLUT): Command {
+        val fastFireRange = 0.0..30.0
+        val fastFire = 1.0
+        val medFireRange = 30.0..60.0
+        val medFire = 0.9
+        val slowFireRange = 60.0..90.0
+        val slowFire = 0.8
+        var remain: Double
+        return Commands.instant {
+            remain = tab.get(robot.follower.pose().distance(robot.refPose)) - robot.follower.pose().heading()
+            when (abs(remain)) {
+                in fastFireRange -> intakeSS.velocity = fastFire
+                in medFireRange -> intakeSS.velocity = medFire
+                in slowFireRange -> intakeSS.velocity = slowFire
+                else -> intakeSS.velocity = robot.intakeDef
+            }
+        }
+    }
     fun getHalf(): Robot.FieldHalf = fieldHalf
     fun reset() {
         robot.pollenBS.set(servoBlock)

@@ -12,6 +12,10 @@ class IntakeSS(
         robot.intakeM.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE)
         robot.intakeM.inverted = true
     }
+
+    /**
+     * The Velocity of the intake like what did you think it would be???
+     */
     var velocity: Double = robot.intakeDef
     private var rev = true
     fun runIntake(): Command = Command.build()
