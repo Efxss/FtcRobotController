@@ -44,6 +44,7 @@ class PanelsDebugUtil(
             debug("")
             debug("=== HardWare ===")
             debug("Intake Speed", robot.intakeM.velocity)
+            //debug("shooter Speed", robot.fireM.velocity)
             debug("")
             debug("=== Gamepad ===")
             debug("Left Stick X", gamepad.left_stick_x)
