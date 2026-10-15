@@ -19,9 +19,9 @@ class IntakeSS(
     var velocity: Double = robot.intakeDef
     private var rev = true
     fun runIntake(): Command = Command.build()
-        .setExecute { robot.intakeM.set(velocity) }
+        .setExecute { robot.intakeM.set(this.velocity) }
         .setEnd { robot.intakeM.stopMotor() }
         .requiring(robot.intakeM)
-    private fun setRev(state: Boolean) {if (rev != state) rev = state; robot.intakeM.inverted = !rev}
+    private fun setRev(state: Boolean) {if (this.rev != state) this.rev = state; robot.intakeM.inverted = !this.rev}
     fun reverseIntake(state: Boolean) {setRev(state)}
 }

@@ -20,10 +20,12 @@ class FiringSS(
     private val servoBlock: Double = 0.02,
     private val servoGo: Double = 0.4
 ) {
-    //init {
-    //    robot.fireM.inverted = true
-    //}
+    init {
+        robot.fireM.inverted = true
+    }
     private var fieldHalf: Robot.FieldHalf = Robot.FieldHalf.TOP
+    private var power: Double = 0.0
+    private var currentVel: Double = 0.0
     fun letGo(): Command {
         return sequential(
             Commands.instant { robot.pollenBS.set(servoGo) },
@@ -96,33 +98,33 @@ class FiringSS(
             //)
         )
     }
-    //fun calcFiring(): Command {
-    //    return Commands.infinite {
-    //        robot.fireM.set(0.5)
-    //        //when (alliance) {
-    //        //    Robot.Alliance.BLUE -> {
-    //        //        if (fieldHalf == Robot.FieldHalf.TOP) {
-    //        //            robot.fireMSquIDF.setPoint = robot.upFireBlueTab.get(follower.pose().distance(robot.refPose))
-    //        //            robot.fireM.set(robot.fireMSquIDF.calculate())
-    //        //        }
-    //        //        else {
-    //        //            robot.fireMSquIDF.setPoint = robot.downFireBlueTab.get(follower.pose().distance(robot.refPose))
-    //        //            robot.fireM.set(robot.fireMSquIDF.calculate())
-    //        //        }
-    //        //    }
-    //        //    Robot.Alliance.RED -> {
-    //        //        if (fieldHalf == Robot.FieldHalf.TOP) {
-    //        //            robot.fireMSquIDF.setPoint = robot.upFireRedTab.get(follower.pose().distance(robot.refPose))
-    //        //            robot.fireM.set(robot.fireMSquIDF.calculate())
-    //        //        }
-    //        //        else {
-    //        //            robot.fireMSquIDF.setPoint = robot.downFireRedTab.get(follower.pose().distance(robot.refPose))
-    //        //            robot.fireM.set(robot.fireMSquIDF.calculate())
-    //        //        }
-    //        //    }
-    //        //}
-    //    }
-    //}
+    fun calcFiring(): Command {
+        return Commands.infinite {
+            this.currentVel = robot.fireM.correctedVelocity
+            //this.power = robot.fireMPIDF.calculate(this.currentVel, 0.3).coerceIn(0.0,1.0)
+            //this.power = robot.fireMPIDF.calculate(this.currentVel, pidfPower(0.5))
+            //robot.fireM.set(0.5)
+            when (alliance) {
+                Robot.Alliance.BLUE -> {
+                    if (fieldHalf == Robot.FieldHalf.TOP) {
+                        this.power = robot.fireMPIDF.calculate(this.currentVel, pidfPower(robot.upFireBlueTab.get(follower.pose().distance(robot.refPose))))
+                    }
+                    else {
+                        this.power = robot.fireMPIDF.calculate(this.currentVel, pidfPower(robot.downFireBlueTab.get(follower.pose().distance(robot.refPose))))
+                    }
+                }
+                Robot.Alliance.RED -> {
+                    if (fieldHalf == Robot.FieldHalf.TOP) {
+                        this.power = robot.fireMPIDF.calculate(this.currentVel, pidfPower(robot.upFireRedTab.get(follower.pose().distance(robot.refPose))))
+                    }
+                    else {
+                        this.power = robot.fireMPIDF.calculate(this.currentVel, pidfPower(robot.downFireRedTab.get(follower.pose().distance(robot.refPose))))
+                    }
+                }
+            }
+            robot.fireM.set(this.power)
+        }
+    }
     ////fun calcHalf(): Command = Commands.infinite { fieldHalf = if (follower.pose().y() >= 72) Robot.FieldHalf.TOP else Robot.FieldHalf.BOTTOM }
     //private fun intakeSpd(tab: InterpLUT): Command {
     //    val fastFireRange = 0.0..30.0
@@ -142,8 +144,13 @@ class FiringSS(
     //        }
     //    }
     //}
-    fun getHalf(): Robot.FieldHalf = fieldHalf
+    fun getHalf(): Robot.FieldHalf = this.fieldHalf
+    fun getPower(): Double = this.power
+    fun getVelocity(): Double = this.currentVel
     fun reset() {
-        robot.pollenBS.set(servoBlock)
+        robot.pollenBS.set(this.servoBlock)
+    }
+    private fun pidfPower(input: Double): Double {
+        return input * 2800
     }
 }

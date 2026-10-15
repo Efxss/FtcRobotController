@@ -6,6 +6,7 @@ import com.pedropathing.api.PoseFactory
 import com.pedropathing.follower.Follower
 import com.pedropathing.math.Pose
 import com.qualcomm.robotcore.hardware.HardwareMap
+import com.seattlesolvers.solverslib.controller.PIDFController
 import com.seattlesolvers.solverslib.hardware.motors.Motor
 import com.seattlesolvers.solverslib.hardware.motors.MotorEx
 import com.seattlesolvers.solverslib.hardware.servos.ServoEx
@@ -27,8 +28,8 @@ class Robot(
     // Hardware
 
     val intakeM: MotorEx = MotorEx(hardwareMap,"intake",Motor.GoBILDA.BARE).setCachingTolerance(0.09); val intakeDef = 0.6
-    //val fireM: MotorEx = MotorEx(hardwareMap,"fire",Motor.GoBILDA.BARE).setCachingTolerance(0.05)
-    //var fireMSquIDF = SquIDFController(15.0, 0.0, 0.0, 13.0)
+    val fireM: MotorEx = MotorEx(hardwareMap,"fire",Motor.GoBILDA.BARE).setCachingTolerance(0.05)
+    var fireMPIDF = PIDFController(0.0009, 0.0, 0.0, 0.00018)
     private val flowerDSC = 0.1
     val pollenBS: ServoEx = ServoEx(hardwareMap, "pollen").setCachingTolerance(0.1)
     //private val flowerDS1: ServoEx = ServoEx(hardwareMap,"FDS1").setCachingTolerance(flowerDSC)

@@ -96,7 +96,7 @@ abstract class TeleOpMode : OpMode() {
             Robot.Alliance.BLUE -> { Pose(9.1, 9.2, Math.toRadians(90.0)) }
             Robot.Alliance.RED -> { Pose(132.3, 132.4, Math.toRadians(90.0)) }
         }
-        Scheduler.schedule(intakeSS.runIntake())
+        //Scheduler.schedule(intakeSS.runIntake())
         //Scheduler.schedule(firingSS.calcHalf())
         //robot.genTab()
         onStart()
@@ -150,14 +150,14 @@ abstract class TeleOpMode : OpMode() {
         Scheduler.execute()
 
         //Show and update debug
-        debugUtil.showAllDebugTeleop(robot.follower,alliance,runtime,gamepad1,firingSS.getHalf(),robot)
+        debugUtil.showAllDebugTeleop(robot.follower,alliance,runtime,gamepad1,firingSS.getHalf(),firingSS,robot)
         debugUtil.update(telemetry)
         onLoop()
     }
 
     final override fun stop() {
         intakeSS.runIntake().cancel()
-        //listOf(firingSS.calcFiring(), firingSS.calcHalf(), firingSS.execFiring()).forEach { it.cancel() }
+        listOf(firingSS.calcFiring(), /*firingSS.calcHalf(),*/ firingSS.execFiring()).forEach { it.cancel() }
         onStop()
     }
 

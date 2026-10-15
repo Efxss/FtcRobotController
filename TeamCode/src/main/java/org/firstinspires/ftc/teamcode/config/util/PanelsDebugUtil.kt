@@ -4,6 +4,7 @@ import com.bylazar.telemetry.TelemetryManager
 import com.pedropathing.follower.Follower
 import com.qualcomm.robotcore.hardware.Gamepad
 import org.firstinspires.ftc.teamcode.config.Robot
+import org.firstinspires.ftc.teamcode.config.subSystem.FiringSS
 
 class PanelsDebugUtil(
     private val panels: TelemetryManager?
@@ -33,6 +34,7 @@ class PanelsDebugUtil(
         runtime: Double,
         gamepad: Gamepad,
         fieldHalf: Robot.FieldHalf,
+        firingSS: FiringSS,
         robot: Robot,
     ) {
         panels?.apply {
@@ -44,7 +46,9 @@ class PanelsDebugUtil(
             debug("")
             debug("=== HardWare ===")
             debug("Intake Speed", robot.intakeM.velocity)
-            //debug("shooter Speed", robot.fireM.velocity)
+            debug("Shooter Speed", robot.fireM.velocity)
+            debug("Shooter Velocity", firingSS.getVelocity())
+            debug("Shooter PIDF Calc", firingSS.getPower())
             debug("")
             debug("=== Gamepad ===")
             debug("Left Stick X", gamepad.left_stick_x)
