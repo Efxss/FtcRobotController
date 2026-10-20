@@ -14,7 +14,7 @@ class Teleop : TeleOpMode() {
     }
 
     override fun onStart() {
-        firingSS.calcFiring().schedule()
+        //firingSS.calcFiring().schedule()
     }
 
     override fun onLoop() {
