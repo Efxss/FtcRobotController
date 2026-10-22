@@ -11,6 +11,8 @@ import com.pedropathing.ivy.commands.Commands
 import com.pedropathing.ivy.groups.Groups
 import com.pedropathing.ivy.groups.Groups.sequential
 import org.firstinspires.ftc.teamcode.config.Robot
+import org.firstinspires.ftc.teamcode.config.util.MathUtil
+import org.firstinspires.ftc.teamcode.config.util.VariableStateUtil
 
 class FiringSS(
     private val robot: Robot,
@@ -101,27 +103,27 @@ class FiringSS(
     fun calcFiring(): Command {
         return Commands.infinite {
             this.currentVel = robot.fireM.correctedVelocity
-            //this.power = robot.fireMPIDF.calculate(this.currentVel, 0.3).coerceIn(0.0,1.0)
-            //this.power = robot.fireMPIDF.calculate(this.currentVel, pidfPower(0.5))
-            //robot.fireM.set(0.5)
-            when (alliance) {
-                Robot.Alliance.BLUE -> {
-                    if (fieldHalf == Robot.FieldHalf.TOP) {
-                        this.power = robot.fireMPIDF.calculate(this.currentVel, pidfPower(robot.upFireBlueTab.get(follower.pose().distance(robot.refPose))))
-                    }
-                    else {
-                        this.power = robot.fireMPIDF.calculate(this.currentVel, pidfPower(robot.downFireBlueTab.get(follower.pose().distance(robot.refPose))))
-                    }
-                }
-                Robot.Alliance.RED -> {
-                    if (fieldHalf == Robot.FieldHalf.TOP) {
-                        this.power = robot.fireMPIDF.calculate(this.currentVel, pidfPower(robot.upFireRedTab.get(follower.pose().distance(robot.refPose))))
-                    }
-                    else {
-                        this.power = robot.fireMPIDF.calculate(this.currentVel, pidfPower(robot.downFireRedTab.get(follower.pose().distance(robot.refPose))))
-                    }
-                }
-            }
+            //this.power = robot.fireMPIDF.calculate(this.currentVel, 0.3).coerceIn(0.0,1.0) // Example to clamp val
+            this.power = robot.fireMPIDF.calculate(this.currentVel, MathUtil.pidfPower(VariableStateUtil.wheelPower))
+            robot.hoodDS.set(VariableStateUtil.hoodAngle) // MAX IS 0.65
+            //when (alliance) {
+            //    Robot.Alliance.BLUE -> {
+            //        if (fieldHalf == Robot.FieldHalf.TOP) {
+            //            this.power = robot.fireMPIDF.calculate(this.currentVel, MathUtil.pidfPower(robot.upFireBlueTab.get(follower.pose().distance(robot.refPose))))
+            //        }
+            //        else {
+            //            this.power = robot.fireMPIDF.calculate(this.currentVel, MathUtil.pidfPower(robot.downFireBlueTab.get(follower.pose().distance(robot.refPose))))
+            //        }
+            //    }
+            //    Robot.Alliance.RED -> {
+            //        if (fieldHalf == Robot.FieldHalf.TOP) {
+            //            this.power = robot.fireMPIDF.calculate(this.currentVel, MathUtil.pidfPower(robot.upFireRedTab.get(follower.pose().distance(robot.refPose))))
+            //        }
+            //        else {
+            //            this.power = robot.fireMPIDF.calculate(this.currentVel, MathUtil.pidfPower(robot.downFireRedTab.get(follower.pose().distance(robot.refPose))))
+            //        }
+            //    }
+            //}
             robot.fireM.set(this.power)
         }
     }
@@ -149,8 +151,6 @@ class FiringSS(
     fun getVelocity(): Double = this.currentVel
     fun reset() {
         robot.pollenBS.set(this.servoBlock)
-    }
-    private fun pidfPower(input: Double): Double {
-        return input * 2800
+        robot.hoodDS.set(0.0)
     }
 }

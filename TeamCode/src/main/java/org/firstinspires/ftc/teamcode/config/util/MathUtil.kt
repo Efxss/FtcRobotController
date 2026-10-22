@@ -14,4 +14,8 @@ object MathUtil {
     fun clip(v: Double, minValue: Double, maxValue: Double): Double {
         return max(minValue, min(maxValue, v))
     }
+
+    fun pidfPower(input: Double): Double {
+        return input * 2800
+    }
 }

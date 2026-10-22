@@ -17,9 +17,15 @@ class IntakeSS(
      * The Velocity of the intake like what did you think it would be???
      */
     var velocity: Double = robot.intakeDef
+    private var currentVel: Double = 0.0
+    private var pidfVelocity: Double = 0.0
     private var rev = true
     fun runIntake(): Command = Command.build()
-        .setExecute { robot.intakeM.set(this.velocity) }
+        .setExecute {
+            //this.currentVel = robot.fireM.correctedVelocity
+            //this.pidfVelocity = robot.intakeMPIDF.calculate(this.currentVel, MathUtil.pidfPower(this.velocity))
+            robot.intakeM.set(this.velocity)
+        }
         .setEnd { robot.intakeM.stopMotor() }
         .requiring(robot.intakeM)
     private fun setRev(state: Boolean) {if (this.rev != state) this.rev = state; robot.intakeM.inverted = !this.rev}

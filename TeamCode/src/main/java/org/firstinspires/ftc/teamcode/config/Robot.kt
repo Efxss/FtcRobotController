@@ -27,34 +27,46 @@ class Robot(
     fun initPedro() { follower = Constants.create(hardwareMap) }
     // Hardware
 
-    val intakeM: MotorEx = MotorEx(hardwareMap,"intake",Motor.GoBILDA.BARE).setCachingTolerance(0.09); val intakeDef = 0.5
+    val intakeM: MotorEx = MotorEx(hardwareMap,"intake",Motor.GoBILDA.BARE).setCachingTolerance(0.09); val intakeDef = 0.4
+    val intakeMPIDF = PIDFController(0.0009, 0.0, 0.0, 0.00018)
     val fireM: MotorEx = MotorEx(hardwareMap,"fire",Motor.GoBILDA.BARE).setCachingTolerance(0.05)
+    val hoodDS: ServoEx = ServoEx(hardwareMap, "hood").setCachingTolerance(0.00000001)
     var fireMPIDF = PIDFController(0.0009, 0.0, 0.0, 0.00018)
-    private val flowerDSC = 0.1
     val pollenBS: ServoEx = ServoEx(hardwareMap, "pollen").setCachingTolerance(0.1)
+    private val flowerDSC = 0.1
     //private val flowerDS1: ServoEx = ServoEx(hardwareMap,"FDS1").setCachingTolerance(flowerDSC)
     //private val flowerDS2: ServoEx = ServoEx(hardwareMap,"FDS2").setCachingTolerance(flowerDSC)
     //val flowerDSG: ServoExGroup = ServoExGroup(flowerDS1,flowerDS2)
 
     // Tables and refs
+
+    // Flywheel Power
     val upFireBlueTab = InterpLUT()
     val downFireBlueTab = InterpLUT()
     val upFireRedTab = InterpLUT()
     val downFireRedTab = InterpLUT()
+
+    // Cell Heading
     val upFireHeadBlueTab = InterpLUT()
     val downFireHeadBlueTab = InterpLUT()
     val upFireHeadRedTab = InterpLUT()
     val downFireHeadRedTab = InterpLUT()
+
+    // Hood Angle
+    val upFireHoodBlueTab = InterpLUT()
+    val downFireHoodBlueTab = InterpLUT()
+    val upFireHoodRedTab = InterpLUT()
+    val downFireHoodRedTab = InterpLUT()
     // Objects, Classes and Functions
-    /*fun genTab() {
-        // Fire Power
+    fun genTab() {
+        // Flywheel Power
         upFireBlueTab.apply {
             add(Pose(0.0,0.0).distance(refPose), 0.1)
             add(Pose(0.0,0.0).distance(refPose), 0.1)
         }.createLUT()
 
         downFireBlueTab.apply {
-            add(Pose(0.0,0.0).distance(refPose), 0.1)
+            add(Pose(81.0,9.0).distance(refPose), 0.51) // ~ Pos
             add(Pose(0.0,0.0).distance(refPose), 0.1)
         }.createLUT()
 
@@ -68,13 +80,13 @@ class Robot(
             add(Pose(0.0,0.0).distance(refPose), 0.1)
         }.createLUT()
 
-        // Turn Heading
+        // Cell Heading
         upFireHeadBlueTab.apply {
             add(Pose(85.8, 133.2).distance(refPose), 270.0)
         }.createLUT()
 
         downFireHeadBlueTab.apply {
-            add(Pose(0.0,0.0).distance(refPose), 0.1)
+            add(Pose(81.0,9.0).distance(refPose), 90.0) // ~ Pos
             add(Pose(0.0,0.0).distance(refPose), 0.1)
         }.createLUT()
 
@@ -91,5 +103,24 @@ class Robot(
             add(Pose(96.5,17.5).distance(refPose), 137.0)
             add(Pose(110.4,12.0).distance(refPose), 141.0)
         }.createLUT()
-    }*/
+
+        // Hood Angle
+        upFireHoodBlueTab.apply {
+            add(Pose(85.8, 133.2).distance(refPose), 270.0)
+        }.createLUT()
+
+        downFireHoodBlueTab.apply {
+            add(Pose(81.0,9.0).distance(refPose), 0.135) // ~ Pos
+            add(Pose(0.0,0.0).distance(refPose), 0.1)
+        }.createLUT()
+
+        upFireHoodRedTab.apply {
+            add(Pose(0.0,0.0).distance(refPose), 0.1)
+            add(Pose(0.0,0.0).distance(refPose), 0.1)
+        }.createLUT()
+
+        downFireHoodRedTab.apply {
+            add(Pose(16.4,12.0).distance(refPose), 44.0)
+        }.createLUT()
+    }
 }

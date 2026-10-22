@@ -14,4 +14,7 @@ object VariableStateUtil {
 
     // Alliance var to pass from auto to TeleOP
     var alliance: Robot.Alliance = Robot.Alliance.BLUE
+
+    var hoodAngle: Double = 0.0
+    var wheelPower: Double = 0.0
 }
