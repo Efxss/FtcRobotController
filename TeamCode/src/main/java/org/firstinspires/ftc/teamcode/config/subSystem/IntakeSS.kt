@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.config.subSystem
 import com.pedropathing.ivy.Command
 import com.seattlesolvers.solverslib.hardware.motors.Motor
 import org.firstinspires.ftc.teamcode.config.Robot
+import org.firstinspires.ftc.teamcode.config.util.MathUtil
 
 class IntakeSS(
     private val robot: Robot
@@ -22,9 +23,9 @@ class IntakeSS(
     private var rev = true
     fun runIntake(): Command = Command.build()
         .setExecute {
-            //this.currentVel = robot.fireM.correctedVelocity
-            //this.pidfVelocity = robot.intakeMPIDF.calculate(this.currentVel, MathUtil.pidfPower(this.velocity))
-            robot.intakeM.set(this.velocity)
+            this.currentVel = robot.intakeM.correctedVelocity
+            this.pidfVelocity = robot.intakeMPIDF.calculate(this.currentVel, MathUtil.pidfPower(this.velocity))
+            robot.intakeM.set(this.pidfVelocity)
         }
         .setEnd { robot.intakeM.stopMotor() }
         .requiring(robot.intakeM)

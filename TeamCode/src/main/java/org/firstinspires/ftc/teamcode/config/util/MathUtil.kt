@@ -15,6 +15,10 @@ object MathUtil {
         return max(minValue, min(maxValue, v))
     }
 
+    /**
+     * Returns The Power For A PIDF Controller To Use
+     * @author NOTE : THIS WAS MADE FOR A 6000 RPM MOTOR MIGHT NOT WORK ON OTHER MOTORS
+     */
     fun pidfPower(input: Double): Double {
         return input * 2800
     }
