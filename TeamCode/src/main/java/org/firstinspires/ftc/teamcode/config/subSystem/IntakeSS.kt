@@ -9,9 +9,10 @@ class IntakeSS(
     private val robot: Robot
 ) {
     init {
-        robot.intakeM.setRunMode(Motor.RunMode.VelocityControl)
-        robot.intakeM.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE)
-        robot.intakeM.inverted = true
+        robot.intakeMG.setRunMode(Motor.RunMode.VelocityControl)
+        robot.intakeMG.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE)
+        //robot.intakeMG.inverted = true
+        robot.intakeM1.inverted = true
     }
 
     /**
@@ -23,12 +24,12 @@ class IntakeSS(
     private var rev = true
     fun runIntake(): Command = Command.build()
         .setExecute {
-            this.currentVel = robot.intakeM.correctedVelocity
+            this.currentVel = robot.intakeM1.correctedVelocity
             this.pidfVelocity = robot.intakeMPIDF.calculate(this.currentVel, MathUtil.pidfPower(this.velocity))
-            robot.intakeM.set(this.pidfVelocity)
+            robot.intakeMG.set(this.pidfVelocity)
         }
-        .setEnd { robot.intakeM.stopMotor() }
-        .requiring(robot.intakeM)
-    private fun setRev(state: Boolean) {if (this.rev != state) this.rev = state; robot.intakeM.inverted = !this.rev}
+        .setEnd { robot.intakeMG.stopMotor() }
+        .requiring(robot.intakeMG)
+    private fun setRev(state: Boolean) { if (this.rev != state) { this.rev = state }; robot.intakeM1.inverted = !this.rev; robot.intakeM2.inverted = this.rev }
     fun reverseIntake(state: Boolean) {setRev(state)}
 }
