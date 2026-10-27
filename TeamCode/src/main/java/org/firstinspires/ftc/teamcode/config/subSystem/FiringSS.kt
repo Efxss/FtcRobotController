@@ -19,8 +19,8 @@ class FiringSS(
     private val follower: Follower,
     private val alliance: Robot.Alliance,
     private val intakeSS: IntakeSS,
-    private val servoBlock: Double = 0.02,
-    private val servoGo: Double = 0.4
+    private val servoBlock: Double = 0.18,
+    private val servoGo: Double = 0.42
 ) {
     init {
         robot.fireM.inverted = true
@@ -32,10 +32,8 @@ class FiringSS(
         return sequential(
             Commands.instant { robot.pollenBS.set(servoGo) },
             //Commands.waitMs(1250.0),
-            Commands.instant { intakeSS.velocity = 0.8 },
-            Commands.waitMs(2500.0),
+            Commands.waitMs(1500.0),
             Commands.instant { robot.pollenBS.set(servoBlock) },
-            Commands.instant { intakeSS.velocity = robot.intakeDef }
         ).requiring(robot.pollenBS)
     }
     fun execFiring(): Command {

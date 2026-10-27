@@ -29,16 +29,16 @@ class Robot(
     // Hardware
 
     // Intake
-    val intakeMC: Double = 0.09
-    val intakeM1: MotorEx = MotorEx(hardwareMap,"intake1",Motor.GoBILDA.BARE).setCachingTolerance(intakeMC); val intakeDef = 0.3
+    val intakeMC: Double = 0.00001
+    val intakeM1: MotorEx = MotorEx(hardwareMap,"intake1",Motor.GoBILDA.BARE).setCachingTolerance(intakeMC); val intakeDef = 0.4
     val intakeM2: MotorEx = MotorEx(hardwareMap,"intake2",Motor.GoBILDA.BARE).setCachingTolerance(intakeMC); val intakeFire = 0.6
     val intakeMG: MotorGroup = MotorGroup(intakeM1, intakeM2)
     val intakeMPIDF = PIDFController(0.0009, 0.0, 0.0, 0.00018)
-    val pollenBS: ServoEx = ServoEx(hardwareMap, "pollen").setCachingTolerance(0.1)
+    val pollenBS: ServoEx = ServoEx(hardwareMap, "pollen").setCachingTolerance(0.0001)
     // Shooter
-    val fireM: MotorEx = MotorEx(hardwareMap,"fire",Motor.GoBILDA.BARE).setCachingTolerance(0.05)
+    val fireM: MotorEx = MotorEx(hardwareMap,"fire",Motor.GoBILDA.BARE).setCachingTolerance(0.00001)
     val hoodDS: ServoEx = ServoEx(hardwareMap, "hood").setCachingTolerance(0.00000001)
-    var fireMPIDF = PIDFController(0.0009, 0.0, 0.0, 0.00018)
+    var fireMPIDF = PIDFController(0.0011, 0.0, 0.0, 0.00018)
     // Flower DeScorer
     private val flowerDSC = 0.1
     //private val flowerDS1: ServoEx = ServoEx(hardwareMap,"FDS1").setCachingTolerance(flowerDSC)
@@ -73,7 +73,7 @@ class Robot(
     //    }.createLUT()
 
     //    downFireBlueTab.apply {
-    //        add(Pose(81.0,9.0).distance(refPose), 0.51) // ~ Pos
+    //        add(Pose(81.0,9.0).distance(refPose), 0.56) // ~ Pos
     //        add(Pose(0.0,0.0).distance(refPose), 0.1)
     //    }.createLUT()
 
@@ -117,7 +117,7 @@ class Robot(
     //    }.createLUT()
 
     //    downFireHoodBlueTab.apply {
-    //        add(Pose(81.0,9.0).distance(refPose), 0.135) // ~ Pos
+    //        add(Pose(81.0,9.0).distance(refPose), 0.17) // ~ Pos
     //        add(Pose(0.0,0.0).distance(refPose), 0.1)
     //    }.createLUT()
 

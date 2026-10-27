@@ -23,5 +23,7 @@ class HubUtil (
     }
 
     /** Clears the bulk read cache on every hub. Call this once at the start of each loop() cycle. */
-    fun clearCache() = hubs.forEach { it.clearBulkCache() }
+    fun clearCache() = hubs.forEach { it.clearBulkCache()
+    //it.getInputVoltage(VoltageUnit.MILLIVOLTS) // Code For maybe getting volts
+    }
 }
