@@ -5,7 +5,6 @@ package org.firstinspires.ftc.teamcode.config.subSystem
 //import com.pedropathing.math.Pose
 //import kotlin.math.abs
 //import com.seattlesolvers.solverslib.util.InterpLUT
-import com.pedropathing.follower.Follower
 import com.pedropathing.ivy.Command
 import com.pedropathing.ivy.commands.Commands
 import com.pedropathing.ivy.groups.Groups
@@ -16,7 +15,6 @@ import org.firstinspires.ftc.teamcode.config.util.VariableStateUtil
 
 class FiringSS(
     private val robot: Robot,
-    private val follower: Follower,
     private val alliance: Robot.Alliance,
     private val intakeSS: IntakeSS,
     private val servoBlock: Double = 0.18,
@@ -40,9 +38,9 @@ class FiringSS(
         //val turnHalf = EnumMap<Robot.FieldHalf, Command>(Robot.FieldHalf::class.java)
         //fun topBlueCell(): Command {
         //    fun turn(): Command {
-        //        return PedroCommands.hold(follower,Pose(
-        //            follower.pose().x(),
-        //            follower.pose().y(),
+        //        return PedroCommands.hold(robot.follower,Pose(
+        //            robot.follower.pose().x(),
+        //            robot.follower.pose().y(),
         //            Math.toRadians(robot.upFireHeadBlueTab.get(robot.follower.pose().distance(robot.refPose))))
         //        )
         //    }
@@ -50,9 +48,9 @@ class FiringSS(
         //}
         //fun bottomBlueCell(): Command {
         //    fun turn(): Command {
-        //        return PedroCommands.hold(follower, Pose(
-        //            follower.pose().x(),
-        //            follower.pose().y(),
+        //        return PedroCommands.hold(robot.follower, Pose(
+        //            robot.follower.pose().x(),
+        //            robot.follower.pose().y(),
         //            Math.toRadians(robot.downFireHeadBlueTab.get(robot.follower.pose().distance(robot.refPose))))
         //        )
         //    }
@@ -60,9 +58,9 @@ class FiringSS(
         //}
         //fun topRedCell(): Command {
         //    fun turn(): Command {
-        //        return PedroCommands.hold(follower,Pose(
-        //            follower.pose().x(),
-        //            follower.pose().y(),
+        //        return PedroCommands.hold(robot.follower,Pose(
+        //            robot.follower.pose().x(),
+        //            robot.follower.pose().y(),
         //            Math.toRadians(robot.upFireHeadRedTab.get(robot.follower.pose().distance(robot.refPose))))
         //        )
         //    }
@@ -70,9 +68,9 @@ class FiringSS(
         //}
         //fun bottomRedCell(): Command {
         //    fun turn(): Command {
-        //        return PedroCommands.hold(follower,Pose(
-        //            follower.pose().x(),
-        //            follower.pose().y(),
+        //        return PedroCommands.hold(robot.follower,Pose(
+        //            robot.follower.pose().x(),
+        //            robot.follower.pose().y(),
         //            Math.toRadians(robot.downFireHeadRedTab.get(robot.follower.pose().distance(robot.refPose))))
         //        )
         //    }
@@ -107,25 +105,25 @@ class FiringSS(
             //when (alliance) {
             //    Robot.Alliance.BLUE -> {
             //        if (fieldHalf == Robot.FieldHalf.TOP) {
-            //            this.power = robot.fireMPIDF.calculate(this.currentVel, MathUtil.pidfPower(robot.upFireBlueTab.get(follower.pose().distance(robot.refPose))))
+            //            this.power = robot.fireMPIDF.calculate(this.currentVel, MathUtil.pidfPower(robot.upFireBlueTab.get(robot.follower.pose().distance(robot.refPose))))
             //        }
             //        else {
-            //            this.power = robot.fireMPIDF.calculate(this.currentVel, MathUtil.pidfPower(robot.downFireBlueTab.get(follower.pose().distance(robot.refPose))))
+            //            this.power = robot.fireMPIDF.calculate(this.currentVel, MathUtil.pidfPower(robot.downFireBlueTab.get(robot.follower.pose().distance(robot.refPose))))
             //        }
             //    }
             //    Robot.Alliance.RED -> {
             //        if (fieldHalf == Robot.FieldHalf.TOP) {
-            //            this.power = robot.fireMPIDF.calculate(this.currentVel, MathUtil.pidfPower(robot.upFireRedTab.get(follower.pose().distance(robot.refPose))))
+            //            this.power = robot.fireMPIDF.calculate(this.currentVel, MathUtil.pidfPower(robot.upFireRedTab.get(robot.follower.pose().distance(robot.refPose))))
             //        }
             //        else {
-            //            this.power = robot.fireMPIDF.calculate(this.currentVel, MathUtil.pidfPower(robot.downFireRedTab.get(follower.pose().distance(robot.refPose))))
+            //            this.power = robot.fireMPIDF.calculate(this.currentVel, MathUtil.pidfPower(robot.downFireRedTab.get(robot.follower.pose().distance(robot.refPose))))
             //        }
             //    }
             //}
             robot.fireM.set(this.power)
         }
     }
-    ////fun calcHalf(): Command = Commands.infinite { fieldHalf = if (follower.pose().y() >= 72) Robot.FieldHalf.TOP else Robot.FieldHalf.BOTTOM }
+    //fun calcHalf(): Command = Commands.infinite { fieldHalf = if (robot.follower.pose().y() >= 72) Robot.FieldHalf.TOP else Robot.FieldHalf.BOTTOM }
     //private fun intakeSpd(tab: InterpLUT): Command {
     //    val fastFireRange = 0.0..30.0
     //    val fastFire = 1.0

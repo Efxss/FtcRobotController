@@ -38,7 +38,7 @@ class Robot(
     // Shooter
     val fireM: MotorEx = MotorEx(hardwareMap,"fire",Motor.GoBILDA.BARE).setCachingTolerance(0.00001)
     val hoodDS: ServoEx = ServoEx(hardwareMap, "hood").setCachingTolerance(0.00000001)
-    var fireMPIDF = PIDFController(0.0011, 0.0, 0.0, 0.00018)
+    var fireMPIDF = PIDFController(0.0013, 0.0, 0.0001, 0.00018)
     // Flower DeScorer
     private val flowerDSC = 0.1
     //private val flowerDS1: ServoEx = ServoEx(hardwareMap,"FDS1").setCachingTolerance(flowerDSC)
