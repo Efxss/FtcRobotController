@@ -1,17 +1,17 @@
 {
   "version": "2.0.0",
-  "timestamp": "2026-10-31T07:08:51.260Z",
+  "timestamp": "2026-10-31T19:34:47.934Z",
   "startPoint": {
     "x": 54.9626535457161,
     "y": 8.000000000000002,
-    "headingDeg": 90,
-    "locked": false
+    "locked": false,
+    "headingDeg": 90
   },
   "lines": [
     {
       "id": "line-mvw1pen5-95kfcq",
       "color": "#ffc516",
-      "name": "Path 1",
+      "name": "BottomCellOutAlignment",
       "locked": false,
       "waitBeforeMs": 0,
       "waitAfterMs": 0,
@@ -46,8 +46,15 @@
       }
     },
     {
-      "kind": "atomic",
       "id": "line-mvw1x0ql-2m6k1j",
+      "color": "#b07aa1",
+      "name": "RedSpike",
+      "locked": false,
+      "waitBeforeMs": 0,
+      "waitAfterMs": 0,
+      "waitBeforeName": "",
+      "waitAfterName": "",
+      "kind": "atomic",
       "endPoint": {
         "x": 8,
         "y": 8
@@ -73,17 +80,18 @@
             }
           ]
         }
-      },
-      "color": "#b07aa1",
+      }
+    },
+    {
+      "id": "line-mvw20v6o-hvw0lm",
+      "color": "#4e79a7",
+      "name": "TopCellSpikeScoring",
       "locked": false,
       "waitBeforeMs": 0,
       "waitAfterMs": 0,
       "waitBeforeName": "",
-      "waitAfterName": ""
-    },
-    {
+      "waitAfterName": "",
       "kind": "atomic",
-      "id": "line-mvw20v6o-hvw0lm",
       "endPoint": {
         "x": 26.80836576097985,
         "y": 119.37813002842618
@@ -119,26 +127,27 @@
             }
           ]
         }
-      },
-      "color": "#4e79a7",
+      }
+    },
+    {
+      "id": "line-mvw23ijs-vg3l43",
+      "color": "#e15759",
+      "name": "TopCellToTopFlower",
       "locked": false,
       "waitBeforeMs": 0,
       "waitAfterMs": 0,
       "waitBeforeName": "",
-      "waitAfterName": ""
-    },
-    {
+      "waitAfterName": "",
       "kind": "atomic",
-      "id": "line-mvw23ijs-vg3l43",
       "endPoint": {
         "x": 36.96367933877011,
         "y": 129.41732404455405
       },
       "controlPoints": [],
       "heading": {
-        "type": "tangential",
+        "type": "constant",
         "reverse": false,
-        "degrees": 67,
+        "degrees": 47,
         "startDeg": 0,
         "endDeg": 0,
         "piecewiseHeading": {
@@ -155,36 +164,55 @@
             }
           ]
         }
-      },
-      "color": "#e15759",
+      }
+    },
+    {
+      "id": "line-mvw254xh-krulsc",
+      "color": "#76b7b2",
+      "name": "TopFlowerScore",
       "locked": false,
       "waitBeforeMs": 0,
       "waitAfterMs": 0,
       "waitBeforeName": "",
-      "waitAfterName": ""
-    },
-    {
+      "waitAfterName": "",
       "kind": "atomic",
-      "id": "line-mvw254xh-krulsc",
       "endPoint": {
         "x": 33.529476305487734,
         "y": 126.31803901664806
       },
       "controlPoints": [],
       "heading": {
-        "type": "tangential",
-        "reverse": true
-      },
+        "type": "linear",
+        "reverse": false,
+        "degrees": -50,
+        "startDeg": 47,
+        "endDeg": -50,
+        "piecewiseHeading": {
+          "segments": [
+            {
+              "startProgress": 0,
+              "endProgress": 1,
+              "interpolationType": "linear",
+              "reversed": false,
+              "parameters": {
+                "startDeg": 0,
+                "endDeg": 0
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "line-mvw26507-xe32n4",
       "color": "#76b7b2",
+      "name": "TopFlowerScoreToBottomFlower",
       "locked": false,
       "waitBeforeMs": 0,
       "waitAfterMs": 0,
       "waitBeforeName": "",
-      "waitAfterName": ""
-    },
-    {
+      "waitAfterName": "",
       "kind": "atomic",
-      "id": "line-mvw26507-xe32n4",
       "endPoint": {
         "x": 16.904690368994263,
         "y": 46.60750125125668
@@ -210,17 +238,18 @@
             }
           ]
         }
-      },
-      "color": "#76b7b2",
+      }
+    },
+    {
+      "id": "line-mvw2765l-wpryhl",
+      "color": "#e15759",
+      "name": "BottomFlowerToPark",
       "locked": false,
       "waitBeforeMs": 0,
       "waitAfterMs": 0,
       "waitBeforeName": "",
-      "waitAfterName": ""
-    },
-    {
+      "waitAfterName": "",
       "kind": "atomic",
-      "id": "line-mvw2765l-wpryhl",
       "endPoint": {
         "x": 12.83997904018067,
         "y": 89.77404436550007
@@ -246,13 +275,7 @@
             }
           ]
         }
-      },
-      "color": "#e15759",
-      "locked": false,
-      "waitBeforeMs": 0,
-      "waitAfterMs": 0,
-      "waitBeforeName": "",
-      "waitAfterName": ""
+      }
     }
   ],
   "shapes": [

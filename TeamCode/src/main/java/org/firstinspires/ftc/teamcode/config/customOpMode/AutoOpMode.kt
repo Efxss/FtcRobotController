@@ -3,9 +3,11 @@ package org.firstinspires.ftc.teamcode.config.customOpMode
 import com.pedropathing.ivy.Scheduler
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import org.firstinspires.ftc.teamcode.config.Robot
+import org.firstinspires.ftc.teamcode.config.subSystem.FiringSS
+import org.firstinspires.ftc.teamcode.config.subSystem.FlowerDSS
+import org.firstinspires.ftc.teamcode.config.subSystem.HubSS
 import org.firstinspires.ftc.teamcode.config.subSystem.IntakeSS
 import org.firstinspires.ftc.teamcode.config.util.DrawingUtil
-import org.firstinspires.ftc.teamcode.config.subSystem.HubSS
 import org.firstinspires.ftc.teamcode.config.util.PanelsDebugUtil
 import org.firstinspires.ftc.teamcode.config.util.StateUtil
 
@@ -20,6 +22,8 @@ abstract class AutoOpMode : OpMode() {
     protected lateinit var hubSS: HubSS
     protected lateinit var debugUtil: PanelsDebugUtil
     protected lateinit var intakeSS: IntakeSS
+    protected lateinit var firingSS: FiringSS
+    protected lateinit var flowerDSS: FlowerDSS
 
     // Custom lifecycle hooks
 
@@ -67,6 +71,8 @@ abstract class AutoOpMode : OpMode() {
         // Init bulkRead
         debugUtil.update(telemetry)
         intakeSS = IntakeSS(robot)
+        firingSS = FiringSS(robot,alliance,intakeSS)
+        //flowerDSS = FlowerDSS(robot)
         hubSS = HubSS(hardwareMap)
         onInit()
     }
@@ -79,6 +85,8 @@ abstract class AutoOpMode : OpMode() {
 
     final override fun start() {
         resetRuntime()
+        Scheduler.schedule(intakeSS.runIntake())
+        Scheduler.schedule(firingSS.calcHalf())
         //robot.genTab()
         onStart()
     }
@@ -102,7 +110,7 @@ abstract class AutoOpMode : OpMode() {
         StateUtil.endOfAutoPose = robot.follower.pose()
         StateUtil.alliance = alliance
         intakeSS.runIntake().cancel()
-        //listOf(firingSS.calcFiring(), firingSS.calcHalf(), firingSS.execFiring()).forEach { it.cancel() }
+        listOf(firingSS.calcFiring(), firingSS.calcHalf(), firingSS.execFiring()).forEach { it.cancel() }
         onStop()
     }
 

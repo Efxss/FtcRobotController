@@ -9,9 +9,14 @@ import com.pedropathing.ivy.Command
 import com.pedropathing.ivy.commands.Commands
 import com.pedropathing.ivy.groups.Groups
 import com.pedropathing.ivy.groups.Groups.sequential
+import com.pedropathing.ivy.pedro.PedroCommands
+import com.pedropathing.math.Pose
+import com.seattlesolvers.solverslib.util.InterpLUT
 import org.firstinspires.ftc.teamcode.config.Robot
 import org.firstinspires.ftc.teamcode.config.util.MathUtil
 import org.firstinspires.ftc.teamcode.config.util.StateUtil
+import java.util.EnumMap
+import kotlin.math.abs
 
 class FiringSS(
     private val robot: Robot,
@@ -35,65 +40,66 @@ class FiringSS(
         ).requiring(robot.pollenBS)
     }
     fun execFiring(): Command {
-        //val turnHalf = EnumMap<Robot.FieldHalf, Command>(Robot.FieldHalf::class.java)
-        //fun topBlueCell(): Command {
-        //    fun turn(): Command {
-        //        return PedroCommands.hold(robot.follower,Pose(
-        //            robot.follower.pose().x(),
-        //            robot.follower.pose().y(),
-        //            Math.toRadians(robot.upFireHeadBlueTab.get(robot.follower.pose().distance(robot.refPose))))
-        //        )
-        //    }
-        //    return Groups.parallel(intakeSpd(robot.upFireHeadBlueTab),turn())
-        //}
-        //fun bottomBlueCell(): Command {
-        //    fun turn(): Command {
-        //        return PedroCommands.hold(robot.follower, Pose(
-        //            robot.follower.pose().x(),
-        //            robot.follower.pose().y(),
-        //            Math.toRadians(robot.downFireHeadBlueTab.get(robot.follower.pose().distance(robot.refPose))))
-        //        )
-        //    }
-        //    return Groups.parallel(intakeSpd(robot.downFireHeadBlueTab),turn())
-        //}
-        //fun topRedCell(): Command {
-        //    fun turn(): Command {
-        //        return PedroCommands.hold(robot.follower,Pose(
-        //            robot.follower.pose().x(),
-        //            robot.follower.pose().y(),
-        //            Math.toRadians(robot.upFireHeadRedTab.get(robot.follower.pose().distance(robot.refPose))))
-        //        )
-        //    }
-        //    return Groups.parallel(intakeSpd(robot.upFireHeadRedTab),turn())
-        //}
-        //fun bottomRedCell(): Command {
-        //    fun turn(): Command {
-        //        return PedroCommands.hold(robot.follower,Pose(
-        //            robot.follower.pose().x(),
-        //            robot.follower.pose().y(),
-        //            Math.toRadians(robot.downFireHeadRedTab.get(robot.follower.pose().distance(robot.refPose))))
-        //        )
-        //    }
-        //    return Groups.parallel(intakeSpd(robot.downFireHeadRedTab),turn())
-        //}
-        //when (alliance) {
-        //    Robot.Alliance.BLUE -> {
-        //        turnHalf[Robot.FieldHalf.TOP] = topBlueCell()
-        //        turnHalf[Robot.FieldHalf.BOTTOM] = bottomBlueCell()
-        //    }
-        //    Robot.Alliance.RED -> {
-        //        turnHalf[Robot.FieldHalf.TOP] = topRedCell()
-        //        turnHalf[Robot.FieldHalf.BOTTOM] = bottomRedCell()
-        //    }
-        //}
-        //fun turnHalfFun(): Command = Commands.match({fieldHalf}, turnHalf)
+        val turnHalf = EnumMap<Robot.FieldHalf, Command>(Robot.FieldHalf::class.java)
+        fun topBlueCell(): Command {
+            fun turn(): Command {
+                return PedroCommands.hold(robot.follower, Pose(
+                    robot.follower.pose().x(),
+                    robot.follower.pose().y(),
+                    Math.toRadians(robot.upFireHeadBlueTab.get(robot.follower.pose().distance(robot.refPose)))
+                )
+                )
+            }
+            return Groups.parallel(intakeSpd(robot.upFireHeadBlueTab),turn())
+        }
+        fun bottomBlueCell(): Command {
+            fun turn(): Command {
+                return PedroCommands.hold(robot.follower, Pose(
+                    robot.follower.pose().x(),
+                    robot.follower.pose().y(),
+                    Math.toRadians(robot.downFireHeadBlueTab.get(robot.follower.pose().distance(robot.refPose))))
+                )
+            }
+            return Groups.parallel(intakeSpd(robot.downFireHeadBlueTab),turn())
+        }
+        fun topRedCell(): Command {
+            fun turn(): Command {
+                return PedroCommands.hold(robot.follower,Pose(
+                    robot.follower.pose().x(),
+                    robot.follower.pose().y(),
+                    Math.toRadians(robot.upFireHeadRedTab.get(robot.follower.pose().distance(robot.refPose))))
+                )
+            }
+            return Groups.parallel(intakeSpd(robot.upFireHeadRedTab),turn())
+        }
+        fun bottomRedCell(): Command {
+            fun turn(): Command {
+                return PedroCommands.hold(robot.follower,Pose(
+                    robot.follower.pose().x(),
+                    robot.follower.pose().y(),
+                    Math.toRadians(robot.downFireHeadRedTab.get(robot.follower.pose().distance(robot.refPose))))
+                )
+            }
+            return Groups.parallel(intakeSpd(robot.downFireHeadRedTab),turn())
+        }
+        when (alliance) {
+            Robot.Alliance.BLUE -> {
+                turnHalf[Robot.FieldHalf.TOP] = topBlueCell()
+                turnHalf[Robot.FieldHalf.BOTTOM] = bottomBlueCell()
+            }
+            Robot.Alliance.RED -> {
+                turnHalf[Robot.FieldHalf.TOP] = topRedCell()
+                turnHalf[Robot.FieldHalf.BOTTOM] = bottomRedCell()
+            }
+        }
+        fun turnHalfFun(): Command = Commands.match({fieldHalf}, turnHalf)
         return Groups.parallel(
             letGo(),
-            //turnHalfFun(),
-            //Groups.sequential(
-            //    Commands.waitMs(5000.0),
-            //    Commands.instant { intakeSS.velocity = robot.intakeDef }
-            //)
+            turnHalfFun(),
+            Groups.sequential(
+                Commands.waitMs(5000.0),
+                Commands.instant { intakeSS.velocity = robot.intakeDef }
+            )
         )
     }
     fun calcFiring(): Command {
@@ -123,25 +129,25 @@ class FiringSS(
             robot.fireM.set(this.power)
         }
     }
-    //fun calcHalf(): Command = Commands.infinite { fieldHalf = if (robot.follower.pose().y() >= 72) Robot.FieldHalf.TOP else Robot.FieldHalf.BOTTOM }
-    //private fun intakeSpd(tab: InterpLUT): Command {
-    //    val fastFireRange = 0.0..30.0
-    //    val fastFire = 1.0
-    //    val medFireRange = 30.0..60.0
-    //    val medFire = 0.9
-    //    val slowFireRange = 60.0..90.0
-    //    val slowFire = 0.8
-    //    var remain: Double
-    //    return Commands.instant {
-    //        remain = tab.get(robot.follower.pose().distance(robot.refPose)) - robot.follower.pose().heading()
-    //        when (abs(remain)) {
-    //            in fastFireRange -> intakeSS.velocity = fastFire
-    //            in medFireRange -> intakeSS.velocity = medFire
-    //            in slowFireRange -> intakeSS.velocity = slowFire
-    //            else -> intakeSS.velocity = robot.intakeDef
-    //        }
-    //    }
-    //}
+    fun calcHalf(): Command = Commands.infinite { fieldHalf = if (robot.follower.pose().y() >= 72) Robot.FieldHalf.TOP else Robot.FieldHalf.BOTTOM }
+    private fun intakeSpd(tab: InterpLUT): Command {
+        val fastFireRange = 0.0..30.0
+        val fastFire = 1.0
+        val medFireRange = 30.0..60.0
+        val medFire = 0.9
+        val slowFireRange = 60.0..90.0
+        val slowFire = 0.8
+        var remain: Double
+        return Commands.instant {
+            remain = tab.get(robot.follower.pose().distance(robot.refPose)) - robot.follower.pose().heading()
+            when (abs(remain)) {
+                in fastFireRange -> intakeSS.velocity = fastFire
+                in medFireRange -> intakeSS.velocity = medFire
+                in slowFireRange -> intakeSS.velocity = slowFire
+                else -> intakeSS.velocity = robot.intakeDef
+            }
+        }
+    }
     fun getHalf(): Robot.FieldHalf = this.fieldHalf
     fun getPower(): Double = this.power
     fun getVelocity(): Double = this.currentVel

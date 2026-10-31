@@ -11,6 +11,7 @@ import com.seattlesolvers.solverslib.hardware.motors.Motor
 import com.seattlesolvers.solverslib.hardware.motors.MotorEx
 import com.seattlesolvers.solverslib.hardware.motors.MotorGroup
 import com.seattlesolvers.solverslib.hardware.servos.ServoEx
+import com.seattlesolvers.solverslib.hardware.servos.ServoExGroup
 import com.seattlesolvers.solverslib.util.InterpLUT
 import org.firstinspires.ftc.teamcode.config.pedroPathing.Constants
 
@@ -29,9 +30,9 @@ class Robot(
     // Hardware
 
     // Intake
-    val intakeMC: Double = 0.00001
-    val intakeM1: MotorEx = MotorEx(hardwareMap,"intake1",Motor.GoBILDA.BARE).setCachingTolerance(intakeMC); val intakeDef = 0.4
-    val intakeM2: MotorEx = MotorEx(hardwareMap,"intake2",Motor.GoBILDA.BARE).setCachingTolerance(intakeMC); val intakeFire = 0.6
+    val intakeMCT: Double = 0.00001
+    val intakeM1: MotorEx = MotorEx(hardwareMap,"intake1",Motor.GoBILDA.BARE).setCachingTolerance(intakeMCT); val intakeDef = 0.4
+    val intakeM2: MotorEx = MotorEx(hardwareMap,"intake2",Motor.GoBILDA.BARE).setCachingTolerance(intakeMCT); val intakeFire = 0.6
     val intakeMG: MotorGroup = MotorGroup(intakeM1, intakeM2)
     val intakeMPIDF = PIDFController(0.0009, 0.0, 0.0, 0.00018)
     val pollenBS: ServoEx = ServoEx(hardwareMap, "pollen").setCachingTolerance(0.0001)
@@ -40,10 +41,10 @@ class Robot(
     val hoodDS: ServoEx = ServoEx(hardwareMap, "hood").setCachingTolerance(0.00000001)
     var fireMPIDF = PIDFController(0.0013, 0.0, 0.0001, 0.00018)
     // Flower DeScorer
-    private val flowerDSC = 0.1
-    //private val flowerDS1: ServoEx = ServoEx(hardwareMap,"FDS1").setCachingTolerance(flowerDSC)
-    //private val flowerDS2: ServoEx = ServoEx(hardwareMap,"FDS2").setCachingTolerance(flowerDSC)
-    //val flowerDSG: ServoExGroup = ServoExGroup(flowerDS1,flowerDS2)
+    private val flowerDSCT = 0.1
+    private val flowerDS1: ServoEx = ServoEx(hardwareMap,"FDS1").setCachingTolerance(flowerDSCT)
+    private val flowerDS2: ServoEx = ServoEx(hardwareMap,"FDS2").setCachingTolerance(flowerDSCT)
+    val flowerDSG: ServoExGroup = ServoExGroup(flowerDS1,flowerDS2)
 
     // Tables and refs
 
