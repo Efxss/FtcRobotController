@@ -11,7 +11,7 @@ import com.pedropathing.ivy.groups.Groups
 import com.pedropathing.ivy.groups.Groups.sequential
 import org.firstinspires.ftc.teamcode.config.Robot
 import org.firstinspires.ftc.teamcode.config.util.MathUtil
-import org.firstinspires.ftc.teamcode.config.util.VariableStateUtil
+import org.firstinspires.ftc.teamcode.config.util.StateUtil
 
 class FiringSS(
     private val robot: Robot,
@@ -100,8 +100,8 @@ class FiringSS(
         return Commands.infinite {
             this.currentVel = robot.fireM.correctedVelocity
             //this.power = robot.fireMPIDF.calculate(this.currentVel, 0.3).coerceIn(0.0,1.0) // Example to clamp val
-            this.power = robot.fireMPIDF.calculate(this.currentVel, MathUtil.pidfPower(VariableStateUtil.wheelPower))
-            robot.hoodDS.set(VariableStateUtil.hoodAngle) // MAX IS 0.65
+            this.power = robot.fireMPIDF.calculate(this.currentVel, MathUtil.pidfPower(StateUtil.wheelPower))
+            robot.hoodDS.set(StateUtil.hoodAngle) // MAX IS 0.65
             //when (alliance) {
             //    Robot.Alliance.BLUE -> {
             //        if (fieldHalf == Robot.FieldHalf.TOP) {

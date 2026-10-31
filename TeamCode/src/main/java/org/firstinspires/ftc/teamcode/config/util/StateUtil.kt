@@ -4,11 +4,10 @@ import com.pedropathing.math.Pose
 import org.firstinspires.ftc.teamcode.config.Robot
 
 /**
- * Holds state that needs to persist between OpModes.
- * Because this is a Kotlin `object`, it lives in the JVM for the entire so
- * It survives the OpMode lifecycles
+ * Holds state that needs to persist
+ * Because this is a `object` it lives in the JVM for the entire power cycle
  */
-object VariableStateUtil {
+object StateUtil {
     /**
      * Pose Object to pass from auto to teleop for position
      */

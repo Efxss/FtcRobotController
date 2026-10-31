@@ -5,9 +5,9 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import org.firstinspires.ftc.teamcode.config.Robot
 import org.firstinspires.ftc.teamcode.config.subSystem.IntakeSS
 import org.firstinspires.ftc.teamcode.config.util.DrawingUtil
-import org.firstinspires.ftc.teamcode.config.util.HubUtil
+import org.firstinspires.ftc.teamcode.config.subSystem.HubSS
 import org.firstinspires.ftc.teamcode.config.util.PanelsDebugUtil
-import org.firstinspires.ftc.teamcode.config.util.VariableStateUtil
+import org.firstinspires.ftc.teamcode.config.util.StateUtil
 
 /**
  * Custom-made OpMode for making an Auto that has needed code for a OpMode
@@ -17,7 +17,7 @@ abstract class AutoOpMode : OpMode() {
 
     // Shared resources
     protected lateinit var robot: Robot
-    protected lateinit var hubUtil: HubUtil
+    protected lateinit var hubSS: HubSS
     protected lateinit var debugUtil: PanelsDebugUtil
     protected lateinit var intakeSS: IntakeSS
 
@@ -67,13 +67,13 @@ abstract class AutoOpMode : OpMode() {
         // Init bulkRead
         debugUtil.update(telemetry)
         intakeSS = IntakeSS(robot)
-        hubUtil = HubUtil(hardwareMap)
+        hubSS = HubSS(hardwareMap)
         onInit()
     }
 
     final override fun init_loop() {
         // Clear the bulk read cache
-        hubUtil.clearCache()
+        hubSS.clearCache()
         onInitLoop()
     }
 
@@ -85,7 +85,7 @@ abstract class AutoOpMode : OpMode() {
 
     final override fun loop() {
         // Clear the bulk read cache
-        hubUtil.clearCache()
+        hubSS.clearCache()
         // Draw on Panels
         DrawingUtil.drawPose(robot.follower)
 
@@ -99,24 +99,12 @@ abstract class AutoOpMode : OpMode() {
     }
 
     final override fun stop() {
-        VariableStateUtil.endOfAutoPose = robot.follower.pose()
-        VariableStateUtil.alliance = alliance
+        StateUtil.endOfAutoPose = robot.follower.pose()
+        StateUtil.alliance = alliance
         intakeSS.runIntake().cancel()
         //listOf(firingSS.calcFiring(), firingSS.calcHalf(), firingSS.execFiring()).forEach { it.cancel() }
         onStop()
     }
 
     // Custom functions
-    //fun runAuto(): Command {
-    //    // Example for PedroPathing branch in Kotlin
-    //    //var cases = LinkedHashMap<BooleanSupplier, Command>()
-    //    //cases[BooleanSupplier {robot.follower.distanceRemaining <= 15.0}] = rampSS.rampIntake()
-    //    //val handlePos: Command = Commands.branch(cases)
-    //    return Groups.sequential(
-    //        follow(robot.follower, PoseUtil.startToLeftCorner,true, 0.5),
-    //        Commands.waitMs(750.0),
-    //        follow(robot.follower,PoseUtil.bottomLeftCornerToLeftSpike,true, 0.5),
-    //        follow(robot.follower, PoseUtil.leftSpikeToHiveFour,true,0.5),
-    //    )
-    //}
 }

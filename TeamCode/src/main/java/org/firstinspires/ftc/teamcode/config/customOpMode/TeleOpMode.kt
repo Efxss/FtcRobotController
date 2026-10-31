@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.config.Robot
 import org.firstinspires.ftc.teamcode.config.subSystem.FiringSS
 import org.firstinspires.ftc.teamcode.config.subSystem.IntakeSS
 import org.firstinspires.ftc.teamcode.config.util.DrawingUtil
-import org.firstinspires.ftc.teamcode.config.util.HubUtil
+import org.firstinspires.ftc.teamcode.config.subSystem.HubSS
 import org.firstinspires.ftc.teamcode.config.util.PanelsDebugUtil
 
 /**
@@ -21,7 +21,7 @@ abstract class TeleOpMode : OpMode() {
 
     // Shared resources
     protected lateinit var robot: Robot
-    protected lateinit var hubUtil: HubUtil
+    protected lateinit var hubSS: HubSS
     protected lateinit var debugUtil: PanelsDebugUtil
     protected lateinit var intakeSS: IntakeSS
     protected lateinit var firingSS: FiringSS
@@ -79,15 +79,14 @@ abstract class TeleOpMode : OpMode() {
         intakeSS = IntakeSS(robot)
         firingSS = FiringSS(robot,alliance,intakeSS)
         //flowerDSS = FlowerDSS(robot)
-        hubUtil = HubUtil(hardwareMap)
-        hubUtil.setVoltCache(0.2)
+        hubSS = HubSS(hardwareMap)
         firingSS.reset()
         onInit()
     }
 
     final override fun init_loop() {
         // Clear the bulk read cache
-        hubUtil.clearCache()
+        hubSS.clearCache()
         // Draw on Panels
         onInitLoop()
     }
@@ -106,7 +105,7 @@ abstract class TeleOpMode : OpMode() {
 
     final override fun loop() {
         // Clear the bulk read cache
-        hubUtil.clearCache()
+        hubSS.clearCache()
         // Draw on Panels
         DrawingUtil.drawPose(robot.follower)
         when (alliance) {
@@ -152,7 +151,7 @@ abstract class TeleOpMode : OpMode() {
         Scheduler.execute()
 
         //Show and update debug
-        debugUtil.showAllDebugTeleop(robot.follower,alliance,runtime,gamepad1,firingSS.getHalf(),firingSS,hubUtil.getVolts(VoltageUnit.MILLIVOLTS),robot)
+        debugUtil.showAllDebugTeleop(robot.follower,alliance,runtime,gamepad1,firingSS.getHalf(),firingSS,hubSS.getVolts(VoltageUnit.MILLIVOLTS),robot)
         debugUtil.update(telemetry)
         onLoop()
     }
