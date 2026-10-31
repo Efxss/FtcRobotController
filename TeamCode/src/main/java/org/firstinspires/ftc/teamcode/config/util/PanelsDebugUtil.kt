@@ -35,6 +35,7 @@ class PanelsDebugUtil(
         gamepad: Gamepad,
         fieldHalf: Robot.FieldHalf,
         firingSS: FiringSS,
+        volts: Double,
         robot: Robot,
     ) {
         panels?.apply {
@@ -60,6 +61,7 @@ class PanelsDebugUtil(
             debug("Right Bumper", gamepad.right_bumper)
             debug("")
             debug("=== OpMode ===")
+            debug("volts/millivolts", volts)
             //debug("runtime", runtime)
             //debug("Field Half", fieldHalf.name)
             //debug("Alliance", alliance.name)

@@ -5,6 +5,7 @@ import com.pedropathing.follower.ManualDrive
 import com.pedropathing.ivy.Scheduler
 import com.pedropathing.math.Pose
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
+import org.firstinspires.ftc.robotcore.external.navigation.VoltageUnit
 import org.firstinspires.ftc.teamcode.config.Robot
 import org.firstinspires.ftc.teamcode.config.subSystem.FiringSS
 import org.firstinspires.ftc.teamcode.config.subSystem.IntakeSS
@@ -79,6 +80,7 @@ abstract class TeleOpMode : OpMode() {
         firingSS = FiringSS(robot,alliance,intakeSS)
         //flowerDSS = FlowerDSS(robot)
         hubUtil = HubUtil(hardwareMap)
+        hubUtil.setVoltCache(0.2)
         firingSS.reset()
         onInit()
     }
@@ -150,7 +152,7 @@ abstract class TeleOpMode : OpMode() {
         Scheduler.execute()
 
         //Show and update debug
-        debugUtil.showAllDebugTeleop(robot.follower,alliance,runtime,gamepad1,firingSS.getHalf(),firingSS,robot)
+        debugUtil.showAllDebugTeleop(robot.follower,alliance,runtime,gamepad1,firingSS.getHalf(),firingSS,hubUtil.getVolts(VoltageUnit.MILLIVOLTS),robot)
         debugUtil.update(telemetry)
         onLoop()
     }
