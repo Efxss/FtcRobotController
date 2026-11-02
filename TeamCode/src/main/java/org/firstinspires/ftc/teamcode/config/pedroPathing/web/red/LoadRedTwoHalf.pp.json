@@ -1,6 +1,6 @@
 {
   "version": "2.0.0",
-  "timestamp": "2026-10-31T19:34:47.934Z",
+  "timestamp": "2026-11-02T14:59:57.909Z",
   "startPoint": {
     "x": 54.9626535457161,
     "y": 8.000000000000002,
@@ -8,43 +8,6 @@
     "headingDeg": 90
   },
   "lines": [
-    {
-      "id": "line-mvw1pen5-95kfcq",
-      "color": "#ffc516",
-      "name": "BottomCellOutAlignment",
-      "locked": false,
-      "waitBeforeMs": 0,
-      "waitAfterMs": 0,
-      "waitBeforeName": "",
-      "waitAfterName": "",
-      "kind": "atomic",
-      "endPoint": {
-        "x": 55,
-        "y": 16
-      },
-      "controlPoints": [],
-      "heading": {
-        "type": "linear",
-        "startDeg": 90,
-        "endDeg": 180,
-        "degrees": 0,
-        "reverse": false,
-        "piecewiseHeading": {
-          "segments": [
-            {
-              "startProgress": 0,
-              "endProgress": 1,
-              "interpolationType": "linear",
-              "reversed": false,
-              "parameters": {
-                "startDeg": 0,
-                "endDeg": 0
-              }
-            }
-          ]
-        }
-      }
-    },
     {
       "id": "line-mvw1x0ql-2m6k1j",
       "color": "#b07aa1",
@@ -59,23 +22,38 @@
         "x": 8,
         "y": 8
       },
-      "controlPoints": [],
+      "controlPoints": [
+        {
+          "x": 65.05666666666667,
+          "y": 20.71666666666667
+        }
+      ],
       "heading": {
-        "type": "constant",
+        "type": "piecewise",
         "reverse": true,
         "degrees": 180,
-        "startDeg": 0,
-        "endDeg": 0,
+        "startDeg": 90,
+        "endDeg": 180,
         "piecewiseHeading": {
           "segments": [
             {
               "startProgress": 0,
-              "endProgress": 1,
-              "interpolationType": "linear",
+              "endProgress": 0.4,
+              "interpolationType": "constant",
               "reversed": false,
+              "continueFromPrevious": false,
               "parameters": {
-                "startDeg": 0,
-                "endDeg": 0
+                "degrees": 90
+              }
+            },
+            {
+              "startProgress": 0.4,
+              "endProgress": 1,
+              "interpolationType": "constant",
+              "reversed": false,
+              "continueFromPrevious": false,
+              "parameters": {
+                "degrees": 180
               }
             }
           ]
@@ -441,10 +419,6 @@
     }
   ],
   "sequence": [
-    {
-      "kind": "path",
-      "lineId": "line-mvw1pen5-95kfcq"
-    },
     {
       "kind": "path",
       "lineId": "line-mvw1x0ql-2m6k1j"
