@@ -9,13 +9,10 @@ import com.pedropathing.ivy.Command
 import com.pedropathing.ivy.commands.Commands
 import com.pedropathing.ivy.groups.Groups
 import com.pedropathing.ivy.groups.Groups.sequential
-import com.pedropathing.ivy.pedro.PedroCommands
-import com.pedropathing.math.Pose
 import com.seattlesolvers.solverslib.util.InterpLUT
 import org.firstinspires.ftc.teamcode.config.Robot
 import org.firstinspires.ftc.teamcode.config.util.MathUtil
 import org.firstinspires.ftc.teamcode.config.util.StateUtil
-import java.util.EnumMap
 import kotlin.math.abs
 
 class FiringSS(
@@ -40,64 +37,65 @@ class FiringSS(
         ).requiring(robot.pollenBS)
     }
     fun execFiring(): Command {
-        val turnHalf = EnumMap<Robot.FieldHalf, Command>(Robot.FieldHalf::class.java)
-        fun topBlueCell(): Command {
-            fun turn(): Command {
-                return PedroCommands.hold(robot.follower, Pose(
-                    robot.follower.pose().x(),
-                    robot.follower.pose().y(),
-                    Math.toRadians(robot.upFireHeadBlueTab.get(robot.follower.pose().distance(robot.refPose)))
-                )
-                )
-            }
-            return Groups.parallel(intakeSpd(robot.upFireHeadBlueTab),turn())
-        }
-        fun bottomBlueCell(): Command {
-            fun turn(): Command {
-                return PedroCommands.hold(robot.follower, Pose(
-                    robot.follower.pose().x(),
-                    robot.follower.pose().y(),
-                    Math.toRadians(robot.downFireHeadBlueTab.get(robot.follower.pose().distance(robot.refPose))))
-                )
-            }
-            return Groups.parallel(intakeSpd(robot.downFireHeadBlueTab),turn())
-        }
-        fun topRedCell(): Command {
-            fun turn(): Command {
-                return PedroCommands.hold(robot.follower,Pose(
-                    robot.follower.pose().x(),
-                    robot.follower.pose().y(),
-                    Math.toRadians(robot.upFireHeadRedTab.get(robot.follower.pose().distance(robot.refPose))))
-                )
-            }
-            return Groups.parallel(intakeSpd(robot.upFireHeadRedTab),turn())
-        }
-        fun bottomRedCell(): Command {
-            fun turn(): Command {
-                return PedroCommands.hold(robot.follower,Pose(
-                    robot.follower.pose().x(),
-                    robot.follower.pose().y(),
-                    Math.toRadians(robot.downFireHeadRedTab.get(robot.follower.pose().distance(robot.refPose))))
-                )
-            }
-            return Groups.parallel(intakeSpd(robot.downFireHeadRedTab),turn())
-        }
-        when (alliance) {
-            Robot.Alliance.BLUE -> {
-                turnHalf[Robot.FieldHalf.TOP] = topBlueCell()
-                turnHalf[Robot.FieldHalf.BOTTOM] = bottomBlueCell()
-            }
-            Robot.Alliance.RED -> {
-                turnHalf[Robot.FieldHalf.TOP] = topRedCell()
-                turnHalf[Robot.FieldHalf.BOTTOM] = bottomRedCell()
-            }
-        }
-        fun turnHalfFun(): Command = Commands.match({fieldHalf}, turnHalf)
+        //val turnHalf = EnumMap<Robot.FieldHalf, Command>(Robot.FieldHalf::class.java)
+        //fun topBlueCell(): Command {
+        //    fun turn(): Command {
+        //        return PedroCommands.hold(robot.follower, Pose(
+        //            robot.follower.pose().x(),
+        //            robot.follower.pose().y(),
+        //            Math.toRadians(robot.upFireHeadBlueTab.get(robot.follower.pose().distance(robot.refPose)))
+        //        )
+        //        )
+        //    }
+        //    return Groups.parallel(intakeSpd(robot.upFireHeadBlueTab),turn())
+        //}
+        //fun bottomBlueCell(): Command {
+        //    fun turn(): Command {
+        //        return PedroCommands.hold(robot.follower, Pose(
+        //            robot.follower.pose().x(),
+        //            robot.follower.pose().y(),
+        //            Math.toRadians(robot.downFireHeadBlueTab.get(robot.follower.pose().distance(robot.refPose))))
+        //        )
+        //    }
+        //    return Groups.parallel(intakeSpd(robot.downFireHeadBlueTab),turn())
+        //}
+        //fun topRedCell(): Command {
+        //    fun turn(): Command {
+        //        return PedroCommands.hold(robot.follower,Pose(
+        //            robot.follower.pose().x(),
+        //            robot.follower.pose().y(),
+        //            Math.toRadians(robot.upFireHeadRedTab.get(robot.follower.pose().distance(robot.refPose))))
+        //        )
+        //    }
+        //    return Groups.parallel(intakeSpd(robot.upFireHeadRedTab),turn())
+        //}
+        //fun bottomRedCell(): Command {
+        //    fun turn(): Command {
+        //        return PedroCommands.hold(robot.follower,Pose(
+        //            robot.follower.pose().x(),
+        //            robot.follower.pose().y(),
+        //            Math.toRadians(robot.downFireHeadRedTab.get(robot.follower.pose().distance(robot.refPose))))
+        //        )
+        //    }
+        //    return Groups.parallel(intakeSpd(robot.downFireHeadRedTab),turn())
+        //}
+        //when (alliance) {
+        //    Robot.Alliance.BLUE -> {
+        //        turnHalf[Robot.FieldHalf.TOP] = topBlueCell()
+        //        turnHalf[Robot.FieldHalf.BOTTOM] = bottomBlueCell()
+        //    }
+        //    Robot.Alliance.RED -> {
+        //        turnHalf[Robot.FieldHalf.TOP] = topRedCell()
+        //        turnHalf[Robot.FieldHalf.BOTTOM] = bottomRedCell()
+        //    }
+        //}
+        //fun turnHalfFun(): Command = Commands.match({fieldHalf}, turnHalf)
         return Groups.parallel(
+            Commands.instant { intakeSS.velocity = 0.65 },
             letGo(),
-            turnHalfFun(),
+            //turnHalfFun(),
             Groups.sequential(
-                Commands.waitMs(5000.0),
+                Commands.waitMs(850.0),
                 Commands.instant { intakeSS.velocity = robot.intakeDef }
             )
         )

@@ -35,7 +35,7 @@ class PanelsDebugUtil(
         gamepad: Gamepad,
         fieldHalf: Robot.FieldHalf,
         firingSS: FiringSS,
-        volts: Double,
+        //volts: Double,
         robot: Robot,
     ) {
         panels?.apply {
@@ -49,9 +49,9 @@ class PanelsDebugUtil(
             debug("Intake Group Speed", robot.intakeMG.velocity)
             debug("Intake 1 Speed", robot.intakeM1.velocity)
             debug("Intake 2 Speed", robot.intakeM2.velocity)
-            debug("Shooter Speed", robot.fireM.velocity)
-            debug("Shooter Velocity", firingSS.getVelocity())
-            debug("Shooter PIDF Calc", firingSS.getPower())
+            addData("Shooter Speed", robot.fireM.velocity)
+            addData("Shooter Velocity", firingSS.getVelocity())
+            addData("Shooter PIDF Calc", firingSS.getPower())
             debug("")
             debug("=== Gamepad ===")
             //debug("Left Stick X", gamepad.left_stick_x)
@@ -61,7 +61,7 @@ class PanelsDebugUtil(
             debug("Right Bumper", gamepad.right_bumper)
             debug("")
             debug("=== OpMode ===")
-            debug("volts/millivolts", volts)
+            //debug("volts/millivolts", volts)
             //debug("runtime", runtime)
             //debug("Field Half", fieldHalf.name)
             //debug("Alliance", alliance.name)
