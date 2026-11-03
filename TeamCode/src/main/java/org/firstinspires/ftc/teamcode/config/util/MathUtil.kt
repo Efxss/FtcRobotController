@@ -17,9 +17,11 @@ object MathUtil {
 
     /**
      * Returns The Power For A PIDF Controller To Use
-     * @author NOTE : THIS WAS MADE FOR A 6000 RPM MOTOR MIGHT NOT WORK ON OTHER MOTORS
+     * @author NOTE : THIS WAS MADE FOR A 6000 RPM MOTOR WILL NOT WORK WITH OTHER MOTORS
      */
     fun pidfPower(input: Double): Double {
-        return input * 2800
+        val rpm = 6000 * input
+        val ticks = rpm * (28/60)
+        return ticks
     }
 }
