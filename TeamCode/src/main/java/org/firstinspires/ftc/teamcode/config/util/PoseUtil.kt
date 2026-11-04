@@ -20,13 +20,16 @@ object PoseUtil {
         }
         object Red {
             val bottomCellStartWall: Pose = p.of(55.0, 8.0, 90.0)
-            val bottomCellOutAlignment: Pose = p.of(55.0, 16.0, 180.0)
             val redSpike: Pose = p.of(8.0, 8.0, 180.0)
+            val redSpikeControl1: Pose = p.of(65.0567, 20.7167, 0.0)
             val topCellSpikeScoring: Pose = p.of(26.8084, 119.3781, -50.0)
             val TopFlower: Pose = p.of(36.9637, 129.4173, 47.0)
             val topFlowerScore: Pose = p.of(33.5295, 126.318, -50.0)
             val bottomFlower: Pose = p.of(16.9047, 46.6075, 180.0)
-            val bottomFlowerToPark: Pose = p.of(12.84, 89.774, 180.0)
+            val bottomFlowerToBottomCell: Pose = p.of(55.0, 8.0, 90.0)
+            val bottomFlowerToBottomCellSegment1Heading: Pose = p.of(55.0, 8.0, 180.0)
+            val bottomFlowerToBottomCellSegment2Heading: Pose = p.of(55.0, 8.0, 90.0)
+            val bottomCellFireToPark: Pose = p.of(10.4154, 87.9747, 90.0)
         }
     }
     object Paths {
@@ -35,23 +38,16 @@ object PoseUtil {
             fun testPathToFlower(): Path = line(movePoseTest, bottomBlueFlower).constant(movePoseTest)
         }
         object Red {
-            fun bottomCellWallOut(): Path {
-                return line(
+            fun bottomCellWallToRedSpike(): Path {
+                return com.pedropathing.api.Paths.curve(
                     PoseUtil.Poses.Red.bottomCellStartWall,
-                    PoseUtil.Poses.Red.bottomCellOutAlignment
-                )
-                .linear(
-                    PoseUtil.Poses.Red.bottomCellStartWall,
-                    PoseUtil.Poses.Red.bottomCellOutAlignment
-                )
-            }
-            fun bottomCellWallOutToRedSpike(): Path {
-                return line(
-                    PoseUtil.Poses.Red.bottomCellOutAlignment,
+                    PoseUtil.Poses.Red.redSpikeControl1,
                     PoseUtil.Poses.Red.redSpike
                 )
-                .constant(
-                    PoseUtil.Poses.Red.redSpike
+                .heading(
+                    Interpolator.piecewise()
+                        .until(0.4, Interpolator.constant(90.0))
+                        .until(1.0, Interpolator.constant(180.0))
                 )
             }
             fun redSpikeToTopScoring(): Path {
@@ -93,13 +89,24 @@ object PoseUtil {
                     PoseUtil.Poses.Red.bottomFlower
                 )
             }
-            fun bottomFlowerToPark(): Path {
+            fun bottomFlowerToBottomCell(): Path {
                 return line(
                     PoseUtil.Poses.Red.bottomFlower,
-                    PoseUtil.Poses.Red.bottomFlowerToPark
+                    PoseUtil.Poses.Red.bottomFlowerToBottomCell
+                )
+                .heading(
+                    Interpolator.piecewise()
+                        .until(0.5, Interpolator.constant(180.0))
+                        .until(1.0, Interpolator.constant(90.0))
+                )
+            }
+            fun bottomCellFireToPark(): Path {
+                return line(
+                    PoseUtil.Poses.Red.bottomFlowerToBottomCell,
+                    PoseUtil.Poses.Red.bottomCellFireToPark
                 )
                 .constant(
-                    PoseUtil.Poses.Red.bottomFlowerToPark
+                   PoseUtil.Poses.Red.bottomCellFireToPark
                 )
             }
         }

@@ -1,6 +1,6 @@
 {
   "version": "2.0.0",
-  "timestamp": "2026-11-02T14:59:57.909Z",
+  "timestamp": "2026-11-04T20:36:16.225Z",
   "startPoint": {
     "x": 54.9626535457161,
     "y": 8.000000000000002,
@@ -219,24 +219,64 @@
       }
     },
     {
-      "id": "line-mvw2765l-wpryhl",
-      "color": "#e15759",
-      "name": "BottomFlowerToPark",
+      "kind": "atomic",
+      "id": "line-mw2jn6vh-psmhqi",
+      "endPoint": {
+        "x": 55,
+        "y": 8
+      },
+      "controlPoints": [],
+      "heading": {
+        "type": "piecewise",
+        "reverse": true,
+        "degrees": 0,
+        "startDeg": 0,
+        "endDeg": 0,
+        "piecewiseHeading": {
+          "segments": [
+            {
+              "startProgress": 0,
+              "endProgress": 0.5,
+              "interpolationType": "constant",
+              "reversed": false,
+              "continueFromPrevious": false,
+              "parameters": {
+                "degrees": 180
+              }
+            },
+            {
+              "startProgress": 0.5,
+              "endProgress": 1,
+              "interpolationType": "constant",
+              "reversed": false,
+              "continueFromPrevious": false,
+              "parameters": {
+                "degrees": 90
+              }
+            }
+          ]
+        }
+      },
+      "color": "#76b7b2",
       "locked": false,
       "waitBeforeMs": 0,
       "waitAfterMs": 0,
       "waitBeforeName": "",
       "waitAfterName": "",
+      "name": "BottomFlowerToBottomCell"
+    },
+    {
       "kind": "atomic",
+      "id": "line-mw2jrba5-7xf9h0",
       "endPoint": {
-        "x": 12.83997904018067,
-        "y": 89.77404436550007
+        "x": 10.415363324011349,
+        "y": 87.97472440144772
       },
       "controlPoints": [],
       "heading": {
         "type": "constant",
         "reverse": true,
-        "degrees": 180,
+        "degrees": 90,
         "startDeg": 0,
         "endDeg": 0,
         "piecewiseHeading": {
@@ -253,7 +293,14 @@
             }
           ]
         }
-      }
+      },
+      "color": "#b07aa1",
+      "locked": false,
+      "waitBeforeMs": 0,
+      "waitAfterMs": 0,
+      "waitBeforeName": "",
+      "waitAfterName": "",
+      "name": "BottomCellFireToPark"
     }
   ],
   "shapes": [
@@ -441,7 +488,11 @@
     },
     {
       "kind": "path",
-      "lineId": "line-mvw2765l-wpryhl"
+      "lineId": "line-mw2jn6vh-psmhqi"
+    },
+    {
+      "kind": "path",
+      "lineId": "line-mw2jrba5-7xf9h0"
     }
   ],
   "fieldPoints": [],

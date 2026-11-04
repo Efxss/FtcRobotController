@@ -32,7 +32,7 @@ class FiringSS(
         return sequential(
             Commands.instant { robot.pollenBS.set(servoGo) },
             //Commands.waitMs(1250.0),
-            Commands.waitMs(1500.0),
+            Commands.waitMs(1000.0),
             Commands.instant { robot.pollenBS.set(servoBlock) },
         ).requiring(robot.pollenBS)
     }
