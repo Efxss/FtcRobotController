@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.opmode.teleop
 
 import com.bylazar.configurables.annotations.Configurable
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
+import org.firstinspires.ftc.teamcode.config.Robot
 import org.firstinspires.ftc.teamcode.config.customOpMode.TeleOpMode
 import org.firstinspires.ftc.teamcode.config.util.StateUtil
 
@@ -14,7 +15,7 @@ class Teleop : TeleOpMode() {
         @JvmField
         var privateWheelPower: Double = 0.0
     }
-    override val alliance = StateUtil.alliance
+    override val alliance = Robot.Alliance.BLUE
 
     override fun onInit() {
     }
@@ -24,7 +25,7 @@ class Teleop : TeleOpMode() {
     }
 
     override fun onLoop() {
-        //robot.follower.manual(dp)
+        robot.follower.manual(dp)
         //ManualDrive.driveOrHold(robot.follower, dp) // Do this to make it so when you stop holding the stick it holds position
         StateUtil.hoodAngle = privateHoodAngle
         StateUtil.wheelPower = privateWheelPower

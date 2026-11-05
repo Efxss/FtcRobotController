@@ -20,7 +20,8 @@ object PoseUtil {
         }
         object Red {
             val bottomCellStartWall: Pose = p.of(55.0, 8.0, 90.0)
-            val redSpike: Pose = p.of(8.0, 8.0, 180.0)
+            var bottomCellPullOut: Pose = p.of(55.0, 16.0, 90.0)
+            val redSpike: Pose = p.of(7.0, 7.5, 180.0)
             val redSpikeControl1: Pose = p.of(65.0567, 20.7167, 0.0)
             val topCellSpikeScoring: Pose = p.of(26.8084, 119.3781, -50.0)
             val TopFlower: Pose = p.of(36.9637, 129.4173, 47.0)
@@ -38,61 +39,67 @@ object PoseUtil {
             fun testPathToFlower(): Path = line(movePoseTest, bottomBlueFlower).constant(movePoseTest)
         }
         object Red {
-            fun bottomCellWallToRedSpike(): Path {
-                return com.pedropathing.api.Paths.curve(
-                    PoseUtil.Poses.Red.bottomCellStartWall,
-                    PoseUtil.Poses.Red.redSpikeControl1,
-                    PoseUtil.Poses.Red.redSpike
+            fun bottomCellWallOutFire(): Path {
+                return line(
+                    Poses.Red.bottomCellStartWall,
+                    Poses.Red.bottomCellPullOut
                 )
-                .heading(
-                    Interpolator.piecewise()
-                        .until(0.4, Interpolator.constant(90.0))
-                        .until(1.0, Interpolator.constant(180.0))
+                .constant(
+                    Poses.Red.bottomCellPullOut
+                )
+            }
+            fun bottomCellOutToRedSpike(): Path {
+                return line(
+                    Poses.Red.bottomCellPullOut,
+                    Poses.Red.redSpike
+                )
+                .constant(
+                    Poses.Red.redSpike
                 )
             }
             fun redSpikeToTopScoring(): Path {
                 return line(
-                    PoseUtil.Poses.Red.redSpike,
-                    PoseUtil.Poses.Red.topCellSpikeScoring
+                    Poses.Red.redSpike,
+                    Poses.Red.topCellSpikeScoring
                 )
                 .heading(
                     Interpolator.piecewise()
-                        .until(0.8, Interpolator.constant(PoseUtil.Poses.Red.redSpike))
-                        .until(1.0, Interpolator.constant(PoseUtil.Poses.Red.topCellSpikeScoring))
+                        .until(0.8, Interpolator.constant(Poses.Red.redSpike))
+                        .until(1.0, Interpolator.constant(Poses.Red.topCellSpikeScoring))
                 )
             }
             fun topSpikeScoringToTopFlower(): Path {
                 return line(
-                    PoseUtil.Poses.Red.topCellSpikeScoring,
-                    PoseUtil.Poses.Red.TopFlower
+                    Poses.Red.topCellSpikeScoring,
+                    Poses.Red.TopFlower
                 )
                 .constant(
-                    PoseUtil.Poses.Red.TopFlower
+                    Poses.Red.TopFlower
                 )
             }
             fun topFlowerToFlowerScore(): Path {
                 return line(
-                    PoseUtil.Poses.Red.TopFlower,
-                    PoseUtil.Poses.Red.topFlowerScore
+                    Poses.Red.TopFlower,
+                    Poses.Red.topFlowerScore
                 )
                 .linear(
-                    PoseUtil.Poses.Red.TopFlower,
-                    PoseUtil.Poses.Red.topFlowerScore
+                    Poses.Red.TopFlower,
+                    Poses.Red.topFlowerScore
                 )
             }
             fun topFlowerScoreToBottomFlower(): Path {
                 return line(
-                    PoseUtil.Poses.Red.topFlowerScore,
-                    PoseUtil.Poses.Red.bottomFlower
+                    Poses.Red.topFlowerScore,
+                    Poses.Red.bottomFlower
                 )
                 .constant(
-                    PoseUtil.Poses.Red.bottomFlower
+                    Poses.Red.bottomFlower
                 )
             }
             fun bottomFlowerToBottomCell(): Path {
                 return line(
-                    PoseUtil.Poses.Red.bottomFlower,
-                    PoseUtil.Poses.Red.bottomFlowerToBottomCell
+                    Poses.Red.bottomFlower,
+                    Poses.Red.bottomFlowerToBottomCell
                 )
                 .heading(
                     Interpolator.piecewise()
@@ -102,11 +109,11 @@ object PoseUtil {
             }
             fun bottomCellFireToPark(): Path {
                 return line(
-                    PoseUtil.Poses.Red.bottomFlowerToBottomCell,
-                    PoseUtil.Poses.Red.bottomCellFireToPark
+                    Poses.Red.bottomFlowerToBottomCell,
+                    Poses.Red.bottomCellFireToPark
                 )
                 .constant(
-                   PoseUtil.Poses.Red.bottomCellFireToPark
+                   Poses.Red.bottomCellFireToPark
                 )
             }
         }

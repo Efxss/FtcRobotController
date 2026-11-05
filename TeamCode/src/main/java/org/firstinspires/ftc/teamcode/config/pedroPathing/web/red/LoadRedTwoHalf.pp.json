@@ -1,6 +1,6 @@
 {
   "version": "2.0.0",
-  "timestamp": "2026-11-04T20:36:16.225Z",
+  "timestamp": "2026-11-05T00:10:38.849Z",
   "startPoint": {
     "x": 54.9626535457161,
     "y": 8.000000000000002,
@@ -8,6 +8,43 @@
     "headingDeg": 90
   },
   "lines": [
+    {
+      "kind": "atomic",
+      "id": "line-mw2q7q7r-s2a7q8",
+      "endPoint": {
+        "x": 55,
+        "y": 16
+      },
+      "controlPoints": [],
+      "heading": {
+        "type": "constant",
+        "reverse": true,
+        "degrees": 90,
+        "startDeg": 0,
+        "endDeg": 0,
+        "piecewiseHeading": {
+          "segments": [
+            {
+              "startProgress": 0,
+              "endProgress": 1,
+              "interpolationType": "linear",
+              "reversed": false,
+              "parameters": {
+                "startDeg": 0,
+                "endDeg": 0
+              }
+            }
+          ]
+        }
+      },
+      "color": "#9c755f",
+      "locked": false,
+      "waitBeforeMs": 0,
+      "waitAfterMs": 0,
+      "waitBeforeName": "",
+      "waitAfterName": "",
+      "name": "BottomCellPullOut"
+    },
     {
       "id": "line-mvw1x0ql-2m6k1j",
       "color": "#b07aa1",
@@ -19,17 +56,12 @@
       "waitAfterName": "",
       "kind": "atomic",
       "endPoint": {
-        "x": 8,
-        "y": 8
+        "x": 7,
+        "y": 7.5
       },
-      "controlPoints": [
-        {
-          "x": 65.05666666666667,
-          "y": 20.71666666666667
-        }
-      ],
+      "controlPoints": [],
       "heading": {
-        "type": "piecewise",
+        "type": "constant",
         "reverse": true,
         "degrees": 180,
         "startDeg": 90,
@@ -219,8 +251,15 @@
       }
     },
     {
-      "kind": "atomic",
       "id": "line-mw2jn6vh-psmhqi",
+      "color": "#76b7b2",
+      "name": "BottomFlowerToBottomCell",
+      "locked": false,
+      "waitBeforeMs": 0,
+      "waitAfterMs": 0,
+      "waitBeforeName": "",
+      "waitAfterName": "",
+      "kind": "atomic",
       "endPoint": {
         "x": 55,
         "y": 8
@@ -256,18 +295,18 @@
             }
           ]
         }
-      },
-      "color": "#76b7b2",
+      }
+    },
+    {
+      "id": "line-mw2jrba5-7xf9h0",
+      "color": "#b07aa1",
+      "name": "BottomCellFireToPark",
       "locked": false,
       "waitBeforeMs": 0,
       "waitAfterMs": 0,
       "waitBeforeName": "",
       "waitAfterName": "",
-      "name": "BottomFlowerToBottomCell"
-    },
-    {
       "kind": "atomic",
-      "id": "line-mw2jrba5-7xf9h0",
       "endPoint": {
         "x": 10.415363324011349,
         "y": 87.97472440144772
@@ -293,14 +332,7 @@
             }
           ]
         }
-      },
-      "color": "#b07aa1",
-      "locked": false,
-      "waitBeforeMs": 0,
-      "waitAfterMs": 0,
-      "waitBeforeName": "",
-      "waitAfterName": "",
-      "name": "BottomCellFireToPark"
+      }
     }
   ],
   "shapes": [
@@ -466,6 +498,10 @@
     }
   ],
   "sequence": [
+    {
+      "kind": "path",
+      "lineId": "line-mw2q7q7r-s2a7q8"
+    },
     {
       "kind": "path",
       "lineId": "line-mvw1x0ql-2m6k1j"

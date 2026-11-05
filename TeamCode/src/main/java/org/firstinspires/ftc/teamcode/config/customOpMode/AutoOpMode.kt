@@ -62,6 +62,7 @@ abstract class AutoOpMode : OpMode() {
 
         // declare Panels and init the debug util
         robot.initPanels()
+        robot.initPedro()
         debugUtil = PanelsDebugUtil(robot.panels)
         debugUtil.showInit()
 
@@ -74,6 +75,7 @@ abstract class AutoOpMode : OpMode() {
         firingSS = FiringSS(robot,alliance,intakeSS)
         //flowerDSS = FlowerDSS(robot)
         hubSS = HubSS(hardwareMap)
+        firingSS.reset()
         onInit()
     }
 
@@ -85,9 +87,9 @@ abstract class AutoOpMode : OpMode() {
 
     final override fun start() {
         resetRuntime()
-        //Scheduler.schedule(intakeSS.runIntake())
+        Scheduler.schedule(intakeSS.runIntake())
         //Scheduler.schedule(firingSS.calcHalf())
-        //Scheduler.schedule(firingSS.calcFiring())
+        Scheduler.schedule(firingSS.calcFiring())
         //robot.genTab()
         onStart()
     }
@@ -100,6 +102,8 @@ abstract class AutoOpMode : OpMode() {
 
         // Run the Ivy Scheduler to actually update Commands
         Scheduler.execute()
+
+        robot.follower.update()
 
         //Show and update debug
         debugUtil.showAllDebugAuto(robot.follower, alliance, runtime)
