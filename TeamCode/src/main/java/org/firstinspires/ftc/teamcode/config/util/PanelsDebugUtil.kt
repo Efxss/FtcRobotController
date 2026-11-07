@@ -5,6 +5,7 @@ import com.pedropathing.follower.Follower
 import com.qualcomm.robotcore.hardware.Gamepad
 import org.firstinspires.ftc.teamcode.config.Robot
 import org.firstinspires.ftc.teamcode.config.subSystem.FiringSS
+import org.firstinspires.ftc.teamcode.config.subSystem.IntakeSS
 
 class PanelsDebugUtil(
     private val panels: TelemetryManager?
@@ -35,7 +36,8 @@ class PanelsDebugUtil(
         gamepad: Gamepad,
         fieldHalf: Robot.FieldHalf,
         firingSS: FiringSS,
-        //volts: Double,
+        volts: Double,
+        intakeSS: IntakeSS,
         robot: Robot,
     ) {
         panels?.apply {
@@ -46,12 +48,17 @@ class PanelsDebugUtil(
             //debug("Dist From Ref Pose", follower.pose().distance(robot.refPose))
             //debug("")
             debug("=== HardWare ===")
-            debug("Intake Group Speed", robot.intakeMG.velocity)
-            debug("Intake 1 Speed", robot.intakeM1.velocity)
-            debug("Intake 2 Speed", robot.intakeM2.velocity)
-            addData("Shooter Speed", robot.fireM.velocity)
-            addData("Shooter Velocity", firingSS.getVelocity())
-            addData("Shooter PIDF Calc", firingSS.getPower())
+            addData("Intake Group Speed", robot.intakeMG.velocity)
+            addData("Intake 1 Speed", robot.intakeM1.velocity)
+            addData("Intake 1 Corrected Velocity", robot.intakeM1.correctedVelocity)
+            addData("Intake 2 Speed", robot.intakeM2.velocity)
+            addData("intake PIDF Point", robot.intakeMPIDF.setPoint)
+            addData("intake PIDF Velocity Error", robot.intakeMPIDF.velocityError)
+            addData("intake PIDF Position Error", robot.intakeMPIDF.positionError)
+            addData("is Full", intakeSS.isFull(volts))
+            //addData("Shooter Speed", robot.fireM.velocity)
+            //addData("Shooter Velocity", firingSS.getVelocity())
+            //addData("Shooter PIDF Calc", firingSS.getPower())
             debug("")
             debug("=== Gamepad ===")
             //debug("Left Stick X", gamepad.left_stick_x)

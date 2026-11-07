@@ -9,6 +9,7 @@ import com.pedropathing.ivy.Command
 import com.pedropathing.ivy.commands.Commands
 import com.pedropathing.ivy.groups.Groups
 import com.pedropathing.ivy.groups.Groups.sequential
+import com.seattlesolvers.solverslib.hardware.motors.Motor
 import com.seattlesolvers.solverslib.util.InterpLUT
 import org.firstinspires.ftc.teamcode.config.Robot
 import org.firstinspires.ftc.teamcode.config.util.MathUtil
@@ -24,7 +25,7 @@ class FiringSS(
 ) {
     init {
         robot.fireM.inverted = true
-    }
+        robot.fireM.setRunMode(Motor.RunMode.RawPower)    }
     private var fieldHalf: Robot.FieldHalf = Robot.FieldHalf.TOP
     private var power: Double = 0.0
     private var currentVel: Double = 0.0
