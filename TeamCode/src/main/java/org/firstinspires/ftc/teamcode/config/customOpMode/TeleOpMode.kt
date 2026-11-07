@@ -5,7 +5,6 @@ import com.pedropathing.follower.ManualDrive
 import com.pedropathing.ivy.Scheduler
 import com.pedropathing.math.Pose
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
-import org.firstinspires.ftc.robotcore.external.navigation.VoltageUnit
 import org.firstinspires.ftc.teamcode.config.Robot
 import org.firstinspires.ftc.teamcode.config.subSystem.FiringSS
 import org.firstinspires.ftc.teamcode.config.subSystem.HubSS
@@ -129,8 +128,11 @@ abstract class TeleOpMode : OpMode() {
 
         if (gamepad1.leftBumperWasPressed()) { intakeSS.reverseIntake(true) }
         if (gamepad1.leftBumperWasReleased()) { intakeSS.reverseIntake(false) }
-        if (gamepad1.rightBumperWasPressed()) { firingSS.execFiring().schedule() }
+        if (gamepad1.rightBumperWasPressed()) { firingSS.execFiring().schedule(); gamepad1.rumble(500) }
         if (gamepad1.crossWasPressed()) { robot.follower.setPose(resetPose) }
+        if (intakeSS.isFull()) {
+            robot.led.green(); gamepad1.rumble(500)
+        }
         //if (gamepad1.circleWasReleased()) {
         //    when (flowerDB) {
         //        0 -> {
@@ -151,7 +153,7 @@ abstract class TeleOpMode : OpMode() {
         Scheduler.execute()
 
         //Show and update debug
-        debugUtil.showAllDebugTeleop(robot.follower,alliance,runtime,gamepad1,firingSS.getHalf(),firingSS,hubSS.getVolts(VoltageUnit.MILLIVOLTS),intakeSS,robot)
+        debugUtil.showAllDebugTeleop(robot.follower,alliance,runtime,gamepad1,firingSS.getHalf(),firingSS,/*hubSS.getVolts(VoltageUnit.MILLIVOLTS),*/intakeSS,robot)
         debugUtil.update(telemetry)
         onLoop()
     }

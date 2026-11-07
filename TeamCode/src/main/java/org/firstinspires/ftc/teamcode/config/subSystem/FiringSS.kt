@@ -20,15 +20,16 @@ class FiringSS(
     private val robot: Robot,
     private val alliance: Robot.Alliance,
     private val intakeSS: IntakeSS,
-    private val servoBlock: Double = 0.18,
-    private val servoGo: Double = 0.42
 ) {
     init {
         robot.fireM.inverted = true
-        robot.fireM.setRunMode(Motor.RunMode.RawPower)    }
+        robot.fireM.setRunMode(Motor.RunMode.RawPower)
+    }
     private var fieldHalf: Robot.FieldHalf = Robot.FieldHalf.TOP
     private var power: Double = 0.0
     private var currentVel: Double = 0.0
+    private val servoBlock: Double = 0.18
+    private val servoGo: Double = 0.42
     fun letGo(): Command {
         return sequential(
             Commands.instant { robot.pollenBS.set(servoGo) },
@@ -92,7 +93,8 @@ class FiringSS(
         //}
         //fun turnHalfFun(): Command = Commands.match({fieldHalf}, turnHalf)
         return Groups.parallel(
-            Commands.instant { intakeSS.velocity = 0.65 },
+            robot.led.flash(3),
+            Commands.instant { intakeSS.velocity = robot.intakeFire },
             letGo(),
             //turnHalfFun(),
             Groups.sequential(

@@ -22,10 +22,7 @@ class IntakeSS(
     var velocity: Double = robot.intakeDef
     private var currentVel: Double = 0.0
     private var pidfVelocity: Double = 0.0
-    private var lastVolts: Double = 1000.0
-    private var voltThreshold: Double = 0.0
-    private var lastVelocity: Double = 0.0
-    private var velocityThreshold: Double = 400.0
+    private var velocityThreshold: Double = 650.0
     private var rev = true
     fun runIntake(): Command = Command.build()
         .setExecute {
@@ -37,12 +34,5 @@ class IntakeSS(
         .requiring(robot.intakeMG)
     private fun setRev(state: Boolean) { if (this.rev != state) { this.rev = state }; robot.intakeM1.inverted = !this.rev; robot.intakeM2.inverted = this.rev }
     fun reverseIntake(state: Boolean) {setRev(state)}
-    fun isFull(volts: Double): Boolean {
-        if (abs(robot.intakeM1.velocity - this.lastVelocity) >= this.velocityThreshold && abs(volts - this.lastVolts) >= this.voltThreshold || this.lastVelocity == 0.0 || this.lastVolts == 0.0) {
-            lastVelocity = robot.intakeM1.velocity
-            lastVolts = volts
-            return true
-        }
-        return false
-    }
+    fun isFull(): Boolean = if (abs(robot.intakeM1.velocity) <= this.velocityThreshold) true else false
 }

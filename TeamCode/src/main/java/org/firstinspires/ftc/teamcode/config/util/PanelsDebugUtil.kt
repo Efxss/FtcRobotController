@@ -16,16 +16,16 @@ class PanelsDebugUtil(
         runtime: Double
     ) {
         panels?.apply {
-            debug("=== PedroPathing ===")
-            debug("Follower Pose X", follower.pose().x())
-            debug("Follower Pose Y", follower.pose().y())
-            debug("Follower Heading", Math.toDegrees(follower.pose().heading()))
-            debug("Follower Distance Remaining", follower.remainingDistance())
-            debug("Follower IsBusy", follower.isBusy)
-            debug("")
-            debug("=== OpMode ===")
-            debug("runtime", runtime)
-            debug("Alliance", alliance.name)
+            addLine("=== PedroPathing ===")
+            addData("Follower Pose X", follower.pose().x())
+            addData("Follower Pose Y", follower.pose().y())
+            addData("Follower Heading", Math.toDegrees(follower.pose().heading()))
+            addData("Follower Distance Remaining", follower.remainingDistance())
+            addData("Follower IsBusy", follower.isBusy)
+            addLine("")
+            addLine("=== OpMode ===")
+            addData("runtime", runtime)
+            addData("Alliance", alliance.name)
         }
     }
 
@@ -36,18 +36,18 @@ class PanelsDebugUtil(
         gamepad: Gamepad,
         fieldHalf: Robot.FieldHalf,
         firingSS: FiringSS,
-        volts: Double,
+        //volts: Double,
         intakeSS: IntakeSS,
         robot: Robot,
     ) {
         panels?.apply {
-            debug("=== PedroPathing ===")
-            //debug("Follower Pose X", follower.pose().x())
-            //debug("Follower Pose Y", follower.pose().y())
-            //debug("Follower Heading", Math.toDegrees(follower.pose().heading()))
-            //debug("Dist From Ref Pose", follower.pose().distance(robot.refPose))
-            //debug("")
-            debug("=== HardWare ===")
+            addLine("=== PedroPathing ===")
+            //addData("Follower Pose X", follower.pose().x())
+            //addData("Follower Pose Y", follower.pose().y())
+            //addData("Follower Heading", Math.toDegrees(follower.pose().heading()))
+            //addData("Dist From Ref Pose", follower.pose().distance(robot.refPose))
+            //addLine("")
+            addLine("=== HardWare ===")
             addData("Intake Group Speed", robot.intakeMG.velocity)
             addData("Intake 1 Speed", robot.intakeM1.velocity)
             addData("Intake 1 Corrected Velocity", robot.intakeM1.correctedVelocity)
@@ -55,23 +55,23 @@ class PanelsDebugUtil(
             addData("intake PIDF Point", robot.intakeMPIDF.setPoint)
             addData("intake PIDF Velocity Error", robot.intakeMPIDF.velocityError)
             addData("intake PIDF Position Error", robot.intakeMPIDF.positionError)
-            addData("is Full", intakeSS.isFull(volts))
+            addData("is Full", intakeSS.isFull())
             //addData("Shooter Speed", robot.fireM.velocity)
             //addData("Shooter Velocity", firingSS.getVelocity())
             //addData("Shooter PIDF Calc", firingSS.getPower())
-            debug("")
-            debug("=== Gamepad ===")
-            //debug("Left Stick X", gamepad.left_stick_x)
-            //debug("Left Stick Y", gamepad.left_stick_y)
-            //debug("Right Stick X", gamepad.right_stick_x)
-            debug("Left Bumper", gamepad.left_bumper)
-            debug("Right Bumper", gamepad.right_bumper)
-            debug("")
-            debug("=== OpMode ===")
-            //debug("volts/millivolts", volts)
-            //debug("runtime", runtime)
-            //debug("Field Half", fieldHalf.name)
-            //debug("Alliance", alliance.name)
+            addLine("")
+            addLine("=== Gamepad ===")
+            //addData("Left Stick X", gamepad.left_stick_x)
+            //addData("Left Stick Y", gamepad.left_stick_y)
+            //addData("Right Stick X", gamepad.right_stick_x)
+            addData("Left Bumper", gamepad.left_bumper)
+            addData("Right Bumper", gamepad.right_bumper)
+            addLine("")
+            addLine("=== OpMode ===")
+            //addData("millivolts", volts)
+            //addData("runtime", runtime)
+            //addData("Field Half", fieldHalf.name)
+            //addData("Alliance", alliance.name)
         }
     }
 

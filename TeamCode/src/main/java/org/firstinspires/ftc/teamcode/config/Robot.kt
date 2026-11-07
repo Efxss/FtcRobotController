@@ -4,8 +4,12 @@ import com.bylazar.telemetry.PanelsTelemetry
 import com.bylazar.telemetry.TelemetryManager
 import com.pedropathing.api.PoseFactory
 import com.pedropathing.follower.Follower
+import com.pedropathing.ivy.Command
+import com.pedropathing.ivy.commands.Commands
+import com.pedropathing.ivy.groups.Groups
 import com.pedropathing.math.Pose
 import com.qualcomm.robotcore.hardware.HardwareMap
+import com.qualcomm.robotcore.hardware.PwmControl
 import com.seattlesolvers.solverslib.controller.PIDFController
 import com.seattlesolvers.solverslib.hardware.motors.Motor
 import com.seattlesolvers.solverslib.hardware.motors.MotorEx
@@ -17,6 +21,19 @@ import org.firstinspires.ftc.teamcode.config.pedroPathing.Constants
 class Robot(
     private val hardwareMap: HardwareMap,
 ) {
+    class LED(hardwareMap: HardwareMap) {
+        private val led: ServoEx = ServoEx(hardwareMap, "LED")
+        init {
+            led.setPwm(PwmControl.PwmRange(500.0, 2500.0))
+        }
+        fun green() {
+            led.set(0.4)
+        }
+        fun off() {
+            led.set(0.0)
+        }
+        fun flash(count: Int): Command = Groups.repeat(Commands.instant { green(); off() }, count)
+    }
     enum class Alliance {BLUE, RED}
     enum class FieldHalf {TOP,BOTTOM}
     // PedroPathing and Panels
@@ -27,7 +44,7 @@ class Robot(
     val refPose: Pose = Pose(0.0,0.0)
     fun initPedro() { follower = Constants.create(hardwareMap) }
     // Hardware
-
+    val led: LED = LED(hardwareMap)
     // Intake
     val intakeMCT: Double = 0.00001
     val intakeM1: MotorEx = MotorEx(hardwareMap,"intake1",Motor.GoBILDA.BARE).setCachingTolerance(intakeMCT); val intakeDef = 0.4
