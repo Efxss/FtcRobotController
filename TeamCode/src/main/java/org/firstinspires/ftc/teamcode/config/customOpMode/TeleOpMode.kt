@@ -131,7 +131,8 @@ abstract class TeleOpMode : OpMode() {
         if (gamepad1.rightBumperWasPressed()) { firingSS.execFiring().schedule(); gamepad1.rumble(500) }
         if (gamepad1.crossWasPressed()) { robot.follower.setPose(resetPose) }
         if (intakeSS.isFull()) {
-            robot.led.green(); gamepad1.rumble(500)
+            //robot.led.green(); gamepad1.rumble(500)
+            firingSS.execFiring().schedule()
         }
         //if (gamepad1.circleWasReleased()) {
         //    when (flowerDB) {

@@ -91,7 +91,7 @@ class FiringSS(
         //}
         //fun turnHalfFun(): Command = Commands.match({fieldHalf}, turnHalf)
         return Groups.parallel(
-            robot.led.flash(3),
+            //robot.led.flash(3),
             Commands.instant { intakeSS.velocity = robot.intakeFire },
             letGo(),
             //turnHalfFun(),
