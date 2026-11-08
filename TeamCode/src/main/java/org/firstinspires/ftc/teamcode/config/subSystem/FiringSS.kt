@@ -4,7 +4,6 @@ package org.firstinspires.ftc.teamcode.config.subSystem
 //import com.pedropathing.ivy.pedro.PedroCommands
 //import com.pedropathing.math.Pose
 //import kotlin.math.abs
-//import com.seattlesolvers.solverslib.util.InterpLUT
 import com.pedropathing.ivy.Command
 import com.pedropathing.ivy.commands.Commands
 import com.pedropathing.ivy.groups.Groups
@@ -45,8 +44,7 @@ class FiringSS(
         //        return PedroCommands.hold(robot.follower, Pose(
         //            robot.follower.pose().x(),
         //            robot.follower.pose().y(),
-        //            Math.toRadians(robot.upFireHeadBlueTab.get(robot.follower.pose().distance(robot.refPose)))
-        //        )
+        //            Math.toRadians(robot.upFireHeadBlueTab.get(robot.follower.pose().distance(robot.refPose))))
         //        )
         //    }
         //    return Groups.parallel(intakeSpd(robot.upFireHeadBlueTab),turn())

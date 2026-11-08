@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.config.subSystem
 
 import com.qualcomm.hardware.lynx.LynxModule
 import com.qualcomm.robotcore.hardware.HardwareMap
-import org.firstinspires.ftc.robotcore.external.navigation.VoltageUnit
+import com.qualcomm.robotcore.hardware.VoltageSensor
 
 /**
  * A utility for getting and sending information to the REV hub (Like bulk reads)
@@ -18,6 +18,7 @@ class HubSS (
 ) {
 
     private val hubs: List<LynxModule> = hardwareMap.getAll(LynxModule::class.java)
+    private val voltageSensor: VoltageSensor = hardwareMap.voltageSensor.iterator().next()
     private var volts: Double = 0.0
 
     init {
@@ -26,8 +27,7 @@ class HubSS (
 
     /** Clears the bulk read cache on every hub. Call this once at the start of each loop() cycle. */
     fun clearCache() = hubs.forEach { it.clearBulkCache() }
-    fun getVolts(voltageUnit: VoltageUnit): Double {
-        hubs.forEach { this.volts = it.getInputVoltage(voltageUnit) }
-        return this.volts
+    fun getVolts(): Double {
+        return this.voltageSensor.voltage
     }
 }
