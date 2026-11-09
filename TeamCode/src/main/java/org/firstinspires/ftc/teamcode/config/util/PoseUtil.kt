@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.config.util
 
+import com.pedropathing.api.Paths.curve
 import com.pedropathing.api.Paths.line
 import com.pedropathing.api.PoseFactory
 import com.pedropathing.math.Pose
@@ -19,10 +20,11 @@ object PoseUtil {
             val bottomBlueFlower: Pose = p.of(95.5, 32.0, 270.0)
         }
         object Red {
+            // Bottom Auto Two and a half
             val bottomCellStartWall: Pose = p.of(55.0, 8.0, 90.0)
             var bottomCellPullOut: Pose = p.of(55.0, 16.0, 90.0)
-            val redSpike: Pose = p.of(7.0, 7.5, 180.0)
-            val redSpikeControl1: Pose = p.of(65.0567, 20.7167, 0.0)
+            val spike: Pose = p.of(7.0, 7.5, 180.0)
+            val spikeControl1: Pose = p.of(65.0567, 20.7167, 0.0)
             val topCellSpikeScoring: Pose = p.of(26.8084, 119.3781, -50.0)
             val TopFlower: Pose = p.of(36.9637, 129.4173, 47.0)
             val topFlowerScore: Pose = p.of(33.5295, 126.318, -50.0)
@@ -31,6 +33,11 @@ object PoseUtil {
             val bottomFlowerToBottomCellSegment1Heading: Pose = p.of(55.0, 8.0, 180.0)
             val bottomFlowerToBottomCellSegment2Heading: Pose = p.of(55.0, 8.0, 90.0)
             val bottomCellFireToPark: Pose = p.of(10.4154, 87.9747, 90.0)
+
+            // Top Auto Fire Park
+            val topRedBlueFlowerSideStart:Pose = p.of(58.4, 133.4, 270.0)
+            val topRedBlueFlowerSideToPark:Pose = p.of(15.0829, 125.145, 270.0)
+            val topRedBlueFlowerSideToParkControl1:Pose = p.of(62.5904, 102.3984, 0.0)
         }
     }
     object Paths {
@@ -39,6 +46,7 @@ object PoseUtil {
             fun testPathToFlower(): Path = line(movePoseTest, bottomBlueFlower).constant(movePoseTest)
         }
         object Red {
+            // Bottom Auto Two and a half
             fun bottomCellWallOutFire(): Path {
                 return line(
                     Poses.Red.bottomCellStartWall,
@@ -51,20 +59,20 @@ object PoseUtil {
             fun bottomCellOutToRedSpike(): Path {
                 return line(
                     Poses.Red.bottomCellPullOut,
-                    Poses.Red.redSpike
+                    Poses.Red.spike
                 )
                 .constant(
-                    Poses.Red.redSpike
+                    Poses.Red.spike
                 )
             }
             fun redSpikeToTopScoring(): Path {
                 return line(
-                    Poses.Red.redSpike,
+                    Poses.Red.spike,
                     Poses.Red.topCellSpikeScoring
                 )
                 .heading(
                     Interpolator.piecewise()
-                        .until(0.8, Interpolator.constant(Poses.Red.redSpike))
+                        .until(0.8, Interpolator.constant(Poses.Red.spike))
                         .until(1.0, Interpolator.constant(Poses.Red.topCellSpikeScoring))
                 )
             }
@@ -114,6 +122,17 @@ object PoseUtil {
                 )
                 .constant(
                    Poses.Red.bottomCellFireToPark
+                )
+            }
+            // Top Auto Fire Park
+            fun topRedBlueFlowerSideToPark(): Path {
+                return curve(
+                    Poses.Red.topRedBlueFlowerSideStart,
+                    Poses.Red.topRedBlueFlowerSideToParkControl1,
+                    Poses.Red.topRedBlueFlowerSideToPark
+                )
+                .constant(
+                    Poses.Red.topRedBlueFlowerSideToPark,
                 )
             }
         }

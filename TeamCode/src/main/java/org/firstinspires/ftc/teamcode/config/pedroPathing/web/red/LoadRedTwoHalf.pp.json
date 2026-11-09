@@ -1,16 +1,24 @@
 {
   "version": "2.0.0",
-  "timestamp": "2026-11-05T00:10:38.849Z",
+  "timestamp": "2026-11-09T19:54:21.923Z",
   "startPoint": {
-    "x": 54.9626535457161,
-    "y": 8.000000000000002,
+    "x": 55,
+    "y": 8,
+    "name": "BottomRedCellStartWall",
     "locked": false,
     "headingDeg": 90
   },
   "lines": [
     {
-      "kind": "atomic",
       "id": "line-mw2q7q7r-s2a7q8",
+      "color": "#9c755f",
+      "name": "BottomCellPullOut",
+      "locked": false,
+      "waitBeforeMs": 0,
+      "waitAfterMs": 0,
+      "waitBeforeName": "",
+      "waitAfterName": "",
+      "kind": "atomic",
       "endPoint": {
         "x": 55,
         "y": 16
@@ -36,14 +44,7 @@
             }
           ]
         }
-      },
-      "color": "#9c755f",
-      "locked": false,
-      "waitBeforeMs": 0,
-      "waitAfterMs": 0,
-      "waitBeforeName": "",
-      "waitAfterName": "",
-      "name": "BottomCellPullOut"
+      }
     },
     {
       "id": "line-mvw1x0ql-2m6k1j",
@@ -95,7 +96,7 @@
     {
       "id": "line-mvw20v6o-hvw0lm",
       "color": "#4e79a7",
-      "name": "TopCellSpikeScoring",
+      "name": "TopRedCellSpikeScoring",
       "locked": false,
       "waitBeforeMs": 0,
       "waitAfterMs": 0,
@@ -142,7 +143,7 @@
     {
       "id": "line-mvw23ijs-vg3l43",
       "color": "#e15759",
-      "name": "TopCellToTopFlower",
+      "name": "TopRedCellToTopRedFlower",
       "locked": false,
       "waitBeforeMs": 0,
       "waitAfterMs": 0,
@@ -179,7 +180,7 @@
     {
       "id": "line-mvw254xh-krulsc",
       "color": "#76b7b2",
-      "name": "TopFlowerScore",
+      "name": "TopRedFlowerScore",
       "locked": false,
       "waitBeforeMs": 0,
       "waitAfterMs": 0,
@@ -216,7 +217,7 @@
     {
       "id": "line-mvw26507-xe32n4",
       "color": "#76b7b2",
-      "name": "TopFlowerScoreToBottomFlower",
+      "name": "TopRedFlowerScoreToBottomRedFlower",
       "locked": false,
       "waitBeforeMs": 0,
       "waitAfterMs": 0,
@@ -253,7 +254,7 @@
     {
       "id": "line-mw2jn6vh-psmhqi",
       "color": "#76b7b2",
-      "name": "BottomFlowerToBottomCell",
+      "name": "BottomRedFlowerToBottomRedCell",
       "locked": false,
       "waitBeforeMs": 0,
       "waitAfterMs": 0,
@@ -300,7 +301,7 @@
     {
       "id": "line-mw2jrba5-7xf9h0",
       "color": "#b07aa1",
-      "name": "BottomCellFireToPark",
+      "name": "BottomRedCellFireToPark",
       "locked": false,
       "waitBeforeMs": 0,
       "waitAfterMs": 0,
