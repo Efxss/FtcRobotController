@@ -1,12 +1,18 @@
 package org.firstinspires.ftc.teamcode.config.subSystem
 
+import com.pedropathing.ivy.Command
+import com.pedropathing.ivy.commands.Commands
 import org.firstinspires.ftc.teamcode.config.Robot
 
 class FlowerDSS(
     private val robot: Robot
 ) {
     private val servoBack = 0.0
-    private val servoGo = 0.33
-    //fun down(): Command = Commands.instant { robot.flowerDSG.set(this.servoGo) }
-    //fun back(): Command = Commands.instant { robot.flowerDSG.set(this.servoBack) }
+    private val servoGo = 0.1
+    init {
+        robot.flowerDS2.inverted = true
+        robot.flowerDSG.set(this.servoBack)
+    }
+    fun down(): Command = Commands.instant { robot.flowerDSG.set(this.servoGo) }
+    fun back(): Command = Commands.instant { robot.flowerDSG.set(this.servoBack) }
 }

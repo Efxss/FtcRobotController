@@ -11,6 +11,7 @@ import com.seattlesolvers.solverslib.hardware.motors.Motor
 import com.seattlesolvers.solverslib.hardware.motors.MotorEx
 import com.seattlesolvers.solverslib.hardware.motors.MotorGroup
 import com.seattlesolvers.solverslib.hardware.servos.ServoEx
+import com.seattlesolvers.solverslib.hardware.servos.ServoExGroup
 import com.seattlesolvers.solverslib.util.InterpLUT
 import org.firstinspires.ftc.teamcode.config.pedroPathing.Constants
 
@@ -53,10 +54,9 @@ class Robot(
     val hoodDS: ServoEx = ServoEx(hardwareMap, "hood").setCachingTolerance(0.00000001)
     var fireMPIDF = PIDFController(0.0005, 0.0, 0.000, 0.00035)
     // Flower DeScorer
-    private val flowerDSCT = 0.1
-    //private val flowerDS1: ServoEx = ServoEx(hardwareMap,"FDS1").setCachingTolerance(flowerDSCT)
-    //private val flowerDS2: ServoEx = ServoEx(hardwareMap,"FDS2").setCachingTolerance(flowerDSCT)
-    //val flowerDSG: ServoExGroup = ServoExGroup(flowerDS1,flowerDS2)
+    val flowerDS1: ServoEx = ServoEx(hardwareMap,"fds1").setCachingTolerance(0.0) // Control Hub Servo 1
+    val flowerDS2: ServoEx = ServoEx(hardwareMap,"fds2").setCachingTolerance(0.0) // Expansion Hub Servo 1
+    val flowerDSG: ServoExGroup = ServoExGroup(flowerDS1, flowerDS2)
 
     // Tables and refs
 

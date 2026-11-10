@@ -7,6 +7,7 @@ import com.pedropathing.math.Pose
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import org.firstinspires.ftc.teamcode.config.Robot
 import org.firstinspires.ftc.teamcode.config.subSystem.FiringSS
+import org.firstinspires.ftc.teamcode.config.subSystem.FlowerDSS
 import org.firstinspires.ftc.teamcode.config.subSystem.HubSS
 import org.firstinspires.ftc.teamcode.config.subSystem.IntakeSS
 import org.firstinspires.ftc.teamcode.config.util.DrawingUtil
@@ -24,7 +25,7 @@ abstract class TeleOpMode : OpMode() {
     protected lateinit var debugUtil: PanelsDebugUtil
     protected lateinit var intakeSS: IntakeSS
     protected lateinit var firingSS: FiringSS
-    //protected lateinit var flowerDSS: FlowerDSS
+    protected lateinit var flowerDSS: FlowerDSS
     protected var resetPose = Pose(9.0, 8.8, Math.toRadians(90.0))
     protected var dp: DrivePowers = ManualDrive.fieldCentric(0.0, 0.0, 0.0, 0.0)
     private var flowerDB = 0
@@ -77,7 +78,7 @@ abstract class TeleOpMode : OpMode() {
         debugUtil.update(telemetry)
         intakeSS = IntakeSS(robot)
         firingSS = FiringSS(robot,alliance,intakeSS)
-        //flowerDSS = FlowerDSS(robot)
+        flowerDSS = FlowerDSS(robot)
         hubSS = HubSS(hardwareMap)
         firingSS.reset()
         onInit()
@@ -96,7 +97,7 @@ abstract class TeleOpMode : OpMode() {
             Robot.Alliance.BLUE -> { Pose(9.1, 9.2, Math.toRadians(90.0)) }
             Robot.Alliance.RED -> { Pose(132.3, 132.4, Math.toRadians(90.0)) }
         }
-        Scheduler.schedule(intakeSS.runIntake())
+        //Scheduler.schedule(intakeSS.runIntake())
         //Scheduler.schedule(firingSS.calcHalf())
         //robot.genTab()
         onStart()
@@ -130,31 +131,30 @@ abstract class TeleOpMode : OpMode() {
         if (gamepad1.leftBumperWasReleased()) { intakeSS.reverseIntake(false) }
         if (gamepad1.rightBumperWasPressed()) { firingSS.execFiring().schedule(); gamepad1.rumble(500) }
         if (gamepad1.crossWasPressed()) { robot.follower.setPose(resetPose) }
-        if (intakeSS.isFull()) {
-            //robot.led.green(); gamepad1.rumble(500)
-            firingSS.execFiring().schedule()
-        }
-        //if (gamepad1.circleWasReleased()) {
-        //    when (flowerDB) {
-        //        0 -> {
-        //            flowerDSS.go()
-        //            flowerDB = 1
-        //            return
-        //        }
-        //        1 -> {
-        //            flowerDSS.back()
-        //            flowerDB = 0
-        //            return
-        //        }
-        //        else -> throw IllegalStateException("WTF How did you even mess up this much????")
-        //    }
+        //if (intakeSS.isFull()) {
+        //    //robot.led.green(); gamepad1.rumble(500)
+        //    firingSS.execFiring().schedule()
         //}
+        if (gamepad1.triangleWasReleased()) {
+            when (flowerDB) {
+                0 -> {
+                    flowerDSS.down().schedule()
+                    flowerDB = 1
+                    return
+                }
+                1 -> {
+                    flowerDSS.back().schedule()
+                    flowerDB = 0
+                    return
+                }
+            }
+        }
 
         // Run the Ivy Scheduler to actually update Commands
         Scheduler.execute()
 
         //Show and update debug
-        debugUtil.showAllDebugTeleop(robot.follower,alliance,runtime,gamepad1,firingSS.getHalf(),firingSS,/*hubSS.getVolts(),*/intakeSS,robot)
+        debugUtil.showAllDebugTeleop(robot.follower,alliance,runtime,gamepad1,firingSS.getHalf(),firingSS,/*hubSS.getVolts(),*/intakeSS,flowerDB,robot)
         debugUtil.update(telemetry)
         onLoop()
     }

@@ -38,6 +38,7 @@ class PanelsDebugUtil(
         firingSS: FiringSS,
         //volts: Double,
         intakeSS: IntakeSS,
+        flowerState: Int,
         robot: Robot,
     ) {
         panels?.apply {
@@ -55,6 +56,9 @@ class PanelsDebugUtil(
             //addData("intake PIDF Point", robot.intakeMPIDF.setPoint)
             //addData("intake PIDF Velocity Error", robot.intakeMPIDF.velocityError)
             //addData("intake PIDF Position Error", robot.intakeMPIDF.positionError)
+            addData("Flower 1 Position", robot.flowerDS1.rawPosition)
+            addData("Flower 2 Position", robot.flowerDS2.rawPosition)
+            addData("Flower State", flowerState)
             addData("is Full", intakeSS.isFull())
             addData("Shooter Speed", robot.fireM.velocity)
             addData("Shooter Velocity", firingSS.getVelocity())
