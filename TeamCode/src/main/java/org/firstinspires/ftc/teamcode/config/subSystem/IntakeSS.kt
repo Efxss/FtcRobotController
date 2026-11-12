@@ -19,7 +19,7 @@ class IntakeSS(
     /**
      * The Velocity of the intake like what did you think it would be???
      */
-    var velocity: Double = robot.intakeDef
+    var speed: Double = robot.intakeDef
     private var currentVel: Double = 0.0
     private var pidfVelocity: Double = 0.0
     private var velocityThreshold: Double = 650.0
@@ -27,7 +27,7 @@ class IntakeSS(
     fun runIntake(): Command = Command.build()
         .setExecute {
             this.currentVel = robot.intakeM1.correctedVelocity
-            this.pidfVelocity = robot.intakeMPIDF.calculate(this.currentVel, MathUtil.pidfPower(this.velocity))
+            this.pidfVelocity = robot.intakeMPIDF.calculate(this.currentVel, MathUtil.pidfPower(this.speed))
             robot.intakeMG.set(this.pidfVelocity)
         }
         .setEnd { robot.intakeMG.stopMotor() }

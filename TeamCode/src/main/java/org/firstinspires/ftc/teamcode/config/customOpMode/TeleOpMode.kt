@@ -5,6 +5,7 @@ import com.pedropathing.follower.ManualDrive
 import com.pedropathing.ivy.Scheduler
 import com.pedropathing.math.Pose
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
+import com.seattlesolvers.solverslib.util.Timing
 import org.firstinspires.ftc.teamcode.config.Robot
 import org.firstinspires.ftc.teamcode.config.subSystem.FiringSS
 import org.firstinspires.ftc.teamcode.config.subSystem.FlowerDSS
@@ -12,6 +13,7 @@ import org.firstinspires.ftc.teamcode.config.subSystem.HubSS
 import org.firstinspires.ftc.teamcode.config.subSystem.IntakeSS
 import org.firstinspires.ftc.teamcode.config.util.DrawingUtil
 import org.firstinspires.ftc.teamcode.config.util.PanelsDebugUtil
+import org.firstinspires.ftc.teamcode.config.util.StateUtil
 
 /**
  * Custom-made OpMode for making a TeleOP that has needed code for a OpMode
@@ -29,6 +31,8 @@ abstract class TeleOpMode : OpMode() {
     protected var resetPose = Pose(9.0, 8.8, Math.toRadians(90.0))
     protected var dp: DrivePowers = ManualDrive.fieldCentric(0.0, 0.0, 0.0, 0.0)
     private var flowerDB = 0
+    private val firstFullTimer: Timing.Timer = Timing.Timer(1500, java.util.concurrent.TimeUnit.MILLISECONDS)
+    private var firstFullBool: Boolean = true
 
 
     // Custom lifecycle hooks
@@ -132,7 +136,13 @@ abstract class TeleOpMode : OpMode() {
         if (gamepad1.rightBumperWasPressed()) { firingSS.execFiring().schedule(); gamepad1.rumble(500) }
         if (gamepad1.crossWasPressed()) { robot.follower.setPose(resetPose) }
         if (intakeSS.isFull()) {
-            //robot.led.green(); gamepad1.rumble(500)
+            if (firstFullBool) { firstFullTimer.start();firstFullBool = false;return }
+            if (!firstFullTimer.done()) return
+            if (!StateUtil.isFiring) {
+                intakeSS.speed = 0.0
+            }
+            //robot.led.green();
+            gamepad1.rumble(500)
             firingSS.execFiring().schedule()
         }
         if (gamepad1.triangleWasReleased()) {

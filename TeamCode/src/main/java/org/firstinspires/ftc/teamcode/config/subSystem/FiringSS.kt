@@ -31,10 +31,12 @@ class FiringSS(
     private val servoGo: Double = 0.42
     fun letGo(): Command {
         return sequential(
+            Commands.instant { StateUtil.isFiring = true },
             Commands.instant { robot.pollenBS.set(servoGo) },
             //Commands.waitMs(1250.0),
             Commands.waitMs(1000.0),
             Commands.instant { robot.pollenBS.set(servoBlock) },
+            Commands.instant { StateUtil.isFiring = false },
         ).requiring(robot.pollenBS)
     }
     fun execFiring(): Command {
@@ -92,12 +94,12 @@ class FiringSS(
         //fun turnHalfFun(): Command = Commands.match({fieldHalf}, turnHalf)
         return Groups.parallel(
             //robot.led.flash(3),
-            Commands.instant { intakeSS.velocity = robot.intakeFire },
+            Commands.instant { intakeSS.speed = robot.intakeFire },
             letGo(),
             //turnHalfFun(),
             Groups.sequential(
                 Commands.waitMs(850.0),
-                Commands.instant { intakeSS.velocity = robot.intakeDef }
+                Commands.instant { intakeSS.speed = robot.intakeDef }
             )
         )
     }
@@ -140,10 +142,10 @@ class FiringSS(
         return Commands.instant {
             remain = tab.get(robot.follower.pose().distance(robot.refPose)) - robot.follower.pose().heading()
             when (abs(remain)) {
-                in fastFireRange -> intakeSS.velocity = fastFire
-                in medFireRange -> intakeSS.velocity = medFire
-                in slowFireRange -> intakeSS.velocity = slowFire
-                else -> intakeSS.velocity = robot.intakeDef
+                in fastFireRange -> intakeSS.speed = fastFire
+                in medFireRange -> intakeSS.speed = medFire
+                in slowFireRange -> intakeSS.speed = slowFire
+                else -> intakeSS.speed = robot.intakeDef
             }
         }
     }
