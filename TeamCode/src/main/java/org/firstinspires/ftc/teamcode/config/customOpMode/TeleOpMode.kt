@@ -97,7 +97,7 @@ abstract class TeleOpMode : OpMode() {
             Robot.Alliance.BLUE -> { Pose(9.1, 9.2, Math.toRadians(90.0)) }
             Robot.Alliance.RED -> { Pose(132.3, 132.4, Math.toRadians(90.0)) }
         }
-        //Scheduler.schedule(intakeSS.runIntake())
+        Scheduler.schedule(intakeSS.runIntake())
         //Scheduler.schedule(firingSS.calcHalf())
         //robot.genTab()
         onStart()
@@ -131,22 +131,14 @@ abstract class TeleOpMode : OpMode() {
         if (gamepad1.leftBumperWasReleased()) { intakeSS.reverseIntake(false) }
         if (gamepad1.rightBumperWasPressed()) { firingSS.execFiring().schedule(); gamepad1.rumble(500) }
         if (gamepad1.crossWasPressed()) { robot.follower.setPose(resetPose) }
-        //if (intakeSS.isFull()) {
-        //    //robot.led.green(); gamepad1.rumble(500)
-        //    firingSS.execFiring().schedule()
-        //}
+        if (intakeSS.isFull()) {
+            //robot.led.green(); gamepad1.rumble(500)
+            firingSS.execFiring().schedule()
+        }
         if (gamepad1.triangleWasReleased()) {
             when (flowerDB) {
-                0 -> {
-                    flowerDSS.down().schedule()
-                    flowerDB = 1
-                    return
-                }
-                1 -> {
-                    flowerDSS.back().schedule()
-                    flowerDB = 0
-                    return
-                }
+                0 -> { flowerDSS.down().schedule(); flowerDB = 1 }
+                1 -> { flowerDSS.back().schedule(); flowerDB = 0 }
             }
         }
 

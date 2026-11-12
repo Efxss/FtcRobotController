@@ -52,7 +52,7 @@ class Robot(
     // Shooter
     val fireM: MotorEx = MotorEx(hardwareMap,"fire",Motor.GoBILDA.BARE).setCachingTolerance(0.00001)
     val hoodDS: ServoEx = ServoEx(hardwareMap, "hood").setCachingTolerance(0.00000001)
-    var fireMPIDF = PIDFController(0.0005, 0.0, 0.000, 0.00035)
+    var fireMPIDF = PIDFController(0.00175, 0.0, 0.000, 0.00035)
     // Flower DeScorer
     val flowerDS1: ServoEx = ServoEx(hardwareMap,"fds1").setCachingTolerance(0.0) // Control Hub Servo 1
     val flowerDS2: ServoEx = ServoEx(hardwareMap,"fds2").setCachingTolerance(0.0) // Expansion Hub Servo 1
@@ -86,7 +86,7 @@ class Robot(
     //    }.createLUT()
 
     //    downFireBlueTab.apply {
-    //        add(Pose(81.0,9.0).distance(refPose), 0.56) // ~ Pos
+    //        add(Pose(81.0,9.0).distance(refPose), 0.45) // ~ Pos
     //        add(Pose(0.0,0.0).distance(refPose), 0.1)
     //    }.createLUT()
 
@@ -130,7 +130,7 @@ class Robot(
     //    }.createLUT()
 
     //    downFireHoodBlueTab.apply {
-    //        add(Pose(81.0,9.0).distance(refPose), 0.17) // ~ Pos
+    //        add(Pose(81.0,9.0).distance(refPose), 0.1) // ~ Pos
     //        add(Pose(0.0,0.0).distance(refPose), 0.1)
     //    }.createLUT()
 
