@@ -35,4 +35,8 @@ class IntakeSS(
     private fun setRev(state: Boolean) { if (this.rev != state) { this.rev = state }; robot.intakeM1.inverted = !this.rev; robot.intakeM2.inverted = this.rev }
     fun reverseIntake(state: Boolean) {setRev(state)}
     fun isFull(): Boolean = if (abs(robot.intakeM1.velocity) <= this.velocityThreshold) true else false
+    fun isFullDeadline(): Command {
+        return Command.build()
+            .setDone { this.isFull() }
+    }
 }

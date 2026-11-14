@@ -48,19 +48,28 @@ class Robot(
     val led by lazy { LED(hardwareMap) }
     // Intake
     val intakeMCT: Double = 0.00001
-    val intakeM1: MotorEx = MotorEx(hardwareMap,"intake1",Motor.GoBILDA.BARE).setCachingTolerance(intakeMCT); val intakeDef = 0.4
-    val intakeM2: MotorEx = MotorEx(hardwareMap,"intake2",Motor.GoBILDA.BARE).setCachingTolerance(intakeMCT); val intakeFire = 0.6
-    val intakeMG: MotorGroup = MotorGroup(intakeM1, intakeM2)
+    //val intakeM1: MotorEx = MotorEx(hardwareMap,"intake1",Motor.GoBILDA.BARE).setCachingTolerance(intakeMCT); val intakeDef = 0.4
+    val intakeM1 by lazy { MotorEx(hardwareMap,"intake1",Motor.GoBILDA.BARE).setCachingTolerance(intakeMCT) as MotorEx }; val intakeDef = 0.4
+    //val intakeM2: MotorEx = MotorEx(hardwareMap,"intake2",Motor.GoBILDA.BARE).setCachingTolerance(intakeMCT); val intakeFire = 0.6
+    val intakeM2 by lazy { MotorEx(hardwareMap,"intake2",Motor.GoBILDA.BARE).setCachingTolerance(intakeMCT) as MotorEx }; val intakeFire = 0.6
+    //val intakeMG: MotorGroup = MotorGroup(intakeM1, intakeM2)
+    val intakeMG by lazy { MotorGroup(intakeM1, intakeM2) }
     val intakeMPIDF = PIDFController(0.0005, 0.0, 0.000, 0.00035)
-    val pollenBS: ServoEx = ServoEx(hardwareMap, "pollen").setCachingTolerance(0.0001)
+    //val pollenBS: ServoEx = ServoEx(hardwareMap, "pollen").setCachingTolerance(0.0001)
+    val pollenBS by lazy { ServoEx(hardwareMap, "pollen").setCachingTolerance(0.0001) as ServoEx }
     // Shooter
-    val fireM: MotorEx = MotorEx(hardwareMap,"fire",Motor.GoBILDA.BARE).setCachingTolerance(0.00001)
-    val hoodDS: ServoEx = ServoEx(hardwareMap, "hood").setCachingTolerance(0.00000001)
+    //val fireM: MotorEx = MotorEx(hardwareMap,"fire",Motor.GoBILDA.BARE).setCachingTolerance(0.00001)
+    val fireM by lazy { MotorEx(hardwareMap,"fire",Motor.GoBILDA.BARE).setCachingTolerance(0.00001) as MotorEx }
+    //val hoodDS: ServoEx = ServoEx(hardwareMap, "hood").setCachingTolerance(0.00000001)
+    val hoodDS by lazy { ServoEx(hardwareMap, "hood").setCachingTolerance(0.00000001) as ServoEx }
     var fireMPIDF = PIDFController(0.00175, 0.0, 0.000, 0.00035)
     // Flower DeScorer
-    val flowerDS1: ServoEx = ServoEx(hardwareMap,"fds1").setCachingTolerance(0.0) // Control Hub Servo 1
-    val flowerDS2: ServoEx = ServoEx(hardwareMap,"fds2").setCachingTolerance(0.0) // Expansion Hub Servo 1
-    val flowerDSG: ServoExGroup = ServoExGroup(flowerDS1, flowerDS2)
+    //val flowerDS1: ServoEx = ServoEx(hardwareMap,"fds1").setCachingTolerance(0.0) // Control Hub Servo 1
+    val flowerDS1 by lazy { ServoEx(hardwareMap,"fds1").setCachingTolerance(0.0) as ServoEx }  // Control Hub Servo 1
+    //val flowerDS2: ServoEx = ServoEx(hardwareMap,"fds2").setCachingTolerance(0.0) // Expansion Hub Servo 1
+    val flowerDS2 by lazy { ServoEx(hardwareMap,"fds2").setCachingTolerance(0.0) as ServoEx }  // Expansion Hub Servo 1
+    //val flowerDSG: ServoExGroup = ServoExGroup(flowerDS1, flowerDS2)
+    val flowerDSG by lazy { ServoExGroup(flowerDS1, flowerDS2) }
 
     // Tables and refs
 

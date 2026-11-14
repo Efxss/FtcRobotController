@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.config.subSystem.HubSS
 import org.firstinspires.ftc.teamcode.config.subSystem.IntakeSS
 import org.firstinspires.ftc.teamcode.config.util.DrawingUtil
 import org.firstinspires.ftc.teamcode.config.util.PanelsDebugUtil
+import org.firstinspires.ftc.teamcode.config.util.StateUtil
 
 /**
  * Custom-made OpMode for making a TeleOP that has needed code for a OpMode
@@ -109,6 +110,8 @@ abstract class TeleOpMode : OpMode() {
     final override fun loop() {
         // Clear the bulk read cache
         hubSS.clearCache()
+        // Run the Ivy Scheduler to actually update Commands
+        Scheduler.execute()
         // Draw on Panels
         DrawingUtil.drawPose(robot.follower)
         when (alliance) {
@@ -135,14 +138,14 @@ abstract class TeleOpMode : OpMode() {
         if (gamepad1.rightBumperWasPressed()) { firingSS.execFiring().schedule(); gamepad1.rumble(500) }
         if (gamepad1.crossWasPressed()) { robot.follower.setPose(resetPose) }
         if (intakeSS.isFull()) {
-            //if (firstFullBool) { firstFullTimer.start();firstFullBool = false;return }
-            //if (!firstFullTimer.done()) return
-            //if (!StateUtil.isFiring) {
-            //    intakeSS.speed = 0.0
-            //}
+            if (firstFullBool) { firstFullTimer.start();firstFullBool = false;return }
+            if (!firstFullTimer.done()) return
+            if (!StateUtil.isFiring) {
+                intakeSS.speed = 0.0
+            }
             //robot.led.green();
             //gamepad1.rumble(500)
-            firingSS.execFiring().schedule()
+            //firingSS.execFiring().schedule()
         }
         if (gamepad1.triangleWasReleased()) {
             when (flowerDB) {
@@ -150,9 +153,6 @@ abstract class TeleOpMode : OpMode() {
                 1 -> { flowerDSS.back().schedule(); flowerDB = 0 }
             }
         }
-
-        // Run the Ivy Scheduler to actually update Commands
-        Scheduler.execute()
 
         //Show and update debug
         debugUtil.showAllDebugTeleop(robot.follower,alliance,runtime,gamepad1,firingSS.getHalf(),firingSS,/*hubSS.getVolts(),*/intakeSS,flowerDB,robot)

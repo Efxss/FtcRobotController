@@ -34,25 +34,30 @@ class LoadedRedTwoAndHalfPark : AutoOpMode() {
             firingSS.letGo(),
             PedroCommands.follow(robot.follower, PoseUtil.Paths.Red.bottomCellOutToRedSpike()
                 .with(Constants.foresightConfig.maxPathSpeed.at(0.9))),
-            //Groups.parallel(
-            //    flowerDSS.down(),
-            //    PedroCommands.follow(robot.follower, PoseUtil.Paths.Red.redSpikeToTopScoring()),
-            //),
+            Groups.parallel(
+                flowerDSS.down(),
+                PedroCommands.follow(robot.follower, PoseUtil.Paths.Red.redSpikeToTopScoring()),
+            ),
             PedroCommands.follow(robot.follower, PoseUtil.Paths.Red.redSpikeToTopScoring()),
             firingSS.letGo(),
-            //PedroCommands.follow(robot.follower, PoseUtil.Paths.Red.topSpikeScoringToTopFlower()),
-            //PedroCommands.follow(robot.follower, PoseUtil.Paths.Red.topFlowerToFlowerScore()),
-            //firingSS.letGo(),
-            //PedroCommands.follow(robot.follower, PoseUtil.Paths.Red.topFlowerScoreToBottomFlower()),
-            ////Groups.parallel(
-            ////    Groups.sequential(
-            ////        Commands.waitMs(700.0),
-            ////        flowerDSS.back()
-            ////    ),
-            ////    PedroCommands.follow(robot.follower, PoseUtil.Paths.Red.bottomFlowerToPark())
-            ////)
-            //PedroCommands.follow(robot.follower, PoseUtil.Paths.Red.bottomFlowerToBottomCell()),
-            //PedroCommands.follow(robot.follower, PoseUtil.Paths.Red.bottomCellFireToPark())
+            Groups.deadline(
+                intakeSS.isFullDeadline(),
+                PedroCommands.follow(robot.follower, PoseUtil.Paths.Red.topSpikeScoringToTopFlower()),
+            ),
+            PedroCommands.follow(robot.follower, PoseUtil.Paths.Red.topFlowerToFlowerScore()),
+            firingSS.letGo(),
+            Groups.deadline(
+                intakeSS.isFullDeadline(),
+                PedroCommands.follow(robot.follower, PoseUtil.Paths.Red.topFlowerScoreToBottomFlower()),
+            ),
+            Groups.parallel(
+                Groups.sequential(
+                    Commands.waitMs(700.0),
+                    flowerDSS.back()
+                ),
+                PedroCommands.follow(robot.follower, PoseUtil.Paths.Red.bottomFlowerToBottomCell()),
+            ),
+            PedroCommands.follow(robot.follower, PoseUtil.Paths.Red.bottomCellFireToPark())
         )
     }
 }
