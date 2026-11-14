@@ -19,6 +19,7 @@ object PoseUtil {
             val movePoseTestHead: Pose = p.of(80.0, 92.0, 270.0)
             val bottomBlueFlower: Pose = p.of(95.5, 32.0, 270.0)
         }
+
         object Red {
             // Bottom Auto Two and a half
             val bottomCellStartWall: Pose = p.of(55.0, 8.0, 90.0)
@@ -40,6 +41,7 @@ object PoseUtil {
             val topRedBlueFlowerSideToParkControl1:Pose = p.of(62.5904, 102.3984, 0.0)
         }
     }
+
     object Paths {
         object Blue {
             fun testPath(): Path = line(startPoseTest, movePoseTest).linear(startPoseTest,movePoseTest)

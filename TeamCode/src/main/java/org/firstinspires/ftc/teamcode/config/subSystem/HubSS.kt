@@ -27,6 +27,7 @@ class HubSS (
 
     /** Clears the bulk read cache on every hub. Call this once at the start of each loop() cycle. */
     fun clearCache() = hubs.forEach { it.clearBulkCache() }
+
     fun getVolts(): Double {
         return this.voltageSensor.voltage
     }

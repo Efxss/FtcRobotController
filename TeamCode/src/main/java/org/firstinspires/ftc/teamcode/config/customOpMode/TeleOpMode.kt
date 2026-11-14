@@ -32,6 +32,7 @@ abstract class TeleOpMode : OpMode() {
     protected var dp: DrivePowers = ManualDrive.fieldCentric(0.0, 0.0, 0.0, 0.0)
     private var flowerDB = 0
     private val firstFullTimer: Timing.Timer = Timing.Timer(1500, java.util.concurrent.TimeUnit.MILLISECONDS)
+    private val intakeRate: Timing.Rate = Timing().Rate(50)
     private var firstFullBool: Boolean = true
 
 
@@ -110,10 +111,17 @@ abstract class TeleOpMode : OpMode() {
     final override fun loop() {
         // Clear the bulk read cache
         hubSS.clearCache()
+
         // Run the Ivy Scheduler to actually update Commands
         Scheduler.execute()
+
+        //Show and update debug
+        debugUtil.showAllDebugTeleop(robot.follower,alliance,runtime,gamepad1,firingSS.getHalf(),firingSS,/*hubSS.getVolts(),*/intakeSS,flowerDB,robot)
+        debugUtil.update(telemetry)
+
         // Draw on Panels
         DrawingUtil.drawPose(robot.follower)
+
         when (alliance) {
             Robot.Alliance.BLUE -> {
                 dp = ManualDrive.fieldCentric(
@@ -137,16 +145,6 @@ abstract class TeleOpMode : OpMode() {
         if (gamepad1.leftBumperWasReleased()) { intakeSS.reverseIntake(false) }
         if (gamepad1.rightBumperWasPressed()) { firingSS.execFiring().schedule(); gamepad1.rumble(500) }
         if (gamepad1.crossWasPressed()) { robot.follower.setPose(resetPose) }
-        if (intakeSS.isFull()) {
-            if (firstFullBool) { firstFullTimer.start();firstFullBool = false;return }
-            if (!firstFullTimer.done()) return
-            if (!StateUtil.isFiring) {
-                intakeSS.speed = 0.0
-            }
-            //robot.led.green();
-            //gamepad1.rumble(500)
-            //firingSS.execFiring().schedule()
-        }
         if (gamepad1.triangleWasReleased()) {
             when (flowerDB) {
                 0 -> { flowerDSS.down().schedule(); flowerDB = 1 }
@@ -154,9 +152,19 @@ abstract class TeleOpMode : OpMode() {
             }
         }
 
-        //Show and update debug
-        debugUtil.showAllDebugTeleop(robot.follower,alliance,runtime,gamepad1,firingSS.getHalf(),firingSS,/*hubSS.getVolts(),*/intakeSS,flowerDB,robot)
-        debugUtil.update(telemetry)
+        if (intakeRate.atTime()) {
+            if (intakeSS.isFull()) {
+                if (firstFullBool) { firstFullTimer.start();firstFullBool = false;return }
+                if (!firstFullTimer.done()) return
+                if (!StateUtil.isFiring) {
+                    intakeSS.speed = 0.0
+                }
+                //robot.led.green();
+                //gamepad1.rumble(500)
+                //firingSS.execFiring().schedule()
+            }
+        }
+
         onLoop()
     }
 

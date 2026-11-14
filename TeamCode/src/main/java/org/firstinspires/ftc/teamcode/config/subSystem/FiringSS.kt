@@ -29,6 +29,7 @@ class FiringSS(
     private var currentVel: Double = 0.0
     private val servoBlock: Double = 0.18
     private val servoGo: Double = 0.42
+
     fun letGo(): Command {
         return sequential(
             Commands.instant { StateUtil.isFiring = true },
@@ -39,6 +40,7 @@ class FiringSS(
             Commands.instant { StateUtil.isFiring = false },
         ).requiring(robot.pollenBS)
     }
+
     fun execFiring(): Command {
         //val turnHalf = EnumMap<Robot.FieldHalf, Command>(Robot.FieldHalf::class.java)
         //fun topBlueCell(): Command {
@@ -103,6 +105,7 @@ class FiringSS(
             )
         )
     }
+
     fun calcFiring(): Command {
         return Commands.infinite {
             this.currentVel = robot.fireM.correctedVelocity
@@ -130,7 +133,9 @@ class FiringSS(
             robot.fireM.set(this.power)
         }
     }
+
     fun calcHalf(): Command = Commands.infinite { fieldHalf = if (robot.follower.pose().y() >= 72) Robot.FieldHalf.TOP else Robot.FieldHalf.BOTTOM }
+
     private fun intakeSpd(tab: InterpLUT): Command {
         val fastFireRange = 0.0..30.0
         val fastFire = 1.0
@@ -149,9 +154,13 @@ class FiringSS(
             }
         }
     }
+
     fun getHalf(): Robot.FieldHalf = this.fieldHalf
+
     fun getPower(): Double = this.power
+
     fun getVelocity(): Double = this.currentVel
+
     fun reset() {
         robot.pollenBS.set(this.servoBlock)
         robot.hoodDS.set(0.0)

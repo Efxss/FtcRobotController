@@ -24,6 +24,7 @@ class IntakeSS(
     private var pidfVelocity: Double = 0.0
     private var velocityThreshold: Double = 650.0
     private var rev = true
+
     fun runIntake(): Command = Command.build()
         .setExecute {
             this.currentVel = robot.intakeM1.correctedVelocity
@@ -32,9 +33,18 @@ class IntakeSS(
         }
         .setEnd { robot.intakeMG.stopMotor() }
         .requiring(robot.intakeMG)
-    private fun setRev(state: Boolean) { if (this.rev != state) { this.rev = state }; robot.intakeM1.inverted = !this.rev; robot.intakeM2.inverted = this.rev }
+
+    private fun setRev(state: Boolean) {
+        if (this.rev != state) {
+            this.rev = state
+        }
+        robot.intakeM1.inverted = !this.rev; robot.intakeM2.inverted = this.rev
+    }
+
     fun reverseIntake(state: Boolean) {setRev(state)}
+
     fun isFull(): Boolean = if (abs(robot.intakeM1.velocity) <= this.velocityThreshold) true else false
+
     fun isFullDeadline(): Command {
         return Command.build()
             .setDone { this.isFull() }
