@@ -8,8 +8,11 @@ import com.pedropathing.ivy.Command
 import com.pedropathing.ivy.commands.Commands
 import com.pedropathing.ivy.groups.Groups
 import com.pedropathing.ivy.groups.Groups.sequential
+import com.pedropathing.ivy.pedro.PedroCommands
+import com.pedropathing.math.Pose
 import com.seattlesolvers.solverslib.hardware.motors.Motor
 import com.seattlesolvers.solverslib.util.InterpLUT
+import com.seattlesolvers.solverslib.util.MathUtils
 import org.firstinspires.ftc.teamcode.config.Robot
 import org.firstinspires.ftc.teamcode.config.util.MathUtil
 import org.firstinspires.ftc.teamcode.config.util.StateUtil
@@ -32,7 +35,6 @@ class FiringSS(
 
     fun letGo(): Command {
         return sequential(
-            Commands.instant { StateUtil.isFiring = true },
             Commands.instant { robot.pollenBS.set(servoGo) },
             //Commands.waitMs(1250.0),
             Commands.waitMs(1000.0),
@@ -42,67 +44,42 @@ class FiringSS(
     }
 
     fun execFiring(): Command {
-        //val turnHalf = EnumMap<Robot.FieldHalf, Command>(Robot.FieldHalf::class.java)
-        //fun topBlueCell(): Command {
-        //    fun turn(): Command {
-        //        return PedroCommands.hold(robot.follower, Pose(
-        //            robot.follower.pose().x(),
-        //            robot.follower.pose().y(),
-        //            Math.toRadians(robot.upFireHeadBlueTab.get(robot.follower.pose().distance(robot.refPose))))
-        //        )
-        //    }
-        //    return Groups.parallel(intakeSpd(robot.upFireHeadBlueTab),turn())
-        //}
-        //fun bottomBlueCell(): Command {
-        //    fun turn(): Command {
-        //        return PedroCommands.hold(robot.follower, Pose(
-        //            robot.follower.pose().x(),
-        //            robot.follower.pose().y(),
-        //            Math.toRadians(robot.downFireHeadBlueTab.get(robot.follower.pose().distance(robot.refPose))))
-        //        )
-        //    }
-        //    return Groups.parallel(intakeSpd(robot.downFireHeadBlueTab),turn())
-        //}
-        //fun topRedCell(): Command {
-        //    fun turn(): Command {
-        //        return PedroCommands.hold(robot.follower,Pose(
-        //            robot.follower.pose().x(),
-        //            robot.follower.pose().y(),
-        //            Math.toRadians(robot.upFireHeadRedTab.get(robot.follower.pose().distance(robot.refPose))))
-        //        )
-        //    }
-        //    return Groups.parallel(intakeSpd(robot.upFireHeadRedTab),turn())
-        //}
-        //fun bottomRedCell(): Command {
-        //    fun turn(): Command {
-        //        return PedroCommands.hold(robot.follower,Pose(
-        //            robot.follower.pose().x(),
-        //            robot.follower.pose().y(),
-        //            Math.toRadians(robot.downFireHeadRedTab.get(robot.follower.pose().distance(robot.refPose))))
-        //        )
-        //    }
-        //    return Groups.parallel(intakeSpd(robot.downFireHeadRedTab),turn())
-        //}
-        //when (alliance) {
-        //    Robot.Alliance.BLUE -> {
-        //        turnHalf[Robot.FieldHalf.TOP] = topBlueCell()
-        //        turnHalf[Robot.FieldHalf.BOTTOM] = bottomBlueCell()
-        //    }
-        //    Robot.Alliance.RED -> {
-        //        turnHalf[Robot.FieldHalf.TOP] = topRedCell()
-        //        turnHalf[Robot.FieldHalf.BOTTOM] = bottomRedCell()
-        //    }
-        //}
-        //fun turnHalfFun(): Command = Commands.match({fieldHalf}, turnHalf)
-        return Groups.parallel(
+        fun turnFun(): Command {
+            fun turning(): Command { return Commands.instant { StateUtil.isTurning = true } }
+            fun notTurning(): Command {
+                return Command.build()
+                    .setDone {
+                        val error = MathUtils.normalizeRadians(
+                            robot.follower.pose().heading() -
+                                    MathUtil.cellRadian(robot.follower.pose(), this.fieldHalf, this.alliance, this.robot),
+                            false
+                        )
+                        abs(error) < Math.toRadians(3.0)
+                    }
+                    .setEnd { StateUtil.isTurning = false }
+            }
+            fun stop(): Command = Commands.instant { robot.follower.stop() }
+            fun turn(): Command {
+                return PedroCommands.hold(robot.follower, Pose(
+                    robot.follower.pose().x(),
+                    robot.follower.pose().y(),
+                    MathUtil.cellRadian(robot.follower.pose(), this.fieldHalf, this.alliance, this.robot))
+                    //Math.toRadians(robot.downFireHeadBlueTab.get(robot.follower.pose().distance(robot.refPose))))
+                )
+            }
+            return sequential(turning(),stop(),turn(),notTurning())
+        }
+        return Groups.sequential(
             //robot.led.flash(3),
-            Commands.instant { intakeSS.speed = robot.intakeFire },
+            Commands.instant { StateUtil.isFiring = true },
+            Commands.instant { intakeSS.speed = robot.intakeDef },
+            turnFun(),
+            Commands.waitMs(500.0),
             letGo(),
-            //turnHalfFun(),
-            Groups.sequential(
-                Commands.waitMs(850.0),
-                Commands.instant { intakeSS.speed = robot.intakeDef }
-            )
+            //Groups.sequential(
+            //    Commands.waitMs(850.0),
+            //    Commands.instant { intakeSS.speed = robot.intakeDef }
+            //)
         )
     }
 

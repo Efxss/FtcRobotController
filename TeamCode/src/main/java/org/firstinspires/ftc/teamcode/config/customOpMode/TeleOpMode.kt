@@ -32,7 +32,7 @@ abstract class TeleOpMode : OpMode() {
     protected var dp: DrivePowers = ManualDrive.fieldCentric(0.0, 0.0, 0.0, 0.0)
     private var flowerDB = 0
     private val firstFullTimer: Timing.Timer = Timing.Timer(1500, java.util.concurrent.TimeUnit.MILLISECONDS)
-    private val intakeRate: Timing.Rate = Timing().Rate(50)
+    private val intakeRate: Timing.Rate = Timing().Rate(25)
     private var firstFullBool: Boolean = true
 
 
@@ -102,8 +102,8 @@ abstract class TeleOpMode : OpMode() {
             Robot.Alliance.BLUE -> { Pose(9.1, 9.2, Math.toRadians(90.0)) }
             Robot.Alliance.RED -> { Pose(132.3, 132.4, Math.toRadians(90.0)) }
         }
-        Scheduler.schedule(intakeSS.runIntake())
-        //Scheduler.schedule(firingSS.calcHalf())
+        //Scheduler.schedule(intakeSS.runIntake())
+        Scheduler.schedule(firingSS.calcHalf())
         //robot.genTab()
         onStart()
     }
@@ -143,7 +143,7 @@ abstract class TeleOpMode : OpMode() {
 
         if (gamepad1.leftBumperWasPressed()) { intakeSS.reverseIntake(true) }
         if (gamepad1.leftBumperWasReleased()) { intakeSS.reverseIntake(false) }
-        if (gamepad1.rightBumperWasPressed()) { firingSS.execFiring().schedule(); gamepad1.rumble(500) }
+        if (gamepad1.rightBumperWasPressed()) { firingSS.execFiring().schedule() }
         if (gamepad1.crossWasPressed()) { robot.follower.setPose(resetPose) }
         if (gamepad1.triangleWasReleased()) {
             when (flowerDB) {
@@ -152,17 +152,17 @@ abstract class TeleOpMode : OpMode() {
             }
         }
 
-        if (intakeRate.atTime()) {
-            if (intakeSS.isFull()) {
-                if (firstFullBool) { firstFullTimer.start();firstFullBool = false;return }
-                if (!firstFullTimer.done()) return
-                if (!StateUtil.isFiring) {
-                    intakeSS.speed = 0.0
+        if (intakeSS.isFull()) {
+            if (firstFullBool) { firstFullTimer.start();firstFullBool = false;return }
+            if (!firstFullTimer.done()) return
+            if (!StateUtil.isFiring) {
+                if (intakeRate.atTime()) {
+                    intakeSS.speed = 0.1
                 }
-                //robot.led.green();
-                //gamepad1.rumble(500)
-                //firingSS.execFiring().schedule()
             }
+            //robot.led.green();
+            //gamepad1.rumble(500)
+            //firingSS.execFiring().schedule()
         }
 
         onLoop()

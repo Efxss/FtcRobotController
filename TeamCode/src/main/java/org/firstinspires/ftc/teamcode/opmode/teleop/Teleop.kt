@@ -23,7 +23,9 @@ class Teleop : TeleOpMode() {
     }
 
     override fun onLoop() {
-        //robot.follower.manual(dp)
+        if (!StateUtil.isTurning) {
+            robot.follower.manual(dp)
+        }
         //ManualDrive.driveOrHold(robot.follower, dp) // Do this to make it so when you stop holding the stick it holds position
         StateUtil.hoodAngle = privateHoodAngle
         StateUtil.wheelPower = privateWheelPower

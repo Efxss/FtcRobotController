@@ -43,14 +43,17 @@ class PanelsDebugUtil(
     ) {
         panels?.apply {
             addLine("=== PedroPathing ===")
-            //addData("Follower Pose X", follower.pose().x())
-            //addData("Follower Pose Y", follower.pose().y())
-            //addData("Follower Heading", Math.toDegrees(follower.pose().heading()))
+            addData("Follower Pose X", follower.pose().x())
+            addData("Follower Pose Y", follower.pose().y())
+            addData("Follower Heading", Math.toDegrees(follower.pose().heading()))
+            addData("Dist To Cell", Math.toDegrees(MathUtil.cellRadian(follower.pose(), fieldHalf, alliance, robot)))
             //addData("Dist From Ref Pose", follower.pose().distance(robot.refPose))
-            //addLine("")
+            addLine("")
             addLine("=== HardWare ===")
             //addData("Intake Group Speed", robot.intakeMG.velocity)
             addData("Intake 1 Speed", robot.intakeM1.velocity)
+            addData("Intake 1 Wanted Speed", intakeSS.speed)
+            addData("Is Firing", StateUtil.isFiring)
             //addData("Intake 1 Corrected Velocity", robot.intakeM1.correctedVelocity)
             //addData("Intake 2 Speed", robot.intakeM2.velocity)
             //addData("intake PIDF Point", robot.intakeMPIDF.setPoint)
@@ -74,8 +77,8 @@ class PanelsDebugUtil(
             addLine("=== OpMode ===")
             //addData("millivolts", volts)
             //addData("runtime", runtime)
-            //addData("Field Half", fieldHalf.name)
-            //addData("Alliance", alliance.name)
+            addData("Field Half", fieldHalf.name)
+            addData("Alliance", alliance.name)
         }
     }
 
