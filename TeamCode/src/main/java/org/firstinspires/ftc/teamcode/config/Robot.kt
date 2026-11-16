@@ -74,12 +74,6 @@ class Robot(
     val upFireRedTab = InterpLUT()
     val downFireRedTab = InterpLUT()
 
-    // Cell Heading
-    val upFireHeadBlueTab = InterpLUT()
-    val downFireHeadBlueTab = InterpLUT()
-    val upFireHeadRedTab = InterpLUT()
-    val downFireHeadRedTab = InterpLUT()
-
     // Hood Angle
     val upFireHoodBlueTab = InterpLUT()
     val downFireHoodBlueTab = InterpLUT()
@@ -106,43 +100,6 @@ class Robot(
         //downFireRedTab.apply {
         //    add(Pose(0.0,0.0).distance(bottomRedRefPose), 0.1)
         //    add(Pose(0.0,0.0).distance(bottomRedRefPose), 0.1)
-        //}.createLUT()
-
-        // Cell Heading
-        //upFireHeadBlueTab.apply {
-        //    add(Pose(31.49,127.47).x(), -39.0)
-        //    add(Pose(62.71,124.92).distance(refPose), -58.0)
-        //    add(Pose(56.13, 127.68).distance(refPose), -60.0)
-        //    add(Pose(86.5, 133.2).distance(refPose), -90.0)
-        //    add(Pose(101.37, 131.5).distance(refPose), -111.0)
-        //    add(Pose(120.48, 129.16).distance(refPose), -129.0)
-        //}.createLUT()
-
-        //downFireHeadBlueTab.apply {
-        //    add(Pose(16.4,14.55).distance(refPose),25.0)
-        //    add(Pose(46.35,13.06).distance(refPose), 45.0)
-        //    add(Pose(65.25,10.73).distance(refPose), 61.0)
-        //    add(Pose(81.0,9.0).distance(refPose), 90.0) // ~ Pos
-        //    add(Pose(93.07,20.92).distance(refPose),112.0)
-        //    add(Pose(112.4,11.79).distance(refPose),129.0)
-        //}.createLUT()
-
-        //upFireHeadRedTab.apply {
-        //    add(Pose(28.72,121.8).distance(refPose), -50.0)
-        //    add(Pose(59.0,133.4).distance(refPose), -90.0)
-        //    add(Pose(70.35,127.75).distance(refPose), -107.0)
-        //    add(Pose(82.45,126.9).distance(refPose), -122.0)
-        //    add(Pose(87.98,128.6).distance(refPose), -128.0)
-        //    add(Pose(109.64,127.11).distance(refPose), -143.0)
-        //}.createLUT()
-
-        //downFireHeadRedTab.apply {
-        //    add(Pose(16.4,12.0).distance(refPose), 44.0)
-        //    add(Pose(33.7,12.0).distance(refPose), 56.0)
-        //    add(Pose(62.2,8.0).distance(refPose), 90.0)
-        //    add(Pose(80.0,12.0).distance(refPose), 124.0)
-        //    add(Pose(96.5,17.5).distance(refPose), 137.0)
-        //    add(Pose(110.4,12.0).distance(refPose), 141.0)
         //}.createLUT()
 
         // Hood Angle
