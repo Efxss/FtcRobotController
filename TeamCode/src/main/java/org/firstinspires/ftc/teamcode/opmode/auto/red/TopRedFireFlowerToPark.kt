@@ -43,7 +43,7 @@ class TopRedFireFlowerToPark : AutoOpMode() {
                 )
         }
         return Groups.sequential(
-            Commands.instant { StateUtil.hoodAngle = 0.07; StateUtil.wheelPower = 0.53 },
+            Commands.instant { firingSS.hoodAngle = 0.07; firingSS.power = 0.53 },
             Commands.waitMs(1000.0),
             firingSS.letGo(),
             PedroCommands.follow(robot.follower, topRedBlueFlowerSideToPark()

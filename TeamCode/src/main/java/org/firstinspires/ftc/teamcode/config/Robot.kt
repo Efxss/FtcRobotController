@@ -51,74 +51,41 @@ class Robot(
     // Hardware
     val led by lazy { LED(hardwareMap) }
     // Intake
-    val intakeMCT: Double = 0.00001
+    var intakeMCT: Double = 0.00001
     val intakeM1 by lazy { MotorEx(hardwareMap,"intake1",Motor.GoBILDA.BARE).setCachingTolerance(intakeMCT) as MotorEx }; val intakeDef = 0.4
     val intakeM2 by lazy { MotorEx(hardwareMap,"intake2",Motor.GoBILDA.BARE).setCachingTolerance(intakeMCT) as MotorEx }; val intakeFire = 0.6
     val intakeMG by lazy { MotorGroup(intakeM1, intakeM2) }
     val intakeMPIDF = PIDFController(0.0005, 0.0, 0.000, 0.00035)
-    val pollenBS by lazy { ServoEx(hardwareMap, "pollen").setCachingTolerance(0.0001) as ServoEx }
     // Shooter
     val fireM by lazy { MotorEx(hardwareMap,"fire",Motor.GoBILDA.BARE).setCachingTolerance(0.00001) as MotorEx }
     val hoodDS by lazy { ServoEx(hardwareMap, "hood").setCachingTolerance(0.00000001) as ServoEx }
+    val pollenBS by lazy { ServoEx(hardwareMap, "pollen").setCachingTolerance(0.0001) as ServoEx }
     var fireMPIDF = PIDFController(0.00175, 0.0, 0.000, 0.00035)
     // Flower DeScorer
-    val flowerDS1 by lazy { ServoEx(hardwareMap,"fds1").setCachingTolerance(0.0) as ServoEx }  // Control Hub Servo 1
-    val flowerDS2 by lazy { ServoEx(hardwareMap,"fds2").setCachingTolerance(0.0) as ServoEx }  // Expansion Hub Servo 1
+    var flowerDSC = 0.0
+    val flowerDS1 by lazy { ServoEx(hardwareMap,"fds1").setCachingTolerance(flowerDSC) as ServoEx }  // Control Hub Servo 1
+    val flowerDS2 by lazy { ServoEx(hardwareMap,"fds2").setCachingTolerance(flowerDSC) as ServoEx }  // Expansion Hub Servo 1
     val flowerDSG by lazy { ServoExGroup(flowerDS1, flowerDS2) }
 
     // Tables and refs
 
     // Flywheel Power
-    val upFireBlueTab = InterpLUT()
-    val downFireBlueTab = InterpLUT()
-    val upFireRedTab = InterpLUT()
-    val downFireRedTab = InterpLUT()
+    val fireTab = InterpLUT()
 
     // Hood Angle
-    val upFireHoodBlueTab = InterpLUT()
-    val downFireHoodBlueTab = InterpLUT()
-    val upFireHoodRedTab = InterpLUT()
-    val downFireHoodRedTab = InterpLUT()
+    val fireHoodTab = InterpLUT()
+
     // Objects, Classes and Functions
     fun genTab() {
         // Flywheel Power
-        //upFireBlueTab.apply {
-        //    add(Pose(0.0,0.0).distance(topBlueRefPose), 0.1)
-        //    add(Pose(0.0,0.0).distance(topBlueRefPose), 0.1)
-        //}.createLUT()
-
-        //downFireBlueTab.apply {
-        //    add(Pose(81.0,9.0).distance(bottomBlueRefPose), 0.45) // ~ Pos
-        //    add(Pose(0.0,0.0).distance(bottomBlueRefPose), 0.1)
-        //}.createLUT()
-
-        //upFireRedTab.apply {
-        //    add(Pose(0.0,0.0).distance(topRedRefPose), 0.1)
-        //    add(Pose(0.0,0.0).distance(topRedRefPose), 0.1)
-        //}.createLUT()
-
-        //downFireRedTab.apply {
-        //    add(Pose(0.0,0.0).distance(bottomRedRefPose), 0.1)
-        //    add(Pose(0.0,0.0).distance(bottomRedRefPose), 0.1)
-        //}.createLUT()
+        fireTab.apply {
+            add(47.0, 0.45)
+            add(Pose(0.0,0.0).distance(topBlueRefPose), 0.1)
+        }.createLUT()
 
         // Hood Angle
-        //upFireHoodBlueTab.apply {
-        //    add(Pose(85.8, 133.2).distance(topBlueRefPose), 270.0)
-        //}.createLUT()
-
-        //downFireHoodBlueTab.apply {
-        //    add(Pose(81.0,9.0).distance(bottomBlueRefPose), 0.1) // ~ Pos
-        //    add(Pose(0.0,0.0).distance(bottomBlueRefPose), 0.1)
-        //}.createLUT()
-
-        //upFireHoodRedTab.apply {
-        //    add(Pose(0.0,0.0).distance(topRedRefPose), 0.1)
-        //    add(Pose(0.0,0.0).distance(topRedRefPose), 0.1)
-        //}.createLUT()
-
-        //downFireHoodRedTab.apply {
-        //    add(Pose(16.4,12.0).distance(bottomRedRefPose), 44.0)
-        //}.createLUT()
+        fireHoodTab.apply {
+            add(47.0, 0.1)
+        }.createLUT()
     }
 }

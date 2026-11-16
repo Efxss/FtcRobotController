@@ -27,8 +27,8 @@ class Teleop : TeleOpMode() {
             robot.follower.manual(dp)
         }
         //ManualDrive.driveOrHold(robot.follower, dp) // Do this to make it so when you stop holding the stick it holds position
-        StateUtil.hoodAngle = privateHoodAngle
-        StateUtil.wheelPower = privateWheelPower
+        firingSS.hoodAngle = privateHoodAngle
+        firingSS.power = privateWheelPower
         robot.follower.update()
     }
 }

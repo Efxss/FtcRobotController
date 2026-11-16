@@ -27,10 +27,12 @@ class FiringSS(
         robot.fireM.setRunMode(Motor.RunMode.RawPower)
     }
     private var fieldHalf: Robot.FieldHalf = Robot.FieldHalf.TOP
-    private var power: Double = 0.0
     private var currentVel: Double = 0.0
+    private var pidfVelocity: Double = 0.0
     private val servoBlock: Double = 0.18
     private val servoGo: Double = 0.42
+    var power: Double = 0.0
+    var hoodAngle: Double = 0.0
 
     fun letGo(): Command {
         return sequential(
@@ -70,44 +72,48 @@ class FiringSS(
         return Groups.sequential(
             //robot.led.flash(3),
             Commands.instant { StateUtil.isFiring = true },
-            Commands.instant { intakeSS.speed = robot.intakeDef },
+            Commands.instant { intakeSS.speed = robot.intakeFire },
             turnFun(),
             letGo(),
+            Commands.waitMs(150.0),
+            Commands.instant { intakeSS.speed = robot.intakeDef },
         )
     }
 
     fun calcFiring(): Command {
         return Commands.infinite {
             this.currentVel = robot.fireM.correctedVelocity
-            this.power = robot.fireMPIDF.calculate(this.currentVel, MathUtil.pidfPower(StateUtil.wheelPower))
-            robot.hoodDS.set(StateUtil.hoodAngle) // MAX IS 0.65 maybe
+            this.pidfVelocity = robot.fireMPIDF.calculate(this.currentVel, MathUtil.pidfPower(this.power))
+            robot.hoodDS.set(this.hoodAngle) // MAX IS 0.65 maybe
             //when (alliance) {
             //    Robot.Alliance.BLUE -> {
-            //        if (fieldHalf == Robot.FieldHalf.TOP) {
-            //            this.power = robot.fireMPIDF.calculate(this.currentVel, MathUtil.pidfPower(robot.upFireBlueTab.get(robot.follower.pose().distance(robot.topBlueRefPose))))
-            //        }
-            //        else {
-            //            this.power = robot.fireMPIDF.calculate(this.currentVel, MathUtil.pidfPower(robot.downFireBlueTab.get(robot.follower.pose().distance(robot.bottomBlueRefPose))))
+            //        when (this.fieldHalf) {
+            //            Robot.FieldHalf.TOP -> {
+            //                this.pidfVelocity = robot.fireMPIDF.calculate(this.currentVel, MathUtil.pidfPower(robot.fireTab.get(robot.follower.pose().distance(robot.topBlueRefPose))))
+            //            }
+            //            Robot.FieldHalf.BOTTOM -> {
+            //                this.pidfVelocity = robot.fireMPIDF.calculate(this.currentVel, MathUtil.pidfPower(robot.fireTab.get(robot.follower.pose().distance(robot.bottomBlueRefPose))))
+            //            }
             //        }
             //    }
             //    Robot.Alliance.RED -> {
-            //        if (fieldHalf == Robot.FieldHalf.TOP) {
-            //            this.power = robot.fireMPIDF.calculate(this.currentVel, MathUtil.pidfPower(robot.upFireRedTab.get(robot.follower.pose().distance(robot.topRedRefPose))))
-            //        }
-            //        else {
-            //            this.power = robot.fireMPIDF.calculate(this.currentVel, MathUtil.pidfPower(robot.downFireRedTab.get(robot.follower.pose().distance(robot.bottomRedRefPose))))
+            //        when (this.fieldHalf) {
+            //            Robot.FieldHalf.TOP -> {
+            //                this.pidfVelocity = robot.fireMPIDF.calculate(this.currentVel, MathUtil.pidfPower(robot.fireTab.get(robot.follower.pose().distance(robot.topRedRefPose))))
+            //            }
+            //            Robot.FieldHalf.BOTTOM -> {
+            //                this.pidfVelocity = robot.fireMPIDF.calculate(this.currentVel, MathUtil.pidfPower(robot.fireTab.get(robot.follower.pose().distance(robot.bottomRedRefPose))))
+            //            }
             //        }
             //    }
             //}
-            robot.fireM.set(this.power)
+            robot.fireM.set(this.pidfVelocity)
         }
     }
 
     fun calcHalf(): Command = Commands.infinite { fieldHalf = if (robot.follower.pose().y() >= 72) Robot.FieldHalf.TOP else Robot.FieldHalf.BOTTOM }
 
     fun getHalf(): Robot.FieldHalf = this.fieldHalf
-
-    fun getPower(): Double = this.power
 
     fun getVelocity(): Double = this.currentVel
 

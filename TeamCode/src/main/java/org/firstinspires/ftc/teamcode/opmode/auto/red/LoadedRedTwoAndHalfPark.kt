@@ -120,7 +120,7 @@ class LoadedRedTwoAndHalfPark : AutoOpMode() {
             )
         }
         return Groups.sequential(
-            Commands.instant { StateUtil.hoodAngle = 0.07; StateUtil.wheelPower = 0.53 },
+            Commands.instant { firingSS.hoodAngle = 0.07; firingSS.power = 0.53 },
             Commands.waitMs(1000.0),
             PedroCommands.follow(robot.follower, bottomCellWallOutFire()),
             firingSS.letGo(),
