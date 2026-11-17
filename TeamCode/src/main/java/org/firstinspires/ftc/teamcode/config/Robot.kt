@@ -45,7 +45,7 @@ class Robot(
     val refPose: Pose = Pose(0.0,0.0)
     val bottomRedRefPose: Pose = Pose(57.0,55.0)
     val topRedRefPose: Pose = Pose(57.0,85.0)
-    val bottomBlueRefPose: Pose = Pose(84.0,55.0)
+    val bottomBlueRefPose: Pose = Pose(84.0,54.0)
     val topBlueRefPose: Pose = Pose(84.0,85.0)
     fun initPedro() { follower = Constants.create(hardwareMap) }
     // Hardware
@@ -60,7 +60,7 @@ class Robot(
     val fireM by lazy { MotorEx(hardwareMap,"fire",Motor.GoBILDA.BARE).setCachingTolerance(0.00001) as MotorEx }
     val hoodDS by lazy { ServoEx(hardwareMap, "hood").setCachingTolerance(0.00000001) as ServoEx }
     val pollenBS by lazy { ServoEx(hardwareMap, "pollen").setCachingTolerance(0.0001) as ServoEx }
-    var fireMPIDF = PIDFController(0.00175, 0.0, 0.000, 0.00035)
+    var fireMPIDF = PIDFController(0.0025, 0.0, 0.000, 0.00035)
     // Flower DeScorer
     var flowerDSC = 0.0
     val flowerDS1 by lazy { ServoEx(hardwareMap,"fds1").setCachingTolerance(flowerDSC) as ServoEx }  // Control Hub Servo 1
@@ -80,12 +80,15 @@ class Robot(
         // Flywheel Power
         fireTab.apply {
             add(47.0, 0.45)
-            add(Pose(0.0,0.0).distance(topBlueRefPose), 0.1)
+            add(55.3, 0.45)
+            add(70.0, 0.435)
         }.createLUT()
 
         // Hood Angle
         fireHoodTab.apply {
             add(47.0, 0.1)
+            add(55.3, 0.15)
+            add(70.0, 0.13)
         }.createLUT()
     }
 }

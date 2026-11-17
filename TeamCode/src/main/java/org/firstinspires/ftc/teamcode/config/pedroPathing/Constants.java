@@ -29,7 +29,7 @@ public class Constants {
                 c.frontRightDirection.set(DcMotorSimple.Direction.FORWARD);
                 c.backRightDirection.set(DcMotorSimple.Direction.FORWARD);
 
-                c.manualBrakeMode.set(false);
+                c.manualBrakeMode.set(true);
                 c.powerThreshold.set(0.0);
             }
     );

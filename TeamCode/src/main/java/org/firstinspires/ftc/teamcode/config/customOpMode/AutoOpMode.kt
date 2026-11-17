@@ -89,7 +89,7 @@ abstract class AutoOpMode : OpMode() {
         resetRuntime()
         Scheduler.schedule(intakeSS.runIntake())
         //Scheduler.schedule(firingSS.calcHalf())
-        Scheduler.schedule(firingSS.calcFiring())
+        Scheduler.schedule(firingSS.calcFiring(false))
         //robot.genTab()
         onStart()
     }

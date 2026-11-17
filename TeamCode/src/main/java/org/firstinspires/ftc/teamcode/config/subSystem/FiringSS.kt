@@ -80,33 +80,40 @@ class FiringSS(
         )
     }
 
-    fun calcFiring(): Command {
+    fun calcFiring(autoCalc: Boolean): Command {
         return Commands.infinite {
             this.currentVel = robot.fireM.correctedVelocity
-            this.pidfVelocity = robot.fireMPIDF.calculate(this.currentVel, MathUtil.pidfPower(this.power))
-            robot.hoodDS.set(this.hoodAngle) // MAX IS 0.65 maybe
-            //when (alliance) {
-            //    Robot.Alliance.BLUE -> {
-            //        when (this.fieldHalf) {
-            //            Robot.FieldHalf.TOP -> {
-            //                this.pidfVelocity = robot.fireMPIDF.calculate(this.currentVel, MathUtil.pidfPower(robot.fireTab.get(robot.follower.pose().distance(robot.topBlueRefPose))))
-            //            }
-            //            Robot.FieldHalf.BOTTOM -> {
-            //                this.pidfVelocity = robot.fireMPIDF.calculate(this.currentVel, MathUtil.pidfPower(robot.fireTab.get(robot.follower.pose().distance(robot.bottomBlueRefPose))))
-            //            }
-            //        }
-            //    }
-            //    Robot.Alliance.RED -> {
-            //        when (this.fieldHalf) {
-            //            Robot.FieldHalf.TOP -> {
-            //                this.pidfVelocity = robot.fireMPIDF.calculate(this.currentVel, MathUtil.pidfPower(robot.fireTab.get(robot.follower.pose().distance(robot.topRedRefPose))))
-            //            }
-            //            Robot.FieldHalf.BOTTOM -> {
-            //                this.pidfVelocity = robot.fireMPIDF.calculate(this.currentVel, MathUtil.pidfPower(robot.fireTab.get(robot.follower.pose().distance(robot.bottomRedRefPose))))
-            //            }
-            //        }
-            //    }
-            //}
+            if (autoCalc) {
+                when (alliance) {
+                    Robot.Alliance.BLUE -> {
+                        when (this.fieldHalf) {
+                            Robot.FieldHalf.TOP -> {
+                                this.pidfVelocity = robot.fireMPIDF.calculate(this.currentVel, MathUtil.pidfPower(robot.fireTab.get(robot.follower.pose().distance(robot.topBlueRefPose))))
+                                this.hoodAngle = robot.fireHoodTab.get(robot.follower.pose().distance(robot.topBlueRefPose))
+                            }
+                            Robot.FieldHalf.BOTTOM -> {
+                                this.pidfVelocity = robot.fireMPIDF.calculate(this.currentVel, MathUtil.pidfPower(robot.fireTab.get(robot.follower.pose().distance(robot.bottomBlueRefPose))))
+                                this.hoodAngle = robot.fireHoodTab.get(robot.follower.pose().distance(robot.bottomBlueRefPose))
+                            }
+                        }
+                    }
+                    Robot.Alliance.RED -> {
+                        when (this.fieldHalf) {
+                            Robot.FieldHalf.TOP -> {
+                                this.pidfVelocity = robot.fireMPIDF.calculate(this.currentVel, MathUtil.pidfPower(robot.fireTab.get(robot.follower.pose().distance(robot.topRedRefPose))))
+                                this.hoodAngle = robot.fireHoodTab.get(robot.follower.pose().distance(robot.topRedRefPose))
+                            }
+                            Robot.FieldHalf.BOTTOM -> {
+                                this.pidfVelocity = robot.fireMPIDF.calculate(this.currentVel, MathUtil.pidfPower(robot.fireTab.get(robot.follower.pose().distance(robot.bottomRedRefPose))))
+                                this.hoodAngle = robot.fireHoodTab.get(robot.follower.pose().distance(robot.bottomRedRefPose))
+                            }
+                        }
+                    }
+                }
+            } else {
+                this.pidfVelocity = robot.fireMPIDF.calculate(this.currentVel, MathUtil.pidfPower(this.power))
+            }
+            robot.hoodDS.set(this.hoodAngle)
             robot.fireM.set(this.pidfVelocity)
         }
     }
