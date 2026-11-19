@@ -73,7 +73,7 @@ abstract class AutoOpMode : OpMode() {
         debugUtil.update(telemetry)
         intakeSS = IntakeSS(robot)
         firingSS = FiringSS(robot,alliance,intakeSS)
-        //flowerDSS = FlowerDSS(robot)
+        flowerDSS = FlowerDSS(robot)
         hubSS = HubSS(hardwareMap)
         firingSS.reset()
         onInit()
@@ -115,7 +115,7 @@ abstract class AutoOpMode : OpMode() {
         StateUtil.endOfAutoPose = robot.follower.pose()
         StateUtil.alliance = alliance
         intakeSS.runIntake().cancel()
-        listOf(firingSS.calcFiring(), firingSS.calcHalf(), firingSS.execFiring()).forEach { it.cancel() }
+        listOf(firingSS.calcFiring(false), firingSS.execFiring()).forEach { it.cancel() }
         onStop()
     }
 

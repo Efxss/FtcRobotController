@@ -99,7 +99,7 @@ abstract class TeleOpMode : OpMode() {
     final override fun start() {
         resetRuntime()
         resetPose = when (alliance) {
-            Robot.Alliance.BLUE -> { Pose(45.6789, 14.1065, Math.toRadians(45.9299)) }
+            Robot.Alliance.BLUE -> { Pose(15.0, 9.65, Math.toRadians(90.0)) }
             Robot.Alliance.RED -> { Pose(132.3, 132.4, Math.toRadians(90.0)) }
         }
         Scheduler.schedule(intakeSS.runIntake())

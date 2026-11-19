@@ -57,9 +57,9 @@ class Robot(
     val intakeMG by lazy { MotorGroup(intakeM1, intakeM2) }
     val intakeMPIDF = PIDFController(0.0005, 0.0, 0.000, 0.00035)
     // Shooter
-    val fireM by lazy { MotorEx(hardwareMap,"fire",Motor.GoBILDA.BARE).setCachingTolerance(0.00001) as MotorEx }
-    val hoodDS by lazy { ServoEx(hardwareMap, "hood").setCachingTolerance(0.00000001) as ServoEx }
-    val pollenBS by lazy { ServoEx(hardwareMap, "pollen").setCachingTolerance(0.0001) as ServoEx }
+    val fireM by lazy { MotorEx(hardwareMap,"fire",Motor.GoBILDA.BARE).setCachingTolerance(0.0) as MotorEx }
+    val hoodDS by lazy { ServoEx(hardwareMap, "hood").setCachingTolerance(0.0) as ServoEx }
+    val pollenBS by lazy { ServoEx(hardwareMap, "pollen").setCachingTolerance(0.0) as ServoEx }
     var fireMPIDF = PIDFController(0.0025, 0.0, 0.000, 0.00035)
     // Flower DeScorer
     var flowerDSC = 0.0
@@ -79,16 +79,14 @@ class Robot(
     fun genTab() {
         // Flywheel Power
         fireTab.apply {
-            add(47.0, 0.45)
-            add(55.3, 0.45)
-            add(70.0, 0.435)
+            add(47.0, 0.69)
+            add(79.0, 0.72)
         }.createLUT()
 
         // Hood Angle
         fireHoodTab.apply {
-            add(47.0, 0.1)
-            add(55.3, 0.15)
-            add(70.0, 0.13)
+            add(47.0, 0.125)
+            add(79.0, 0.12)
         }.createLUT()
     }
 }

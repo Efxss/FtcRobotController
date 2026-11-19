@@ -13,13 +13,13 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import org.firstinspires.ftc.teamcode.config.Robot
 import org.firstinspires.ftc.teamcode.config.customOpMode.AutoOpMode
 import org.firstinspires.ftc.teamcode.config.pedroPathing.Constants
-import org.firstinspires.ftc.teamcode.config.util.StateUtil
 
 @Autonomous(group = "Red Auto", name = "Bottom Cell Two Half Tip Park"/*, preselectTeleOp = "Teleop"*/)
 class LoadedRedTwoAndHalfPark : AutoOpMode() {
     override val alliance = Robot.Alliance.RED
-    val bottomCellStartWall: Pose = robot.p.of(55.0, 8.0, 90.0)
+    lateinit var bottomCellStartWall: Pose
     override fun onInit() {
+        bottomCellStartWall = robot.p.of(55.0, 8.0, 90.0)
         robot.follower.setPose(bottomCellStartWall)
     }
 
@@ -120,7 +120,7 @@ class LoadedRedTwoAndHalfPark : AutoOpMode() {
             )
         }
         return Groups.sequential(
-            Commands.instant { firingSS.hoodAngle = 0.07; firingSS.power = 0.53 },
+            Commands.instant { firingSS.hoodAngle = 0.11; firingSS.power = 0.68 },
             Commands.waitMs(1000.0),
             PedroCommands.follow(robot.follower, bottomCellWallOutFire()),
             firingSS.letGo(),

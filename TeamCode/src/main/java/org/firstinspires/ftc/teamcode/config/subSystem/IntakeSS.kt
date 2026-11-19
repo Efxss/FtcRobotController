@@ -22,7 +22,7 @@ class IntakeSS(
     var speed: Double = robot.intakeDef
     private var currentVel: Double = 0.0
     private var pidfVelocity: Double = 0.0
-    private var velocityThreshold: Double = 300.0
+    private var velocityThreshold: Double = 480.0
     private var rev = true
 
     fun runIntake(): Command = Command.build()
