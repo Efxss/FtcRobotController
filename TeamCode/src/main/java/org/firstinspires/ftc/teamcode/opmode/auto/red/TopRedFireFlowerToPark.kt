@@ -12,13 +12,13 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import org.firstinspires.ftc.teamcode.config.Robot
 import org.firstinspires.ftc.teamcode.config.customOpMode.AutoOpMode
 import org.firstinspires.ftc.teamcode.config.pedroPathing.Constants
-import org.firstinspires.ftc.teamcode.config.util.StateUtil
 
 @Autonomous(group = "Red Auto", name = "Top Flower Fire To Park"/*, preselectTeleOp = "Teleop"*/)
 class TopRedFireFlowerToPark : AutoOpMode() {
     override val alliance = Robot.Alliance.RED
-    val topRedBlueFlowerSideStart:Pose = robot.p.of(58.4, 133.4, 270.0)
+    lateinit var topRedBlueFlowerSideStart: Pose
     override fun onInit() {
+        topRedBlueFlowerSideStart = robot.p.of(58.4, 133.4, 270.0)
         robot.follower.setPose(topRedBlueFlowerSideStart)
     }
 
@@ -37,10 +37,9 @@ class TopRedFireFlowerToPark : AutoOpMode() {
                 topRedBlueFlowerSideStart,
                 topRedBlueFlowerSideToParkControl1,
                 topRedBlueFlowerSideToPark
+            ).constant(
+                topRedBlueFlowerSideToPark,
             )
-                .constant(
-                    topRedBlueFlowerSideToPark,
-                )
         }
         return Groups.sequential(
             Commands.instant { firingSS.hoodAngle = 0.07; firingSS.power = 0.53 },
