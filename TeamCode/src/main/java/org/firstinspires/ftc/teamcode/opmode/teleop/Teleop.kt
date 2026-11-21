@@ -4,6 +4,7 @@ import com.bylazar.configurables.annotations.Configurable
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import org.firstinspires.ftc.teamcode.config.Robot
 import org.firstinspires.ftc.teamcode.config.customOpMode.TeleOpMode
+import org.firstinspires.ftc.teamcode.config.util.StateUtil
 
 @Configurable
 @TeleOp
@@ -18,13 +19,18 @@ class Teleop : TeleOpMode() {
     }
 
     override fun onStart() {
-        firingSS.calcFiring(false).schedule()
+        //firingSS.calcFiring(false).schedule()
     }
 
     override fun onLoop() {
-        //if (!StateUtil.isTurning) {
-        //    robot.follower.manual(dp)
-        //}
+        if (!StateUtil.isTurning) {
+            robot.follower.manual(dp)
+            //robot.follower.manual(
+            //    -gamepad1.left_stick_y.toDouble(),
+            //    -gamepad1.left_stick_x.toDouble(),
+            //    gamepad1.right_stick_x.toDouble(),
+            //)
+        }
         //ManualDrive.driveOrHold(robot.follower, dp) // Do this to make it so when you stop holding the stick it holds position
         firingSS.hoodAngle = privateHoodAngle
         firingSS.power = privateWheelPower

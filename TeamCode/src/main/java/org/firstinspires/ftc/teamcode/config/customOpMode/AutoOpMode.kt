@@ -97,11 +97,13 @@ abstract class AutoOpMode : OpMode() {
     final override fun loop() {
         // Clear the bulk read cache
         hubSS.clearCache()
-        // Draw on Panels
-        DrawingUtil.drawPose(robot.follower)
 
         // Run the Ivy Scheduler to actually update Commands
         Scheduler.execute()
+
+        // Draw on Panels
+        DrawingUtil.drawPose(robot.follower)
+
 
         robot.follower.update()
 

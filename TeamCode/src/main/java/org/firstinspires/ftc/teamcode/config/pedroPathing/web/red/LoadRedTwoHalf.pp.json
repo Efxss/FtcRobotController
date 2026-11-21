@@ -1,18 +1,18 @@
 {
   "version": "2.0.0",
-  "timestamp": "2026-11-09T19:54:21.923Z",
+  "timestamp": "2026-11-21T01:14:36.493Z",
   "startPoint": {
     "x": 55,
     "y": 8,
-    "name": "BottomRedCellStartWall",
+    "name": "bottomCellStartWall",
     "locked": false,
     "headingDeg": 90
   },
   "lines": [
     {
-      "id": "line-mw2q7q7r-s2a7q8",
-      "color": "#9c755f",
-      "name": "BottomCellPullOut",
+      "id": "line-mwmtkzoy-4ezbvm",
+      "color": "#ffc516",
+      "name": "bottomCellPullOut",
       "locked": false,
       "waitBeforeMs": 0,
       "waitAfterMs": 0,
@@ -21,146 +21,15 @@
       "kind": "atomic",
       "endPoint": {
         "x": 55,
-        "y": 16
+        "y": 18
       },
       "controlPoints": [],
       "heading": {
         "type": "constant",
-        "reverse": true,
-        "degrees": 90,
-        "startDeg": 0,
-        "endDeg": 0,
-        "piecewiseHeading": {
-          "segments": [
-            {
-              "startProgress": 0,
-              "endProgress": 1,
-              "interpolationType": "linear",
-              "reversed": false,
-              "parameters": {
-                "startDeg": 0,
-                "endDeg": 0
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "id": "line-mvw1x0ql-2m6k1j",
-      "color": "#b07aa1",
-      "name": "RedSpike",
-      "locked": false,
-      "waitBeforeMs": 0,
-      "waitAfterMs": 0,
-      "waitBeforeName": "",
-      "waitAfterName": "",
-      "kind": "atomic",
-      "endPoint": {
-        "x": 7,
-        "y": 7.5
-      },
-      "controlPoints": [],
-      "heading": {
-        "type": "constant",
-        "reverse": true,
-        "degrees": 180,
         "startDeg": 90,
         "endDeg": 180,
-        "piecewiseHeading": {
-          "segments": [
-            {
-              "startProgress": 0,
-              "endProgress": 0.4,
-              "interpolationType": "constant",
-              "reversed": false,
-              "continueFromPrevious": false,
-              "parameters": {
-                "degrees": 90
-              }
-            },
-            {
-              "startProgress": 0.4,
-              "endProgress": 1,
-              "interpolationType": "constant",
-              "reversed": false,
-              "continueFromPrevious": false,
-              "parameters": {
-                "degrees": 180
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "id": "line-mvw20v6o-hvw0lm",
-      "color": "#4e79a7",
-      "name": "TopRedCellSpikeScoring",
-      "locked": false,
-      "waitBeforeMs": 0,
-      "waitAfterMs": 0,
-      "waitBeforeName": "",
-      "waitAfterName": "",
-      "kind": "atomic",
-      "endPoint": {
-        "x": 26.80836576097985,
-        "y": 119.37813002842618
-      },
-      "controlPoints": [],
-      "heading": {
-        "type": "piecewise",
-        "reverse": true,
-        "degrees": 0,
-        "startDeg": 0,
-        "endDeg": 0,
-        "piecewiseHeading": {
-          "segments": [
-            {
-              "startProgress": 0,
-              "endProgress": 0.8,
-              "interpolationType": "constant",
-              "reversed": false,
-              "continueFromPrevious": false,
-              "parameters": {
-                "degrees": 180
-              }
-            },
-            {
-              "startProgress": 0.8,
-              "endProgress": 1,
-              "interpolationType": "constant",
-              "reversed": false,
-              "continueFromPrevious": false,
-              "parameters": {
-                "degrees": -50
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "id": "line-mvw23ijs-vg3l43",
-      "color": "#e15759",
-      "name": "TopRedCellToTopRedFlower",
-      "locked": false,
-      "waitBeforeMs": 0,
-      "waitAfterMs": 0,
-      "waitBeforeName": "",
-      "waitAfterName": "",
-      "kind": "atomic",
-      "endPoint": {
-        "x": 36.96367933877011,
-        "y": 129.41732404455405
-      },
-      "controlPoints": [],
-      "heading": {
-        "type": "constant",
+        "degrees": 90,
         "reverse": false,
-        "degrees": 47,
-        "startDeg": 0,
-        "endDeg": 0,
         "piecewiseHeading": {
           "segments": [
             {
@@ -178,9 +47,9 @@
       }
     },
     {
-      "id": "line-mvw254xh-krulsc",
+      "id": "line-mwmtmay2-c2h3d9",
       "color": "#76b7b2",
-      "name": "TopRedFlowerScore",
+      "name": "bottomFlowerOut",
       "locked": false,
       "waitBeforeMs": 0,
       "waitAfterMs": 0,
@@ -188,45 +57,8 @@
       "waitAfterName": "",
       "kind": "atomic",
       "endPoint": {
-        "x": 33.529476305487734,
-        "y": 126.31803901664806
-      },
-      "controlPoints": [],
-      "heading": {
-        "type": "linear",
-        "reverse": false,
-        "degrees": -50,
-        "startDeg": 47,
-        "endDeg": -50,
-        "piecewiseHeading": {
-          "segments": [
-            {
-              "startProgress": 0,
-              "endProgress": 1,
-              "interpolationType": "linear",
-              "reversed": false,
-              "parameters": {
-                "startDeg": 0,
-                "endDeg": 0
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "id": "line-mvw26507-xe32n4",
-      "color": "#76b7b2",
-      "name": "TopRedFlowerScoreToBottomRedFlower",
-      "locked": false,
-      "waitBeforeMs": 0,
-      "waitAfterMs": 0,
-      "waitBeforeName": "",
-      "waitAfterName": "",
-      "kind": "atomic",
-      "endPoint": {
-        "x": 16.904690368994263,
-        "y": 46.60750125125668
+        "x": 28,
+        "y": 47
       },
       "controlPoints": [],
       "heading": {
@@ -234,7 +66,7 @@
         "reverse": true,
         "degrees": 180,
         "startDeg": 180,
-        "endDeg": 180,
+        "endDeg": 0,
         "piecewiseHeading": {
           "segments": [
             {
@@ -252,9 +84,9 @@
       }
     },
     {
-      "id": "line-mw2jn6vh-psmhqi",
-      "color": "#76b7b2",
-      "name": "BottomRedFlowerToBottomRedCell",
+      "id": "line-mwmtpp27-bzr3rj",
+      "color": "#e15759",
+      "name": "bottomFlower",
       "locked": false,
       "waitBeforeMs": 0,
       "waitAfterMs": 0,
@@ -262,36 +94,26 @@
       "waitAfterName": "",
       "kind": "atomic",
       "endPoint": {
-        "x": 55,
-        "y": 8
+        "x": 11.25,
+        "y": 47
       },
       "controlPoints": [],
       "heading": {
-        "type": "piecewise",
+        "type": "constant",
         "reverse": true,
-        "degrees": 0,
+        "degrees": 180,
         "startDeg": 0,
         "endDeg": 0,
         "piecewiseHeading": {
           "segments": [
             {
               "startProgress": 0,
-              "endProgress": 0.5,
-              "interpolationType": "constant",
-              "reversed": false,
-              "continueFromPrevious": false,
-              "parameters": {
-                "degrees": 180
-              }
-            },
-            {
-              "startProgress": 0.5,
               "endProgress": 1,
-              "interpolationType": "constant",
+              "interpolationType": "linear",
               "reversed": false,
-              "continueFromPrevious": false,
               "parameters": {
-                "degrees": 90
+                "startDeg": 0,
+                "endDeg": 0
               }
             }
           ]
@@ -299,18 +121,116 @@
       }
     },
     {
-      "id": "line-mw2jrba5-7xf9h0",
-      "color": "#b07aa1",
-      "name": "BottomRedCellFireToPark",
+      "kind": "atomic",
+      "id": "line-mwpjdbun-8jem6q",
+      "endPoint": {
+        "x": 34.02332889520583,
+        "y": 121.2688650310904
+      },
+      "controlPoints": [
+        {
+          "x": 33.52908802130408,
+          "y": 42.652392709148515
+        }
+      ],
+      "heading": {
+        "type": "piecewise",
+        "reverse": true,
+        "degrees": 180,
+        "startDeg": 0,
+        "endDeg": 0,
+        "piecewiseHeading": {
+          "segments": [
+            {
+              "startProgress": 0,
+              "endProgress": 0.25,
+              "interpolationType": "linear",
+              "reversed": false,
+              "continueFromPrevious": false,
+              "parameters": {
+                "startDeg": 180,
+                "endDeg": 90
+              }
+            },
+            {
+              "startProgress": 0.25,
+              "endProgress": 0.99,
+              "interpolationType": "constant",
+              "reversed": false,
+              "continueFromPrevious": false,
+              "parameters": {
+                "degrees": 90
+              }
+            },
+            {
+              "startProgress": 0.99,
+              "endProgress": 1,
+              "interpolationType": "constant",
+              "reversed": false,
+              "continueFromPrevious": false,
+              "parameters": {
+                "degrees": -65
+              }
+            }
+          ]
+        }
+      },
+      "color": "#4e79a7",
       "locked": false,
       "waitBeforeMs": 0,
       "waitAfterMs": 0,
       "waitBeforeName": "",
       "waitAfterName": "",
+      "name": "bottomFlowerScore"
+    },
+    {
       "kind": "atomic",
+      "id": "line-mwpll8rz-co9d43",
       "endPoint": {
-        "x": 10.415363324011349,
-        "y": 87.97472440144772
+        "x": 46.6,
+        "y": 126
+      },
+      "controlPoints": [
+        {
+          "x": 46.97956645610787,
+          "y": 120.31525407678538
+        }
+      ],
+      "heading": {
+        "type": "constant",
+        "reverse": true,
+        "degrees": 90,
+        "startDeg": 0,
+        "endDeg": 0,
+        "piecewiseHeading": {
+          "segments": [
+            {
+              "startProgress": 0,
+              "endProgress": 1,
+              "interpolationType": "linear",
+              "reversed": false,
+              "parameters": {
+                "startDeg": 0,
+                "endDeg": 0
+              }
+            }
+          ]
+        }
+      },
+      "color": "#b07aa1",
+      "locked": false,
+      "waitBeforeMs": 0,
+      "waitAfterMs": 0,
+      "waitBeforeName": "",
+      "waitAfterName": "",
+      "name": "topFlower"
+    },
+    {
+      "kind": "atomic",
+      "id": "line-mwpm36qp-7p83hu",
+      "endPoint": {
+        "x": 46.6,
+        "y": 120
       },
       "controlPoints": [],
       "heading": {
@@ -333,7 +253,62 @@
             }
           ]
         }
-      }
+      },
+      "color": "#e15759",
+      "locked": false,
+      "waitBeforeMs": 0,
+      "waitAfterMs": 0,
+      "waitBeforeName": "",
+      "waitAfterName": "",
+      "name": "topFlowerOut"
+    },
+    {
+      "kind": "atomic",
+      "id": "line-mwpmigfg-qy1x5e",
+      "endPoint": {
+        "x": 46.6,
+        "y": 115
+      },
+      "controlPoints": [],
+      "heading": {
+        "type": "piecewise",
+        "reverse": true,
+        "degrees": 0,
+        "startDeg": 0,
+        "endDeg": 0,
+        "piecewiseHeading": {
+          "segments": [
+            {
+              "startProgress": 0,
+              "endProgress": 0.9,
+              "interpolationType": "linear",
+              "reversed": false,
+              "continueFromPrevious": false,
+              "parameters": {
+                "startDeg": 90,
+                "endDeg": -80
+              }
+            },
+            {
+              "startProgress": 0.9,
+              "endProgress": 1,
+              "interpolationType": "constant",
+              "reversed": false,
+              "continueFromPrevious": false,
+              "parameters": {
+                "degrees": -80
+              }
+            }
+          ]
+        }
+      },
+      "color": "#b07aa1",
+      "locked": false,
+      "waitBeforeMs": 0,
+      "waitAfterMs": 0,
+      "waitBeforeName": "",
+      "waitAfterName": "",
+      "name": "topFlowerScore"
     }
   ],
   "shapes": [
@@ -501,35 +476,31 @@
   "sequence": [
     {
       "kind": "path",
-      "lineId": "line-mw2q7q7r-s2a7q8"
+      "lineId": "line-mwmtkzoy-4ezbvm"
     },
     {
       "kind": "path",
-      "lineId": "line-mvw1x0ql-2m6k1j"
+      "lineId": "line-mwmtmay2-c2h3d9"
     },
     {
       "kind": "path",
-      "lineId": "line-mvw20v6o-hvw0lm"
+      "lineId": "line-mwmtpp27-bzr3rj"
     },
     {
       "kind": "path",
-      "lineId": "line-mvw23ijs-vg3l43"
+      "lineId": "line-mwpjdbun-8jem6q"
     },
     {
       "kind": "path",
-      "lineId": "line-mvw254xh-krulsc"
+      "lineId": "line-mwpll8rz-co9d43"
     },
     {
       "kind": "path",
-      "lineId": "line-mvw26507-xe32n4"
+      "lineId": "line-mwpm36qp-7p83hu"
     },
     {
       "kind": "path",
-      "lineId": "line-mw2jn6vh-psmhqi"
-    },
-    {
-      "kind": "path",
-      "lineId": "line-mw2jrba5-7xf9h0"
+      "lineId": "line-mwpmigfg-qy1x5e"
     }
   ],
   "fieldPoints": [],
