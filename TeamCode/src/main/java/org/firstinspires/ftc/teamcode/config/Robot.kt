@@ -8,6 +8,7 @@ import com.pedropathing.ivy.Command
 import com.pedropathing.ivy.commands.Commands
 import com.pedropathing.ivy.groups.Groups
 import com.pedropathing.math.Pose
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.PwmControl
 import com.seattlesolvers.solverslib.controller.PIDFController
@@ -50,17 +51,18 @@ class Robot(
     fun initPedro() { follower = Constants.create(hardwareMap) }
     // Hardware
     val led by lazy { LED(hardwareMap) }
+    val pnpt by lazy { hardwareMap["pnpt"] as GoBildaPinpointDriver }
     // Intake
-    var intakeMCT: Double = 0.00001
+    var intakeMCT: Double = 0.0
     val intakeM1 by lazy { MotorEx(hardwareMap,"intake1",Motor.GoBILDA.BARE).setCachingTolerance(intakeMCT) as MotorEx }; val intakeDef = 0.4
-    val intakeM2 by lazy { MotorEx(hardwareMap,"intake2",Motor.GoBILDA.BARE).setCachingTolerance(intakeMCT) as MotorEx }; val intakeFire = 0.6
+    val intakeM2 by lazy { MotorEx(hardwareMap,"intake2",Motor.GoBILDA.BARE).setCachingTolerance(intakeMCT) as MotorEx }; val intakeFire = 0.35
     val intakeMG by lazy { MotorGroup(intakeM1, intakeM2) }
     val intakeMPIDF = PIDFController(0.0005, 0.0, 0.000, 0.00035)
     // Shooter
     val fireM by lazy { MotorEx(hardwareMap,"fire",Motor.GoBILDA.BARE).setCachingTolerance(0.0) as MotorEx }
     val hoodDS by lazy { ServoEx(hardwareMap, "hood").setCachingTolerance(0.0) as ServoEx }
     val pollenBS by lazy { ServoEx(hardwareMap, "pollen").setCachingTolerance(0.0) as ServoEx }
-    var fireMPIDF = PIDFController(0.0025, 0.0, 0.000, 0.00035)
+    var fireMPIDF = PIDFController(0.0075, 0.0, 0.000, 0.00035)
     // Flower DeScorer
     var flowerDSC = 0.0
     val flowerDS1 by lazy { ServoEx(hardwareMap,"fds1").setCachingTolerance(flowerDSC) as ServoEx }  // Control Hub Servo 1
