@@ -11,8 +11,8 @@ import org.firstinspires.ftc.teamcode.config.subSystem.FiringSS
 import org.firstinspires.ftc.teamcode.config.subSystem.FlowerDSS
 import org.firstinspires.ftc.teamcode.config.subSystem.HubSS
 import org.firstinspires.ftc.teamcode.config.subSystem.IntakeSS
+import org.firstinspires.ftc.teamcode.config.util.DebugUtil
 import org.firstinspires.ftc.teamcode.config.util.DrawingUtil
-import org.firstinspires.ftc.teamcode.config.util.PanelsDebugUtil
 import org.firstinspires.ftc.teamcode.config.util.StateUtil
 
 /**
@@ -24,7 +24,7 @@ abstract class TeleOpMode : OpMode() {
     // Shared resources
     protected lateinit var robot: Robot
     protected lateinit var hubSS: HubSS
-    protected lateinit var debugUtil: PanelsDebugUtil
+    protected lateinit var debugUtil: DebugUtil
     protected lateinit var intakeSS: IntakeSS
     protected lateinit var firingSS: FiringSS
     protected lateinit var flowerDSS: FlowerDSS
@@ -73,7 +73,7 @@ abstract class TeleOpMode : OpMode() {
 
         // declare Panels and init the debug util
         robot.initPanels()
-        debugUtil = PanelsDebugUtil(robot.panels)
+        debugUtil = DebugUtil(robot.panels)
         debugUtil.showInit()
         // Reset Ivy scheduler so commands from a previous OpMode don't carry over
         Scheduler.reset()
@@ -86,7 +86,6 @@ abstract class TeleOpMode : OpMode() {
         flowerDSS = FlowerDSS(robot)
         hubSS = HubSS(hardwareMap)
         firingSS.reset()
-        robot.pnpt.setYawScalar(1.0015)
         onInit()
     }
 
@@ -100,10 +99,10 @@ abstract class TeleOpMode : OpMode() {
     final override fun start() {
         resetRuntime()
         resetPose = when (alliance) {
-            Robot.Alliance.BLUE -> { Pose(9.0, 9.0, Math.toRadians(90.0)) }
+            Robot.Alliance.BLUE -> { Pose(83.61, 8.6, Math.toRadians(90.0)) }
             Robot.Alliance.RED -> { Pose(132.3, 132.4, Math.toRadians(90.0)) }
         }
-        Scheduler.schedule(intakeSS.runIntake())
+        //Scheduler.schedule(intakeSS.runIntake())
         Scheduler.schedule(firingSS.calcHalf())
         //robot.genTab()
         onStart()

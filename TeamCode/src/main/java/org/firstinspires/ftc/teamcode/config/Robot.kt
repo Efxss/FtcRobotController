@@ -16,7 +16,6 @@ import com.seattlesolvers.solverslib.hardware.motors.Motor
 import com.seattlesolvers.solverslib.hardware.motors.MotorEx
 import com.seattlesolvers.solverslib.hardware.motors.MotorGroup
 import com.seattlesolvers.solverslib.hardware.servos.ServoEx
-import com.seattlesolvers.solverslib.hardware.servos.ServoExGroup
 import com.seattlesolvers.solverslib.util.InterpLUT
 import org.firstinspires.ftc.teamcode.config.pedroPathing.Constants
 
@@ -48,26 +47,26 @@ class Robot(
     val topRedRefPose: Pose = Pose(57.0,85.0)
     val bottomBlueRefPose: Pose = Pose(84.0,54.0)
     val topBlueRefPose: Pose = Pose(84.0,85.0)
-    fun initPedro() { follower = Constants.create(hardwareMap) }
+    fun initPedro() {
+        follower = Constants.create(hardwareMap)
+        pnpt.setYawScalar(1.0015)
+    }
     // Hardware
     val led by lazy { LED(hardwareMap) }
     val pnpt by lazy { hardwareMap["pnpt"] as GoBildaPinpointDriver }
     // Intake
     var intakeMCT: Double = 0.0
     val intakeM1 by lazy { MotorEx(hardwareMap,"intake1",Motor.GoBILDA.BARE).setCachingTolerance(intakeMCT) as MotorEx }; val intakeDef = 0.4
-    val intakeM2 by lazy { MotorEx(hardwareMap,"intake2",Motor.GoBILDA.BARE).setCachingTolerance(intakeMCT) as MotorEx }; val intakeFire = 0.35
+    val intakeM2 by lazy { MotorEx(hardwareMap,"intake2",Motor.GoBILDA.BARE).setCachingTolerance(intakeMCT) as MotorEx }; var intakeFire = 0.3
     val intakeMG by lazy { MotorGroup(intakeM1, intakeM2) }
-    val intakeMPIDF = PIDFController(0.0005, 0.0, 0.000, 0.00035)
+    var intakeMPIDF = PIDFController(0.0005, 0.0, 0.000, 0.00035)
     // Shooter
     val fireM by lazy { MotorEx(hardwareMap,"fire",Motor.GoBILDA.BARE).setCachingTolerance(0.0) as MotorEx }
     val hoodDS by lazy { ServoEx(hardwareMap, "hood").setCachingTolerance(0.0) as ServoEx }
     val pollenBS by lazy { ServoEx(hardwareMap, "pollen").setCachingTolerance(0.0) as ServoEx }
-    var fireMPIDF = PIDFController(0.0075, 0.0, 0.000, 0.00035)
+    var fireMPIDF = PIDFController(0.01, 0.0, 0.0001, 0.00035)
     // Flower DeScorer
-    var flowerDSC = 0.0
-    val flowerDS1 by lazy { ServoEx(hardwareMap,"fds1").setCachingTolerance(flowerDSC) as ServoEx }  // Control Hub Servo 1
-    val flowerDS2 by lazy { ServoEx(hardwareMap,"fds2").setCachingTolerance(flowerDSC) as ServoEx }  // Expansion Hub Servo 1
-    val flowerDSG by lazy { ServoExGroup(flowerDS1, flowerDS2) }
+    val flowerDS by lazy { ServoEx(hardwareMap,"fds1").setCachingTolerance(0.0) as ServoEx }  // Control Hub Servo 1
 
     // Tables and refs
 

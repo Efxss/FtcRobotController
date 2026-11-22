@@ -7,8 +7,8 @@ import org.firstinspires.ftc.teamcode.config.subSystem.FiringSS
 import org.firstinspires.ftc.teamcode.config.subSystem.FlowerDSS
 import org.firstinspires.ftc.teamcode.config.subSystem.HubSS
 import org.firstinspires.ftc.teamcode.config.subSystem.IntakeSS
+import org.firstinspires.ftc.teamcode.config.util.DebugUtil
 import org.firstinspires.ftc.teamcode.config.util.DrawingUtil
-import org.firstinspires.ftc.teamcode.config.util.PanelsDebugUtil
 import org.firstinspires.ftc.teamcode.config.util.StateUtil
 
 /**
@@ -20,7 +20,7 @@ abstract class AutoOpMode : OpMode() {
     // Shared resources
     protected lateinit var robot: Robot
     protected lateinit var hubSS: HubSS
-    protected lateinit var debugUtil: PanelsDebugUtil
+    protected lateinit var debugUtil: DebugUtil
     protected lateinit var intakeSS: IntakeSS
     protected lateinit var firingSS: FiringSS
     protected lateinit var flowerDSS: FlowerDSS
@@ -63,7 +63,7 @@ abstract class AutoOpMode : OpMode() {
         // declare Panels and init the debug util
         robot.initPanels()
         robot.initPedro()
-        debugUtil = PanelsDebugUtil(robot.panels)
+        debugUtil = DebugUtil(robot.panels)
         debugUtil.showInit()
 
         // Reset Ivy scheduler so commands from a previous OpMode don't carry over
@@ -76,7 +76,6 @@ abstract class AutoOpMode : OpMode() {
         flowerDSS = FlowerDSS(robot)
         hubSS = HubSS(hardwareMap)
         firingSS.reset()
-        robot.pnpt.setYawScalar(1.0015)
         onInit()
     }
 

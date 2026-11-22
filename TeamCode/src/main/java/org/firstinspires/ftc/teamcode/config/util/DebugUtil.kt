@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.config.Robot
 import org.firstinspires.ftc.teamcode.config.subSystem.FiringSS
 import org.firstinspires.ftc.teamcode.config.subSystem.IntakeSS
 
-class PanelsDebugUtil(
+class DebugUtil(
     private val panels: TelemetryManager?
 ) {
     fun showAllDebugAuto(
