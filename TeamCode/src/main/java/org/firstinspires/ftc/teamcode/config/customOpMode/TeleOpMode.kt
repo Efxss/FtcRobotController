@@ -100,7 +100,7 @@ abstract class TeleOpMode : OpMode() {
     final override fun start() {
         resetRuntime()
         resetPose = when (alliance) {
-            Robot.Alliance.BLUE -> { Pose(42.0, 20.7, Math.toRadians(40.5)) }
+            Robot.Alliance.BLUE -> { Pose(9.0, 9.0, Math.toRadians(90.0)) }
             Robot.Alliance.RED -> { Pose(132.3, 132.4, Math.toRadians(90.0)) }
         }
         Scheduler.schedule(intakeSS.runIntake())
@@ -146,7 +146,6 @@ abstract class TeleOpMode : OpMode() {
         if (gamepad1.leftBumperWasReleased()) { intakeSS.reverseIntake(false) }
         if (gamepad1.rightBumperWasPressed()) { firingSS.execFiring().schedule() }
         if (gamepad1.crossWasPressed()) { robot.follower.setPose(resetPose) }
-        if (gamepad1.squareWasPressed()) { robot.follower.setPose(Pose(robot.follower.pose().x(), robot.follower.pose().y(), Math.toRadians(90.0))) }
         if (gamepad1.triangleWasReleased()) {
             when (flowerDB) {
                 0 -> { flowerDSS.down().schedule(); flowerDB = 1 }

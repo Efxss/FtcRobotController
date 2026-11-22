@@ -25,11 +25,6 @@ class Teleop : TeleOpMode() {
     override fun onLoop() {
         if (!StateUtil.isTurning) {
             robot.follower.manual(dp)
-            //robot.follower.manual(
-            //    -gamepad1.left_stick_y.toDouble(),
-            //    -gamepad1.left_stick_x.toDouble(),
-            //    gamepad1.right_stick_x.toDouble(),
-            //)
         }
         //ManualDrive.driveOrHold(robot.follower, dp) // Do this to make it so when you stop holding the stick it holds position
         firingSS.hoodAngle = privateHoodAngle

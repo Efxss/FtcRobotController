@@ -158,9 +158,11 @@ class LoadedRedTwoAndHalf : AutoOpMode() {
             )
         }
         return Groups.sequential(
-            Commands.instant { firingSS.hoodAngle = 0.04; firingSS.power = 0.82 },
-            Commands.waitMs(900.0),
-            PedroCommands.follow(robot.follower, bottomCellPullOut()),
+            Groups.deadline(
+                Commands.waitMs(900.0),
+                Commands.instant { firingSS.hoodAngle = 0.04; firingSS.power = 0.7 },
+                PedroCommands.follow(robot.follower, bottomCellPullOut()),
+            ),
             firingSS.letGo(),
             Groups.parallel(
                 PedroCommands.follow(robot.follower, bottomFlowerOut()),
@@ -187,9 +189,10 @@ class LoadedRedTwoAndHalf : AutoOpMode() {
                     flowerDSS.back()
                 ),
             ),
-            Commands.instant { firingSS.hoodAngle = 0.07; firingSS.power = 0.7; intakeSS.speed = robot.intakeDef },
+            Commands.instant { firingSS.hoodAngle = 0.07; firingSS.power = 0.7; intakeSS.speed = robot.intakeFire },
             Commands.waitMs(800.0),
             firingSS.letGo(),
+            Commands.instant { intakeSS.speed = robot.intakeDef },
             Groups.parallel(
                 PedroCommands.follow(robot.follower, topFlower()
                     .with(Constants.foresightConfig.maxPathSpeed.at(0.65))),
@@ -206,9 +209,10 @@ class LoadedRedTwoAndHalf : AutoOpMode() {
             ),
             Commands.waitMs(200.0),
             PedroCommands.follow(robot.follower, topFlowerScore()),
-            Commands.instant { firingSS.hoodAngle = 0.02; firingSS.power = 0.7; intakeSS.speed = robot.intakeDef },
+            Commands.instant { firingSS.hoodAngle = 0.02; firingSS.power = 0.7; intakeSS.speed = robot.intakeFire },
             Commands.waitMs(800.0),
             firingSS.letGo(),
+            Commands.instant { intakeSS.speed = robot.intakeDef },
         )
     }
 }

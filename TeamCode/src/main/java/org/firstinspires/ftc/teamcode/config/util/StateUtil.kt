@@ -27,10 +27,4 @@ object StateUtil {
      * Global Boolean var to check if the robot is turning
      */
     var isTurning: Boolean = false
-
-    /**
-     * Angle of the hood that can be passed though auto to teleop for a more seamless transition
-     */
-    //var hoodAngle: Double = 0.0
-    //var wheelPower: Double = 0.0
 }

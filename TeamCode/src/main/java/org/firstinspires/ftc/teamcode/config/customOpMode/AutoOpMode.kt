@@ -76,6 +76,7 @@ abstract class AutoOpMode : OpMode() {
         flowerDSS = FlowerDSS(robot)
         hubSS = HubSS(hardwareMap)
         firingSS.reset()
+        robot.pnpt.setYawScalar(1.0015)
         onInit()
     }
 
