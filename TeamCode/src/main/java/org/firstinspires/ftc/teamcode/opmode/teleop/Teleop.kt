@@ -12,22 +12,22 @@ class Teleop : TeleOpMode() {
     companion object {
         @JvmField
         @Sorter(sort = 0)
-        var fkp: Double = 0.01
+        var fkp: Double = 0.04
         @JvmField
         @Sorter(sort = 1)
         var fki: Double = 0.0
         @JvmField
         @Sorter(sort = 2)
-        var fkd: Double = 0.0001
+        var fkd: Double = 0.0004
         @JvmField
         @Sorter(sort = 3)
-        var fkf: Double = 0.00035
+        var fkf: Double = 0.0004
         @JvmField
         @Sorter(sort = 4)
         var privateHoodAngle: Double = 0.1
         @JvmField
         @Sorter(sort = 5)
-        var privateWheelPower: Double = 0.7
+        var privateWheelPower: Double = 0.61
         @JvmField
         @Sorter(sort = 6)
         var privateIntakeFire: Double = 0.3
