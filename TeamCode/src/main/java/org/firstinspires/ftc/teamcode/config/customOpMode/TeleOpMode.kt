@@ -5,6 +5,7 @@ import com.pedropathing.follower.ManualDrive
 import com.pedropathing.ivy.Scheduler
 import com.pedropathing.math.Pose
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
+import com.qualcomm.robotcore.util.ElapsedTime
 import com.seattlesolvers.solverslib.util.Timing
 import org.firstinspires.ftc.teamcode.config.Robot
 import org.firstinspires.ftc.teamcode.config.subSystem.FiringSS
@@ -34,6 +35,7 @@ abstract class TeleOpMode : OpMode() {
     private val firstFullTimer: Timing.Timer = Timing.Timer(1500, java.util.concurrent.TimeUnit.MILLISECONDS)
     private val intakeRate: Timing.Rate = Timing().Rate(25)
     private var firstFullBool: Boolean = true
+    lateinit var elapsedTime: ElapsedTime
 
 
     // Custom lifecycle hooks
@@ -70,6 +72,7 @@ abstract class TeleOpMode : OpMode() {
     final override fun init() {
         // Any other shared init (hardware caching, subsystems, etc.)
         robot = Robot(hardwareMap)
+        elapsedTime = ElapsedTime()
 
         // declare Panels and init the debug util
         robot.initPanels()
@@ -86,6 +89,7 @@ abstract class TeleOpMode : OpMode() {
         flowerDSS = FlowerDSS(robot)
         hubSS = HubSS(hardwareMap)
         firingSS.reset()
+        elapsedTime.reset()
         onInit()
     }
 
@@ -116,7 +120,7 @@ abstract class TeleOpMode : OpMode() {
         Scheduler.execute()
 
         //Show and update debug
-        debugUtil.showAllDebugTeleop(robot.follower,alliance,runtime,gamepad1,firingSS.getHalf(),firingSS,/*hubSS.getVolts(),*/intakeSS,flowerDB,robot)
+        debugUtil.showAllDebugTeleop(robot.follower,alliance,runtime,gamepad1,firingSS.getHalf(),firingSS,intakeSS,flowerDB,elapsedTime.milliseconds(),robot)
         debugUtil.update(telemetry)
 
         // Draw on Panels
@@ -164,7 +168,6 @@ abstract class TeleOpMode : OpMode() {
             //gamepad1.rumble(500)
             //firingSS.execFiring().schedule()
         }
-
         onLoop()
     }
 

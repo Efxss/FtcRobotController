@@ -36,9 +36,9 @@ class DebugUtil(
         gamepad: Gamepad,
         fieldHalf: Robot.FieldHalf,
         firingSS: FiringSS,
-        //volts: Double,
         intakeSS: IntakeSS,
         flowerState: Int,
+        loopTimes: Double,
         robot: Robot,
     ) {
         panels?.apply {
@@ -74,8 +74,8 @@ class DebugUtil(
             addData("Right Bumper", gamepad.right_bumper)
             addLine("")
             addLine("=== OpMode ===")
-            //addData("millivolts", volts)
             addData("runtime", runtime)
+            addData("Loop Times", loopTimes)
             addData("Field Half", fieldHalf.name)
             addData("Alliance", alliance.name)
         }

@@ -42,7 +42,6 @@ class Robot(
     fun initPanels() { panels = PanelsTelemetry.telemetry }
     lateinit var follower: Follower
     val p: PoseFactory = PoseFactory.degrees()
-    val refPose: Pose = Pose(0.0,0.0)
     val bottomRedRefPose: Pose = Pose(57.0,55.0)
     val topRedRefPose: Pose = Pose(57.0,85.0)
     val bottomBlueRefPose: Pose = Pose(84.0,54.0)
@@ -55,7 +54,7 @@ class Robot(
     val led by lazy { LED(hardwareMap) }
     val pnpt by lazy { hardwareMap["pnpt"] as GoBildaPinpointDriver }
     // Intake
-    var intakeMCT: Double = 0.0
+    var intakeMCT: Double = 0.1
     val intakeM1 by lazy { MotorEx(hardwareMap,"intake1",Motor.GoBILDA.BARE).setCachingTolerance(intakeMCT) as MotorEx }; val intakeDef = 0.4
     val intakeM2 by lazy { MotorEx(hardwareMap,"intake2",Motor.GoBILDA.BARE).setCachingTolerance(intakeMCT) as MotorEx }; var intakeFire = 0.3
     val intakeMG by lazy { MotorGroup(intakeM1, intakeM2) }
@@ -63,10 +62,10 @@ class Robot(
     // Shooter
     val fireM by lazy { MotorEx(hardwareMap,"fire",Motor.GoBILDA.BARE).setCachingTolerance(0.0) as MotorEx }
     val hoodDS by lazy { ServoEx(hardwareMap, "hood").setCachingTolerance(0.0) as ServoEx }
-    val pollenBS by lazy { ServoEx(hardwareMap, "pollen").setCachingTolerance(0.0) as ServoEx }
+    val pollenBS by lazy { ServoEx(hardwareMap, "pollen").setCachingTolerance(0.1) as ServoEx }
     var fireMPIDF = PIDFController(0.01, 0.0, 0.0002, 0.00035)
     // Flower DeScorer
-    val flowerDS by lazy { ServoEx(hardwareMap,"fds1").setCachingTolerance(0.0) as ServoEx }  // Control Hub Servo 1
+    val flowerDS by lazy { ServoEx(hardwareMap,"fds1").setCachingTolerance(0.3) as ServoEx }  // Control Hub Servo 1
 
     // Tables and refs
 

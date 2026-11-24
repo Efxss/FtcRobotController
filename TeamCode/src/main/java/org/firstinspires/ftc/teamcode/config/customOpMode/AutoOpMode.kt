@@ -57,7 +57,7 @@ abstract class AutoOpMode : OpMode() {
     open fun onStop() {}
 
     final override fun init() {
-        // Any other shared init (hardware caching, subsystems, etc.)
+        // Any other shared init (hardware caching, subsystems, etc...)
         robot = Robot(hardwareMap)
 
         // declare Panels and init the debug util

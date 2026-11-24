@@ -44,15 +44,13 @@ class Teleop : TeleOpMode() {
     override fun onLoop() {
         //if (!StateUtil.isTurning) {
         //    robot.follower.manual(dp)
+        //    ManualDrive.driveOrHold(robot.follower, dp) // Do this to make it so when you stop holding the stick it holds position
         //}
-        //ManualDrive.driveOrHold(robot.follower, dp) // Do this to make it so when you stop holding the stick it holds position
         firingSS.hoodAngle = privateHoodAngle
         firingSS.power = privateWheelPower
         robot.intakeFire = privateIntakeFire
-        robot.fireMPIDF.p = fkp
-        robot.fireMPIDF.i = fki
-        robot.fireMPIDF.d = fkd
-        robot.fireMPIDF.f = fkf
+        robot.fireMPIDF.setPIDF(fkp, fki, fkd, fkf)
         robot.follower.update()
+        elapsedTime.reset()
     }
 }
