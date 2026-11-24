@@ -2,12 +2,12 @@ package org.firstinspires.ftc.teamcode.config.subSystem
 
 import com.pedropathing.ivy.Command
 import com.pedropathing.ivy.commands.Commands
-import com.pedropathing.ivy.groups.Groups
 import com.pedropathing.ivy.groups.Groups.sequential
 import com.pedropathing.ivy.pedro.PedroCommands
 import com.pedropathing.math.Pose
 import com.seattlesolvers.solverslib.hardware.motors.Motor
 import com.seattlesolvers.solverslib.util.MathUtils
+import com.seattlesolvers.solverslib.util.Timing
 import org.firstinspires.ftc.teamcode.config.Robot
 import org.firstinspires.ftc.teamcode.config.util.MathUtil
 import org.firstinspires.ftc.teamcode.config.util.StateUtil
@@ -27,7 +27,10 @@ class FiringSS(
     private var pidfVelocity: Double = 0.0
     private val servoBlock: Double = 0.18
     private val servoGo: Double = 0.42
-    var power: Double = 0.0
+    private val initRampVel = 0.20
+    private val lastRampVel = 0.22
+    private val lastBallTimer: Timing.Timer = Timing.Timer(140, java.util.concurrent.TimeUnit.MILLISECONDS)
+    var power: Double = 0.78
     var hoodAngle: Double = 0.0
 
     fun letGo(): Command {
@@ -65,7 +68,7 @@ class FiringSS(
             }
             return sequential(turning(),stop(),turn(),notTurning())
         }
-        return Groups.sequential(
+        return sequential(
             //robot.led.flash(3),
             Commands.instant { StateUtil.isFiring = true },
             Commands.instant { intakeSS.speed = robot.intakeFire },
@@ -107,7 +110,13 @@ class FiringSS(
                     }
                 }
             } else {
-                this.pidfVelocity = robot.fireMPIDF.calculate(this.currentVel, MathUtil.pidfPower(this.power))
+                this.pidfVelocity = if (StateUtil.isFiring) {
+                    lastBallTimer.start()
+                    if (lastBallTimer.done()) robot.fireMPIDF.calculate(this.currentVel, MathUtil.pidfPower(this.power + lastRampVel))
+                    else robot.fireMPIDF.calculate(this.currentVel, MathUtil.pidfPower(this.power))
+                } else {
+                    robot.fireMPIDF.calculate(this.currentVel, MathUtil.pidfPower(this.power - initRampVel))
+                }
             }
             robot.hoodDS.set(this.hoodAngle)
             robot.fireM.set(this.pidfVelocity)
