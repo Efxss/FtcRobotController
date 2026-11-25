@@ -165,8 +165,6 @@ abstract class TeleOpMode : OpMode() {
                 }
             }
             //robot.led.green();
-            //gamepad1.rumble(500)
-            //firingSS.execFiring().schedule()
         }
         onLoop()
     }

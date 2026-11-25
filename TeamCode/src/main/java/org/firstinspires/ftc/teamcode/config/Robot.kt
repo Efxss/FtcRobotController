@@ -22,18 +22,38 @@ import org.firstinspires.ftc.teamcode.config.pedroPathing.Constants
 class Robot(
     private val hardwareMap: HardwareMap,
 ) {
+    // Classes
     class LED(hardwareMap: HardwareMap) {
-        private val led: ServoEx = ServoEx(hardwareMap, "LED")
-        init {
-            led.setPwm(PwmControl.PwmRange(500.0, 2500.0))
+        private val led: ServoEx = ServoEx(hardwareMap, "LED").setCachingTolerance(0.05)
+        init { led.setPwm(PwmControl.PwmRange(500.0, 2500.0)) }
+
+        fun red() = led.set(Robot.LEDColor.RED.pos)
+        fun orange() = led.set(Robot.LEDColor.ORANGE.pos)
+        fun yellow() = led.set(Robot.LEDColor.YELLOW.pos)
+        fun sage() = led.set(Robot.LEDColor.SAGE.pos)
+        fun green() = led.set(Robot.LEDColor.GREEN.pos)
+        fun azure() = led.set(Robot.LEDColor.AZURE.pos)
+        fun blue() = led.set(Robot.LEDColor.BLUE.pos)
+        fun indigo() = led.set(Robot.LEDColor.INDIGO.pos)
+        fun violet() = led.set(Robot.LEDColor.VIOLET.pos)
+        fun white() = led.set(Robot.LEDColor.WHITE.pos)
+        fun off() = led.set(0.0)
+
+        fun flash(count: Int, color: Robot.LEDColor): Command {
+            return Groups.repeat(Groups.sequential(Commands.instant { led.set(color.pos) }, Commands.waitMs(500.0), Commands.instant { off() }), count)
         }
-        fun green() {
-            led.set(0.4)
-        }
-        fun off() {
-            led.set(0.0)
-        }
-        fun flash(count: Int): Command = Groups.repeat(Commands.instant { green(); off() }, count)
+    }
+    enum class LEDColor(val pos: Double) {
+        RED(0.277),
+        ORANGE(0.333),
+        YELLOW(0.388),
+        SAGE(0.444),
+        GREEN(0.5),
+        AZURE(0.555),
+        BLUE(0.611),
+        INDIGO(0.666),
+        VIOLET(0.722),
+        WHITE(1.0)
     }
     enum class Alliance {BLUE, RED}
     enum class FieldHalf {TOP,BOTTOM}
@@ -60,10 +80,10 @@ class Robot(
     val intakeMG by lazy { MotorGroup(intakeM1, intakeM2) }
     var intakeMPIDF = PIDFController(0.0005, 0.0, 0.000, 0.00035)
     // Shooter
-    val fireM by lazy { MotorEx(hardwareMap,"fire",Motor.GoBILDA.BARE).setCachingTolerance(0.0) as MotorEx }
-    val hoodDS by lazy { ServoEx(hardwareMap, "hood").setCachingTolerance(0.0) as ServoEx }
+    val fireM by lazy { MotorEx(hardwareMap,"fire",Motor.GoBILDA.BARE).setCachingTolerance(0.01) as MotorEx }
+    val hoodDS by lazy { ServoEx(hardwareMap, "hood").setCachingTolerance(0.01) as ServoEx }
     val pollenBS by lazy { ServoEx(hardwareMap, "pollen").setCachingTolerance(0.1) as ServoEx }
-    var fireMPIDF = PIDFController(0.01, 0.0, 0.0002, 0.00035)
+    var fireMPIDF = PIDFController(0.04, 0.0, 0.0004, 0.0004)
     // Flower DeScorer
     val flowerDS by lazy { ServoEx(hardwareMap,"fds1").setCachingTolerance(0.3) as ServoEx }  // Control Hub Servo 1
 
@@ -80,7 +100,7 @@ class Robot(
         // Flywheel Power
         fireTab.apply {
             add(27.5, 0.61)
-            add(45.0, 0.665)
+            add(45.0, 0.78)
             add(79.0, 0.72)
         }.createLUT()
 

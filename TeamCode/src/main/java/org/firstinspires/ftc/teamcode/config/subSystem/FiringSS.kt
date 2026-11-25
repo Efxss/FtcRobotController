@@ -72,7 +72,7 @@ class FiringSS(
         }
         return if (autoTurn) {
             sequential(
-                //robot.led.flash(3),
+                //robot.led.flash(3, Robot.LEDColor.GREEN),
                 Commands.instant { StateUtil.isFiring = true },
                 Commands.instant { intakeSS.speed = robot.intakeFire },
                 turnFun(),
@@ -82,7 +82,7 @@ class FiringSS(
             )
         } else {
             sequential(
-                //robot.led.flash(3),
+                //robot.led.flash(3, Robot.LEDColor.GREEN),
                 Commands.instant { StateUtil.isFiring = true },
                 Commands.instant { intakeSS.speed = robot.intakeFire },
                 letGo(),

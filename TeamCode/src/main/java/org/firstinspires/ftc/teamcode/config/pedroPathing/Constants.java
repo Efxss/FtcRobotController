@@ -30,7 +30,7 @@ public class Constants {
                 c.backRightDirection.set(DcMotorSimple.Direction.FORWARD);
 
                 c.manualBrakeMode.set(true);
-                c.powerThreshold.set(0.0);
+                c.powerThreshold.set(0.01);
             }
     );
     public static PinpointConfig localizerConfig = new PinpointConfig(c -> {
