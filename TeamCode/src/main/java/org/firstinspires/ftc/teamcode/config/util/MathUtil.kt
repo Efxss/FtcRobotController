@@ -29,31 +29,27 @@ object MathUtil {
      * @return THIS WILL RETURN A RADIAN TO NOT CONVERT INTO A RADIAN AGAIN IT IS ALREADY A RADIAN
      */
     fun cellRadian(currentPose: Pose, fieldHalf: Robot.FieldHalf, alliance: Robot.Alliance, robot: Robot): Double {
-        var dpx: Double
-        var dpy: Double
+        var dpx = 0.0
+        var dpy = 0.0
         when (alliance) {
-            Robot.Alliance.BLUE -> {
-                when (fieldHalf) {
-                    Robot.FieldHalf.TOP -> {
-                        dpx = robot.topBlueRefPose.x()
-                        dpy = robot.topBlueRefPose.y()
-                    }
-                    Robot.FieldHalf.BOTTOM -> {
-                        dpx = robot.bottomBlueRefPose.x()
-                        dpy = robot.bottomBlueRefPose.y()
-                    }
+            Robot.Alliance.BLUE -> when (fieldHalf) {
+                Robot.FieldHalf.TOP -> {
+                    dpx = robot.topBlueRefPose.x()
+                    dpy = robot.topBlueRefPose.y()
+                }
+                Robot.FieldHalf.BOTTOM -> {
+                    dpx = robot.bottomBlueRefPose.x()
+                    dpy = robot.bottomBlueRefPose.y()
                 }
             }
-            Robot.Alliance.RED -> {
-                when (fieldHalf) {
-                    Robot.FieldHalf.TOP -> {
-                        dpx = robot.topRedRefPose.x()
-                        dpy = robot.topRedRefPose.y()
-                    }
-                    Robot.FieldHalf.BOTTOM -> {
-                        dpx = robot.bottomRedRefPose.x()
-                        dpy = robot.bottomRedRefPose.y()
-                    }
+            Robot.Alliance.RED -> when (fieldHalf) {
+                Robot.FieldHalf.TOP -> {
+                    dpx = robot.topRedRefPose.x()
+                    dpy = robot.topRedRefPose.y()
+                }
+                Robot.FieldHalf.BOTTOM -> {
+                    dpx = robot.bottomRedRefPose.x()
+                    dpy = robot.bottomRedRefPose.y()
                 }
             }
         }

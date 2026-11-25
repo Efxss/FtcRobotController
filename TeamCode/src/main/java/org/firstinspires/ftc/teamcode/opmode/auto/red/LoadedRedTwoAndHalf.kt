@@ -163,7 +163,7 @@ class LoadedRedTwoAndHalf : AutoOpMode() {
                 Commands.instant { firingSS.hoodAngle = 0.04; firingSS.power = 0.7 },
                 PedroCommands.follow(robot.follower, bottomCellPullOut()),
             ),
-            firingSS.letGo(),
+            firingSS.execFiring(false),
             Groups.parallel(
                 PedroCommands.follow(robot.follower, bottomFlowerOut()),
                 flowerDSS.down()
@@ -191,7 +191,7 @@ class LoadedRedTwoAndHalf : AutoOpMode() {
             ),
             Commands.instant { firingSS.hoodAngle = 0.07; firingSS.power = 0.7; intakeSS.speed = robot.intakeFire },
             Commands.waitMs(800.0),
-            firingSS.letGo(),
+            firingSS.execFiring(false),
             Commands.instant { intakeSS.speed = robot.intakeDef },
             Groups.parallel(
                 PedroCommands.follow(robot.follower, topFlower()
@@ -211,7 +211,7 @@ class LoadedRedTwoAndHalf : AutoOpMode() {
             PedroCommands.follow(robot.follower, topFlowerScore()),
             Commands.instant { firingSS.hoodAngle = 0.02; firingSS.power = 0.7; intakeSS.speed = robot.intakeFire },
             Commands.waitMs(800.0),
-            firingSS.letGo(),
+            firingSS.execFiring(false),
             Commands.instant { intakeSS.speed = robot.intakeDef },
         )
     }

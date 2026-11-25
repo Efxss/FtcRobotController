@@ -44,7 +44,7 @@ class TopRedFireFlowerToPark : AutoOpMode() {
         return Groups.sequential(
             Commands.instant { firingSS.hoodAngle = 0.07; firingSS.power = 0.53 },
             Commands.waitMs(1000.0),
-            firingSS.letGo(),
+            firingSS.execFiring(false),
             PedroCommands.follow(robot.follower, topRedBlueFlowerSideToPark()
                 .with(Constants.foresightConfig.maxPathSpeed.at(0.5))),
         )

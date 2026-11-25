@@ -147,7 +147,7 @@ abstract class TeleOpMode : OpMode() {
 
         if (gamepad1.leftBumperWasPressed()) { intakeSS.reverseIntake(true) }
         if (gamepad1.leftBumperWasReleased()) { intakeSS.reverseIntake(false) }
-        if (gamepad1.rightBumperWasPressed()) { firingSS.execFiring().schedule() }
+        if (gamepad1.rightBumperWasPressed()) { firingSS.execFiring(true).schedule() }
         if (gamepad1.crossWasPressed()) { robot.follower.setPose(resetPose) }
         if (gamepad1.triangleWasReleased()) {
             when (flowerDB) {
@@ -173,7 +173,7 @@ abstract class TeleOpMode : OpMode() {
 
     final override fun stop() {
         intakeSS.runIntake().cancel()
-        listOf(firingSS.calcFiring(true), /*firingSS.calcHalf(),*/ firingSS.execFiring()).forEach { it.cancel() }
+        listOf(firingSS.calcFiring(true), /*firingSS.calcHalf(),*/ firingSS.execFiring(false)).forEach { it.cancel() }
         onStop()
     }
 
