@@ -32,7 +32,7 @@ class FiringSS(
     private val lastBallTimer: Timing.Timer = Timing.Timer(140, java.util.concurrent.TimeUnit.MILLISECONDS)
     private lateinit var refPose: Pose
     private var distance: Double = 0.0
-    var power: Double = 0.78
+    var power: Double = 0.0
     var hoodAngle: Double = 0.0
 
     fun letGo(): Command {

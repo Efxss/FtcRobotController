@@ -27,7 +27,7 @@ class Teleop : TeleOpMode() {
         var privateHoodAngle: Double = 0.1
         @JvmField
         @Sorter(sort = 5)
-        var privateWheelPower: Double = 0.61
+        var privateWheelPower: Double = 0.78
         @JvmField
         @Sorter(sort = 6)
         var privateIntakeFire: Double = 0.3
@@ -42,12 +42,12 @@ class Teleop : TeleOpMode() {
     }
 
     override fun onLoop() {
-        //if (!StateUtil.isTurning) {
-        //    robot.follower.manual(dp)
+        //if (!StateUtil.isTurning || StateUtil.isFiring && gamepad1.rightBumperWasPressed()) {
+        //    //robot.follower.manual(dp)
         //    ManualDrive.driveOrHold(robot.follower, dp) // Do this to make it so when you stop holding the stick it holds position
         //}
         firingSS.hoodAngle = privateHoodAngle
-        //firingSS.power = privateWheelPower
+        firingSS.power = privateWheelPower
         robot.intakeFire = privateIntakeFire
         robot.fireMPIDF.setPIDF(fkp, fki, fkd, fkf)
         robot.follower.update()
