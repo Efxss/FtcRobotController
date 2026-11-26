@@ -151,19 +151,16 @@ abstract class TeleOpMode : OpMode() {
         if (gamepad1.leftBumperWasReleased()) { intakeSS.reverseIntake(false) }
         if (gamepad1.rightBumperWasPressed()) { firingSS.execFiring(true).schedule() }
         if (gamepad1.crossWasPressed()) { robot.follower.setPose(resetPose) }
+        if (gamepad1.circleWasPressed()) { StateUtil.isIntakeFullOver = true }
         if (gamepad1.triangleWasReleased()) {
             when (flowerDB) {
                 0 -> { flowerDSS.down().schedule(); flowerDB = 1 }
                 1 -> { flowerDSS.back().schedule(); flowerDB = 0 }
             }
         }
-
         if (StateUtil.isIntakeFull) {
             if (firstFullBool) { firstFullTimer.start();firstFullBool = false;return }
             if (!firstFullTimer.done()) return
-            if (gamepad1.circleWasPressed()) {
-                intakeSS.speed = robot.intakeDef;StateUtil.isIntakeFull = false
-            }
             if (!StateUtil.isFiring) {
                 if (intakeRate.atTime()) {
                     intakeSS.speed = 0.1

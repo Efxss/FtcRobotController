@@ -32,4 +32,9 @@ object StateUtil {
      * Global Boolean var to check if the robots intake is full
      */
     var isIntakeFull: Boolean = false
+
+    /**
+     * Global Boolean var to override if the intake is full
+     */
+    var isIntakeFullOver: Boolean = false
 }
