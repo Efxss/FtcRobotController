@@ -103,7 +103,9 @@ abstract class TeleOpMode : OpMode() {
     final override fun start() {
         resetRuntime()
         resetPose = when (alliance) {
-            Robot.Alliance.BLUE -> { Pose(83.61, 8.6, Math.toRadians(90.0)) }
+            //Robot.Alliance.BLUE -> { Pose(83.61, 8.6, Math.toRadians(90.0)) } // Flower
+            Robot.Alliance.BLUE -> { Pose(83.61, 8.6, Math.toRadians(90.0)) } // Flower
+            //Robot.Alliance.BLUE -> { Pose(9.0, 9.0, Math.toRadians(90.0)) } // Corner
             Robot.Alliance.RED -> { Pose(132.3, 132.4, Math.toRadians(90.0)) }
         }
         Scheduler.schedule(intakeSS.runIntake())
@@ -156,9 +158,12 @@ abstract class TeleOpMode : OpMode() {
             }
         }
 
-        if (intakeSS.isFull()) {
+        if (StateUtil.isIntakeFull) {
             if (firstFullBool) { firstFullTimer.start();firstFullBool = false;return }
             if (!firstFullTimer.done()) return
+            if (gamepad1.circleWasPressed()) {
+                intakeSS.speed = robot.intakeDef;StateUtil.isIntakeFull = false
+            }
             if (!StateUtil.isFiring) {
                 if (intakeRate.atTime()) {
                     intakeSS.speed = 0.1

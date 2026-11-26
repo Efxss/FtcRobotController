@@ -72,7 +72,7 @@ class Robot(
     }
     // Hardware
     val led by lazy { LED(hardwareMap) }
-    val pnpt by lazy { hardwareMap["pnpt"] as GoBildaPinpointDriver }
+    val pnpt by lazy { hardwareMap["pnpt"] as GoBildaPinpointDriver } // Control Hub I2C 2
     // Intake
     var intakeMCT: Double = 0.1
     val intakeM1 by lazy { MotorEx(hardwareMap,"intake1",Motor.GoBILDA.BARE).setCachingTolerance(intakeMCT) as MotorEx }; val intakeDef = 0.4
@@ -80,8 +80,8 @@ class Robot(
     val intakeMG by lazy { MotorGroup(intakeM1, intakeM2) }
     var intakeMPIDF = PIDFController(0.0005, 0.0, 0.000, 0.00035)
     // Shooter
-    val fireM by lazy { MotorEx(hardwareMap,"fire",Motor.GoBILDA.BARE).setCachingTolerance(0.01) as MotorEx }
-    val hoodDS by lazy { ServoEx(hardwareMap, "hood").setCachingTolerance(0.01) as ServoEx }
+    val fireM by lazy { MotorEx(hardwareMap,"fire",Motor.GoBILDA.BARE).setCachingTolerance(0.001) as MotorEx }
+    val hoodDS by lazy { ServoEx(hardwareMap, "hood").setCachingTolerance(0.0) as ServoEx }
     val pollenBS by lazy { ServoEx(hardwareMap, "pollen").setCachingTolerance(0.1) as ServoEx }
     var fireMPIDF = PIDFController(0.04, 0.0, 0.0004, 0.0004)
     // Flower DeScorer
@@ -99,16 +99,20 @@ class Robot(
     fun genTab() {
         // Flywheel Power
         fireTab.apply {
-            add(27.5, 0.61)
-            add(45.0, 0.78)
-            add(79.0, 0.72)
+            add(27.5, 0.75)
+            add(45.0, 0.75)
+            add(47.9, 0.79)
+            add(56.68, 0.8)
+            add(99.85, 0.8)
         }.createLUT()
 
         // Hood Angle
         fireHoodTab.apply {
             add(27.5, 0.0)
             add(45.0, 0.11)
-            add(79.0, 0.12)
+            add(47.9, 0.16)
+            add(56.68, 0.165)
+            add(95.85, 0.16)
         }.createLUT()
     }
 }

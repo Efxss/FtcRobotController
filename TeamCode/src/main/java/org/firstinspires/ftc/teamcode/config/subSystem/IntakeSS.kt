@@ -4,6 +4,7 @@ import com.pedropathing.ivy.Command
 import com.seattlesolvers.solverslib.hardware.motors.Motor
 import org.firstinspires.ftc.teamcode.config.Robot
 import org.firstinspires.ftc.teamcode.config.util.MathUtil
+import org.firstinspires.ftc.teamcode.config.util.StateUtil
 import kotlin.math.abs
 
 class IntakeSS(
@@ -27,6 +28,7 @@ class IntakeSS(
 
     fun runIntake(): Command = Command.build()
         .setExecute {
+            StateUtil.isIntakeFull = if (abs(robot.intakeM1.velocity) <= this.velocityThreshold) true else false
             this.currentVel = robot.intakeM1.correctedVelocity
             this.pidfVelocity = robot.intakeMPIDF.calculate(this.currentVel, MathUtil.pidfPower(this.speed))
             robot.intakeMG.set(this.pidfVelocity)
@@ -43,10 +45,8 @@ class IntakeSS(
 
     fun reverseIntake(state: Boolean) {setRev(state)}
 
-    fun isFull(): Boolean = if (abs(robot.intakeM1.velocity) <= this.velocityThreshold) true else false
-
     fun isFullDeadline(): Command {
         return Command.build()
-            .setDone { this.isFull() }
+            .setDone { StateUtil.isIntakeFull }
     }
 }

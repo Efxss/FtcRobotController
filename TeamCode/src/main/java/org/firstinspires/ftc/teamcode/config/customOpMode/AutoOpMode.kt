@@ -117,7 +117,7 @@ abstract class AutoOpMode : OpMode() {
         StateUtil.endOfAutoPose = robot.follower.pose()
         StateUtil.alliance = alliance
         intakeSS.runIntake().cancel()
-        listOf(firingSS.calcFiring(false), firingSS.execFiring()).forEach { it.cancel() }
+        listOf(firingSS.calcFiring(false), firingSS.execFiring(false)).forEach { it.cancel() }
         onStop()
     }
 

@@ -61,7 +61,7 @@ class DebugUtil(
             //addData("Flower 1 Position", robot.flowerDS1.rawPosition)
             //addData("Flower 2 Position", robot.flowerDS2.rawPosition)
             //addData("Flower State", flowerState)
-            addData("is Full", intakeSS.isFull())
+            addData("is Full", StateUtil.isIntakeFull)
             addData("Shooter Speed", robot.fireM.velocity)
             //addData("Shooter Velocity", firingSS.getVelocity())
             //addData("Shooter PIDF Calc", firingSS.power)

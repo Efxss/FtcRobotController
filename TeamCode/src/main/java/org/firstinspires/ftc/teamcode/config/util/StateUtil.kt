@@ -27,4 +27,9 @@ object StateUtil {
      * Global Boolean var to check if the robot is turning
      */
     var isTurning: Boolean = false
+
+    /**
+     * Global Boolean var to check if the robots intake is full
+     */
+    var isIntakeFull: Boolean = false
 }

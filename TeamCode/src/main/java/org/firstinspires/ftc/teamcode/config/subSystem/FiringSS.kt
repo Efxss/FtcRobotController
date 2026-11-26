@@ -27,8 +27,8 @@ class FiringSS(
     private var pidfVelocity: Double = 0.0
     private val servoBlock: Double = 0.18
     private val servoGo: Double = 0.42
-    private val initRampVel = 0.20
-    private val lastRampVel = 0.22
+    private val initRampVel = 0.22
+    private val lastRampVel = 0.24
     private val lastBallTimer: Timing.Timer = Timing.Timer(140, java.util.concurrent.TimeUnit.MILLISECONDS)
     private lateinit var refPose: Pose
     private var distance: Double = 0.0
