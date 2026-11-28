@@ -32,18 +32,23 @@ class LoadedRedTwoAndHalf : AutoOpMode() {
 
     fun runAuto(): Command {
         val bottomCellPullOut: Pose = robot.p.of(55.0, 16.0, 90.0)
+
         val bottomFlowerOut: Pose = robot.p.of(28.0, 47.0, 180.0)
         val bottomFlower: Pose = robot.p.of(11.2, 47.0, 180.0)
-        val bottomFlowerScore: Pose = robot.p.of(34.0233, 121.2689, -70.0)
+        val bottomFlowerIn: Pose = robot.p.of(18.2, 47.0, 180.0)
+        val bottomFlowerScore: Pose = robot.p.of(34.0233, 121.2689, -55.0)
+
         val bottomFlowerScoreControl1: Pose = robot.p.of(33.5291, 42.6524, 0.0)
         val bottomFlowerScoreSegment1Start: Pose = robot.p.of(34.0233, 121.2689, 180.0)
         val bottomFlowerScoreSegment1End: Pose = robot.p.of(34.0233, 121.2689, 90.0)
         val bottomFlowerScoreSegment2Heading: Pose = robot.p.of(34.0233, 121.2689, 90.0)
-        val bottomFlowerScoreSegment3Heading: Pose = robot.p.of(34.0233, 121.2689, -70.0)
+        val bottomFlowerScoreSegment3Heading: Pose = robot.p.of(34.0233, 121.2689, -55.0)
+
         val topFlower: Pose = robot.p.of(46.6, 126.0, 90.0)
         val topFlowerControl1: Pose = robot.p.of(46.9796, 120.3153, 0.0)
         val topFlowerOut: Pose = robot.p.of(46.6, 120.0, 90.0)
         val topFlowerScore: Pose = robot.p.of(46.6, 118.0, -80.0)
+
         val topFlowerScoreSegment1Start: Pose = robot.p.of(46.6, 118.0, 90.0)
         val topFlowerScoreSegment1End: Pose = robot.p.of(46.6, 118.0, -80.0)
         val topFlowerScoreSegment2Heading: Pose = robot.p.of(46.6, 118.0, -80.0)
@@ -56,6 +61,7 @@ class LoadedRedTwoAndHalf : AutoOpMode() {
               bottomCellPullOut
           )
         }
+
         fun bottomFlowerOut(): Path {
             return Paths.line(
                 bottomCellPullOut,
@@ -65,6 +71,7 @@ class LoadedRedTwoAndHalf : AutoOpMode() {
                 bottomFlowerOut
             )
         }
+
         fun bottomFlower(): Path {
             return Paths.line(
                 bottomFlowerOut,
@@ -73,6 +80,7 @@ class LoadedRedTwoAndHalf : AutoOpMode() {
                 bottomFlower
             )
         }
+
         fun bottomFlowerRepeatOut(): Path {
             return Paths.line(
                 bottomFlower,
@@ -81,17 +89,19 @@ class LoadedRedTwoAndHalf : AutoOpMode() {
                 bottomFlower
             )
         }
+
         fun bottomFlowerRepeatIn(): Path {
             return Paths.line(
                 bottomFlowerOut,
-                bottomFlower
+                bottomFlowerIn
             ).constant(
-                bottomFlower
+                bottomFlowerIn
             )
         }
+
         fun bottomFlowerScore(): Path {
             return Paths.curve(
-                bottomFlower,
+                bottomFlowerIn,
                 bottomFlowerScoreControl1,
                 bottomFlowerScore
             ).heading(
@@ -113,6 +123,7 @@ class LoadedRedTwoAndHalf : AutoOpMode() {
                 )
             )
         }
+
         fun topFlower(): Path {
             return Paths.curve(
                 bottomFlowerScore,
@@ -122,6 +133,7 @@ class LoadedRedTwoAndHalf : AutoOpMode() {
             topFlower
             )
         }
+
         fun topFlowerRepeatOut(): Path {
             return Paths.line(
                 topFlower,
@@ -130,6 +142,7 @@ class LoadedRedTwoAndHalf : AutoOpMode() {
                 topFlower
             )
         }
+
         fun topFlowerRepeatIn(): Path {
             return Paths.line(
                 topFlowerOut,
@@ -138,6 +151,7 @@ class LoadedRedTwoAndHalf : AutoOpMode() {
                 topFlower
             )
         }
+
         fun topFlowerScore(): Path {
             return Paths.line(
                 topFlowerOut,
@@ -157,10 +171,11 @@ class LoadedRedTwoAndHalf : AutoOpMode() {
                 )
             )
         }
+
         return Groups.sequential(
             Groups.deadline(
                 Commands.waitMs(900.0),
-                Commands.instant { firingSS.hoodAngle = 0.04; firingSS.power = 0.7 },
+                Commands.instant { firingSS.hoodAngle = 0.0; firingSS.power = 0.75 },
                 PedroCommands.follow(robot.follower, bottomCellPullOut()),
             ),
             firingSS.execFiring(false),
@@ -189,10 +204,9 @@ class LoadedRedTwoAndHalf : AutoOpMode() {
                     flowerDSS.back()
                 ),
             ),
-            Commands.instant { firingSS.hoodAngle = 0.07; firingSS.power = 0.7; intakeSS.speed = robot.intakeFire },
+            Commands.instant { firingSS.hoodAngle = 0.14; firingSS.power = 0.8 },
             Commands.waitMs(800.0),
             firingSS.execFiring(false),
-            Commands.instant { intakeSS.speed = robot.intakeDef },
             Groups.parallel(
                 PedroCommands.follow(robot.follower, topFlower()
                     .with(Constants.foresightConfig.maxPathSpeed.at(0.65))),
@@ -209,10 +223,9 @@ class LoadedRedTwoAndHalf : AutoOpMode() {
             ),
             Commands.waitMs(200.0),
             PedroCommands.follow(robot.follower, topFlowerScore()),
-            Commands.instant { firingSS.hoodAngle = 0.02; firingSS.power = 0.7; intakeSS.speed = robot.intakeFire },
-            Commands.waitMs(800.0),
+            Commands.instant { firingSS.hoodAngle = 0.02; firingSS.power = 0.7 },
+            Commands.waitMs(500.0),
             firingSS.execFiring(false),
-            Commands.instant { intakeSS.speed = robot.intakeDef },
         )
     }
 }
